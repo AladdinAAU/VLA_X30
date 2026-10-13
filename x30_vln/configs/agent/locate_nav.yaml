@@ -1,0 +1,108 @@
+# locate_nav = the model only reports WHERE the target is (report_target); the planner drives. Copy of object_nav.yaml otherwise.
+# Policy of the reasoner agent in mode object_nav (x30_agent.core.reasoner). Everything the agent does that is not the
+# model's own decision is parameterised here. Per-goal overrides: Navigate.params_json {"limits": {"max_turns": 12}, ...}.
+# The files listed under `prompt_files` plus this file are hashed (12 hex) and the hash is written into every trace.
+version: 1
+
+prompt_files:
+  system: locate_nav_system.md
+
+# Skills offered to the model as tools, in this order. Names must exist in configs/skills.yaml.
+# `finish` and `query_map` are local tools handled by the harness.
+tools: [search, explore, scan]
+local_tools: [query_map, report_target]
+# description_mode: summary = one-line registry summary (small prompt), full = long registry description (about 4x the tokens)
+description_mode: summary
+tool_descriptions: {}          # per-skill override text, e.g. {search: "Find ..."}
+examples: []   # ids from the examples file to put in the system prompt ([] = none)
+
+model:
+  tool_choice: auto            # auto | required (llama.cpp grammar-forces a call; measured in docs/reports/agent.md)
+  temperature: 0.2
+  max_tokens: 300
+
+limits:
+  max_turns: 30
+  time_budget_s: 300           # Navigate.timeout_s wins if it is set
+  format_retries: 2            # extra model calls inside one turn when the reply has no valid tool call
+  max_calls_per_turn: 1        # extra calls in one reply are dropped and the model is told
+  max_refusals: 6              # repeated-call / scan-again refusals before the episode ends as no_progress
+  max_consecutive_failures: 8  # skill failures in a row before the episode ends as no_progress
+  max_noop_turns: 3            # consecutive turns without a usable tool call before the episode ends as error
+  max_llm_errors: 2            # consecutive transport errors (after client retries) before the episode ends as error
+  repeat_refuse_at: 3          # refuse the Nth identical consecutive call
+  failed_call_refuse_at: 3     # refuse a call that already failed this many times with identical arguments
+  scan_min_separation_m: 1.5   # a second scan closer than this to a previous scan is refused
+  skill_timeout_margin_s: 10
+
+prompt:
+  history_units: 5             # (assistant call, tool result) pairs kept as chat history
+  action_log_lines: 10         # one-line summaries of older actions kept in the harness notes
+  summary_max_objects: 25
+  result_max_chars: 700
+  show_time: true
+
+trace:
+  messages: true             # store the full request messages (images replaced by file references) for fine-tuning export
+
+images:
+  map: false                   # annotated top-down map from /semantic_map/annotated_map
+  camera: false                # latest egocentric RGB frame
+  max_side_px: 448
+  jpeg_quality: 80
+
+budget:
+  context_tokens: 0            # 0 = take reasoner_vlm.context_tokens (models.yaml) or the server's /props value
+  safety_margin_tokens: 160
+  chars_per_token: 3.4         # text estimate before the first model reply; recalibrated from usage afterwards
+
+guard:                         # finish(success=true) guard
+  require_verify: true
+  max_object_distance_m: 2.0   # robot to object centre
+  max_surface_distance_m: 1.2  # robot to object surface (centre distance minus half the footprint)
+  verify_stale_m: 1.5          # a verify "yes" older than this much robot motion no longer counts
+  accept_unsure_plausibility: 0   # >0: a verify "unsure" with plausibility >= this counts as yes (recorded as accepted_unsure)
+  override_after_refusals: 2   # the Nth refused finish(success=true) is accepted and flagged guard_overridden
+
+hints:                         # {fields} come from the skill result; unknown fields print as '?'
+  search:
+    found: "Found {n} candidate(s): {cands}. NEXT: report_target(object_id={best_id}, reason). Do not call search again for the same label."
+    all_rejected: "Every candidate returned was already rejected. NEXT: explore or scan somewhere new, or search with a synonym label."
+    exhausted: "Nothing (new) found and nothing left to explore. NEXT: try a synonym label once, or report_target(found=false, reason)."
+    fail: "Not found yet. NEXT: explore (or scan in a new place), then search again."
+  goto_object:
+    ok: "You are next to #{object_id}. NEXT: verify(object_id={object_id}, question=<ask about the task's colour/room/relation>)."
+    fail: "Could not get there. This does not mean the object is wrong. NEXT: retry once with a larger standoff_m (1.5), or explore to see more of the map, or goto_pose to a point near it."
+    blocked_repeat: "Blocked again. NEXT: choose another object, explore, or goto_pose to a point on the other side."
+  approach:
+    ok: "In position in front of #{object_id}. NEXT: verify(object_id={object_id}, question=<ask about the task's colour/room/relation>)."
+    fail: "Approach failed; this does not mean the object is wrong. NEXT: goto_object(object_id={object_id}) first, then verify from there."
+  verify:
+    "yes": "Verified: #{object_id} matches. NEXT: finish(success=true, reason) if you are within 1.5 m of it and the task is satisfied; otherwise approach it first."
+    "no": "Rejected: #{object_id} is not the target and is excluded from now on. NEXT: search(label) again."
+    no_others: "Rejected: #{object_id} is not the target and is excluded from now on. Other unchecked candidates of the same kind are already mapped: {others}. NEXT: goto_object(object_id={first_other}), then verify it."
+    unsure: "Unsure (poor view). NEXT: approach(object_id={object_id}) or turn_to it and verify again; if still unsure twice, look at other candidates."
+    unknown: "No answer. NEXT: verify again once; if it keeps failing, continue without it."
+  explore:
+    found: "The map now has the target: #{found_id}. NEXT: report_target(object_id={found_id}, reason)."
+    exhausted: "Nothing left to explore. NEXT: scan here once, search with a synonym, or report_target(found=false, reason)."
+    ok: "Explored a new area. NEXT: search(label) again (it checks the new map content)."
+    fail: "Exploration failed. NEXT: scan, or goto_pose to a known free point, then explore again."
+  scan:
+    ok: "New objects: {new}. NEXT: search(label) to check for the target."
+    empty: "Nothing new here. NEXT: explore to move to a new place."
+  generic:
+    ok: "NEXT: continue (search, explore, scan, then report_target)."
+    fail: "Failed. NEXT: read the message, then change the arguments or choose another skill."
+  refused_repeat: "That exact call was already made {n} times in a row and will not give a different result. Choose a DIFFERENT tool or different arguments."
+  refused_failed: "That exact call already failed {n} times. Choose different arguments or another skill."
+  refused_scan: "You already scanned within {d:.1f} m of here. NEXT: explore to a new place."
+  refused_cycle: "You are alternating between the same two calls. Break the cycle: choose a different tool."
+  extra_calls_dropped: "You sent {n} tool calls; only the first was executed. Send exactly one call per turn."
+  no_tool_call: "Your reply had no tool call. Answer with exactly one tool call."
+  unknown_tool: "'{name}' is not a tool. Available tools: {tools}."
+  bad_arguments: "Arguments for {name} are invalid: {problems}."
+  finish_missing_verify: "Refused: finish(success=true) needs a verify answer of yes. NEXT: verify(object_id=..., question=...) first (goto_object or approach before it if you are far)."
+  finish_far: "Refused: you are {d:.1f} m from #{object_id}, more than the allowed distance. NEXT: approach(object_id={object_id}), then finish."
+  finish_stale: "Refused: you moved {d:.1f} m since the last verify. NEXT: verify(object_id=...) again."
+  finish_overridden: "Guard override: accepted after {n} refusals ({why})."

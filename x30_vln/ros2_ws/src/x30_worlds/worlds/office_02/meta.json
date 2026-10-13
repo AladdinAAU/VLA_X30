@@ -1,0 +1,60 @@
+{
+ "sdf": "worlds/office_02/world.sdf",
+ "spawn": {
+  "x": 1.2,
+  "y": 0.0,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.5,
+  -6.9,
+  22.64,
+  7.5
+ ],
+ "objects_file": "worlds/office_02/objects.json",
+ "rooms_file": "worlds/office_02/rooms.json",
+ "map_file": "worlds/office_02/map.yaml",
+ "license": "generated in this repository from SDF primitives (no third-party assets); CC0-1.0",
+ "source": "x30_datasets.procgen preset 'office_02' seed 66",
+ "source_dataset": "procedural",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "kind": "office",
+  "rooms": 9,
+  "objects": 104,
+  "reachable_area_m2": 116.8,
+  "models": 106,
+  "objects_by_label": {
+   "bookshelf": 3,
+   "cabinet": 3,
+   "chair": 16,
+   "desk": 8,
+   "door": 8,
+   "filing_cabinet": 3,
+   "fire_extinguisher": 1,
+   "kitchen_counter": 1,
+   "laptop": 1,
+   "microwave": 1,
+   "mirror": 1,
+   "monitor": 8,
+   "person": 2,
+   "picture": 3,
+   "plant": 8,
+   "printer": 1,
+   "radiator": 3,
+   "refrigerator": 1,
+   "sink": 3,
+   "stove": 1,
+   "table": 2,
+   "toilet": 3,
+   "trash_can": 6,
+   "tv": 2,
+   "water_cooler": 3,
+   "whiteboard": 6,
+   "window": 6
+  },
+  "robot_radius_m": 0.35,
+  "min_door_width_m": 1.0
+ }
+}

@@ -1,0 +1,258 @@
+// 2.4G 机身相机画面的单元测试：node tools/dogcam_test.js
+//
+// 这一层值得单独测，因为它错起来只有一种表现 —— 黑屏，而黑屏的可能原因太多
+// （网关、相机、网卡、链路），现场很难往「网页少发了一句 videoStart」上想。
+// 这里用假的 DOM 和假的原生桥把状态机跑一遍，不需要平板和狗。
+
+'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var vm = require('vm');
+
+var pass = 0, fail = 0;
+
+function check(name, ok, detail) {
+  if (ok) { pass++; console.log('  [OK]   ' + name); }
+  else { fail++; console.log('  [FAIL] ' + name + (detail ? '  ' + detail : '')); }
+}
+
+// 只造这个模块真正摸到的那几个节点，多了反而看不清它依赖什么。
+function harness() {
+  var h = {
+    calls: [],
+    resyncs: 0,
+    cls: {},
+    on24: false,
+    hidden: false,
+    nodes: {},
+  };
+
+  function node(text) {
+    var small = { textContent: text };
+    return {
+      small: small,
+      hiddenNow: false,
+      classList: {
+        contains: function () { return false; },
+        add: function () {}, remove: function () {},
+        toggle: function (c, on) { this.owner.hiddenNow = !!on; },
+      },
+      querySelector: function () { return small; },
+      getBoundingClientRect: function () {
+        return { left: 0, top: 64, width: 1280, height: 600 };
+      },
+    };
+  }
+
+  h.nodes['pane-video'] = node('');
+  h.nodes['pane-ptz-vis'] = node('');
+  h.nodes['media-idle'] = node('等待拉流…');
+  h.nodes['media-idle-ptz-vis'] = node('未接通时会停在这里');
+  h.nodes['media-idle-ptz-ir'] = node('未接通时会停在这里');
+  Object.keys(h.nodes).forEach(function (k) {
+    h.nodes[k].classList.owner = h.nodes[k];
+  });
+  h.main = 'dog_cam';
+  h.nodes['pane-video'].classList.contains = function (c) {
+    return c === 'is-main' && h.main === 'dog_cam';
+  };
+  h.nodes['pane-ptz-vis'].classList.contains = function (c) {
+    return c === 'is-main' && h.main === 'ptz_vis';
+  };
+
+  var store = {};
+  var sandbox = {
+    window: {
+      devicePixelRatio: 2,
+      localStorage: {
+        getItem: function (k) { return store[k] || null; },
+        setItem: function (k, v) { store[k] = v; },
+        removeItem: function (k) { delete store[k]; },
+      },
+      addEventListener: function () {},
+      setInterval: function () { return 0; },
+      // 这一路归原生还是归网关是二选一，交接时要通知 media.js 重算。
+      // 不记进 h.calls：那串是给原生播放器的指令序列，混进来会看不清。
+      X30Media: {
+        resync: function () { h.resyncs++; },
+      },
+      X30Native: {
+        getGatewayHost: function () { return '192.168.1.101'; },
+        videoStart: function (u) { h.calls.push('start ' + u); },
+        videoStartOn: function (u, bind) {
+          h.calls.push('start ' + u + (bind ? ' radio' : ' lan'));
+        },
+        videoStop: function () { h.calls.push('stop'); },
+        videoRect: function (x, y, w, hh) {
+          h.calls.push('rect ' + x + ',' + y + ',' + w + ',' + hh);
+        },
+      },
+    },
+    document: {
+      addEventListener: function () {},
+      documentElement: {
+        attrs: {},
+        classList: {
+          add: function (c) { h.cls[c] = true; },
+          remove: function (c) { delete h.cls[c]; },
+          contains: function (c) {
+            return c === 'radio-24' ? h.on24 : !!h.cls[c];
+          },
+        },
+        setAttribute: function (k, v) { this.attrs[k] = v; },
+        removeAttribute: function (k) { delete this.attrs[k]; },
+        getAttribute: function (k) { return this.attrs[k] || null; },
+      },
+      getElementById: function (id) { return h.nodes[id] || null; },
+    },
+  };
+  Object.defineProperty(sandbox.document, 'hidden', {
+    get: function () { return h.hidden; },
+  });
+
+  var src = fs.readFileSync(
+    path.join(__dirname, '..', 'web', 'dogcam24.js'), 'utf8');
+  vm.runInNewContext(src, sandbox, { filename: 'dogcam24.js' });
+  h.mod = sandbox.window.X30DogCam;
+  h.idle = function () { return h.nodes['media-idle'].small.textContent; };
+  h.ptz = function () { return h.nodes['media-idle-ptz-vis'].small.textContent; };
+  h.ir = function () { return h.nodes['media-idle-ptz-ir'].small.textContent; };
+  return h;
+}
+
+// --- MESH 下走网关转推 -----------------------------------------------------
+console.log('\n== MESH 下走网关转推 ==');
+
+var h = harness();
+h.mod.init();
+check('MESH 上机身拉网关 dog_cam_main，不绑射频',
+      h.calls[0] === 'rect 0,128,2560,1200' &&
+      h.calls[1] === 'start rtsp://192.168.1.101:8554/dog_cam_main lan',
+      JSON.stringify(h.calls));
+check('把网页背景透出去', !!h.cls['native-video-on']);
+
+// --- 切到 2.4G ---------------------------------------------------------------
+console.log('\n== 切到 2.4G ==');
+
+h = harness();
+h.on24 = true;
+h.mod.init();
+// 先报矩形再开流：反过来的话原生会先按上一次（或整屏）的位置画一下，画面会跳。
+check('先报矩形，再开流',
+      h.calls[0] === 'rect 0,128,2560,1200' &&
+      h.calls[1] === 'start rtsp://192.168.1.105:8554/test radio',
+      JSON.stringify(h.calls));
+// 网页是 CSS 像素、原生是设备像素，中间差一个 devicePixelRatio（这里是 2）。
+check('矩形按 devicePixelRatio 换算成设备像素',
+      h.calls[0] === 'rect 0,128,2560,1200', h.calls[0]);
+check('把网页背景透出去，否则看不到底下的画面', !!h.cls['native-video-on']);
+check('占位图说明正在拉哪个地址',
+      h.idle().indexOf('rtsp://192.168.1.105:8554/test') !== -1, h.idle());
+check('热成像占位不改口',
+      h.ir() === '未接通时会停在这里', h.ir());
+check('双光不再标成没有（球在 192.168.1.x，能直拉）',
+      h.ptz() === '未接通时会停在这里', h.ptz());
+// 平板同时连着 WiFi 时网关那一路也够得到机身相机。接手时得让 media.js 重算，
+// 否则同一只相机被拉两遍：白占本来就窄的 2.4G，两边还抢同一块占位图。
+check('接手时通知 media.js 让出这一路', h.resyncs === 1, String(h.resyncs));
+
+// 切布局、切档、定时器都会走到 sync。每次都重开流的话画面会不停闪断。
+h.calls.length = 0;
+h.resyncs = 0;
+h.mod.onStageLayout();
+h.mod.onRadioPath();
+h.mod.onStageLayout();
+check('反复同步不会把正在放的流打断', h.calls.length === 0, JSON.stringify(h.calls));
+check('反复同步也不会反复惊动 media.js', h.resyncs === 0, String(h.resyncs));
+
+// --- 出错和出画面 -----------------------------------------------------------
+console.log('\n== 状态回报 ==');
+
+h.mod.onState({ playing: false, err: 'Unable to connect to /192.168.1.105:8554' });
+check('拉不到时占位图写出原生的报错',
+      h.idle().indexOf('Unable to connect') !== -1, h.idle());
+check('拉不到时占位图还留着', !h.nodes['media-idle'].hiddenNow);
+
+h.mod.onState({ playing: true, err: '' });
+check('出画面后收起占位图', h.nodes['media-idle'].hiddenNow);
+
+// 画面慢的时候要能分清慢在哪：本机缓冲接近 0 说明慢在上游（相机转码、链路排队），
+// 再怎么调客户端都没用。这一行就是为了不再靠猜。
+console.log('\n== 延迟出在哪 ==');
+
+h.mod.onState({ playing: true, err: '', buf: 60 });
+check('缓冲小就点明延迟在上游',
+      h.mod.status().indexOf('60 ms') !== -1 &&
+      h.mod.status().indexOf('上游') !== -1, h.mod.status());
+h.mod.onState({ playing: true, err: '', buf: 1200 });
+check('缓冲大就说明正在快放追',
+      h.mod.status().indexOf('1200 ms') !== -1 &&
+      h.mod.status().indexOf('快放追') !== -1, h.mod.status());
+
+// --- 切后台 -----------------------------------------------------------------
+console.log('\n== 切后台 ==');
+
+h.calls.length = 0;
+h.hidden = true;
+h.mod.stop();
+check('停流并把背景恢复成不透明',
+      h.calls.length === 1 && h.calls[0] === 'stop' && !h.cls['native-video-on'],
+      JSON.stringify(h.calls));
+h.hidden = false;
+h.mod.onRadioPath();
+check('回前台重新开流',
+      h.calls.indexOf('start rtsp://192.168.1.105:8554/test radio') !== -1,
+      JSON.stringify(h.calls));
+
+// --- 切回 MESH：改拉网关转推 -----------------------------------------------
+console.log('\n== 切回 MESH ==');
+
+h.calls.length = 0;
+h.resyncs = 0;
+h.on24 = false;
+h.mod.onRadioPath();
+check('改绑 WiFi，地址换成网关转推',
+      h.calls.indexOf('start rtsp://192.168.1.101:8554/dog_cam_main lan') !== -1,
+      JSON.stringify(h.calls));
+check('同一路只换地址，不必再惊动 media.js', h.resyncs === 0, String(h.resyncs));
+check('MESH 原生画面仍把网页背景透掉', !!h.cls['native-video-on']);
+
+console.log('\n== MESH 转推失败改走 2.4G ==');
+h.calls.length = 0;
+h.mod.onState({ playing: false, err: 'TCP: Connection refused' });
+check('转推失败后改直连机身并绑射频',
+      h.calls.indexOf('start rtsp://192.168.1.105:8554/test radio') !== -1,
+      JSON.stringify(h.calls));
+
+// --- 地址可改 ---------------------------------------------------------------
+console.log('\n== 相机地址 ==');
+
+check('默认是感知主机那一路', h.mod.url() === 'rtsp://192.168.1.105:8554/test');
+h.mod.setUrl('rtsp://192.168.1.200:8554/live');
+check('改过之后记得住', h.mod.url() === 'rtsp://192.168.1.200:8554/live', h.mod.url());
+h.mod.setUrl('');
+check('清空回到默认', h.mod.url() === 'rtsp://192.168.1.105:8554/test', h.mod.url());
+
+h.on24 = true;
+h.mod.onRadioPath();
+h.calls.length = 0;
+h.mod.setUrl('rtsp://192.168.1.200:8554/live');
+check('放着的时候改地址会按新地址重开',
+      h.calls.indexOf('stop') !== -1 &&
+      h.calls.indexOf('start rtsp://192.168.1.200:8554/live radio') !== -1,
+      JSON.stringify(h.calls));
+
+// --- MESH 上双光直拉球机 ----------------------------------------------------
+console.log('\n== MESH 上双光直拉球机 ==');
+
+h = harness();
+h.main = 'ptz_vis';
+h.mod.init();
+check('MESH 双光直拉 10.168:554/11，不绑射频',
+      h.calls.indexOf('start rtsp://192.168.10.168:554/11 lan') !== -1,
+      JSON.stringify(h.calls));
+check('MESH 双光也把网页背景透掉', !!h.cls['native-video-on']);
+
+console.log('\n通过 ' + pass + '，失败 ' + fail);
+process.exit(fail === 0 ? 0 : 1);

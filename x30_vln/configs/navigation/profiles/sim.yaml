@@ -1,0 +1,9 @@
+# Overrides for the sim profile (Gazebo or the nav_stub_robot). Applied after navigation.yaml.
+# /odom in sim is ground truth with optional noise, so it is a good "leg" source; fused still works.
+odom_selector:
+  ros__parameters:
+    odom_source: leg
+
+cloud_leveler:
+  ros__parameters:
+    tilt_source: auto

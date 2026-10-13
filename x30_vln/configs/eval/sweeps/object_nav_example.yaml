@@ -1,0 +1,22 @@
+# Example sweep for the real stack. Parameter names are "<config file stem>.<key path>"; they must exist in configs/ (checked at start).
+# Run (dev split only; held-out is touched only by `finalize --final`):
+#   python -m x30_eval.sweep run      --spec configs/eval/sweeps/object_nav_example.yaml --episodes datasets/episodes/<file>.yaml
+#   python -m x30_eval.sweep confirm  --spec ... --episodes ...
+#   python -m x30_eval.sweep finalize --spec ... --episodes ... --final        # once, at the very end
+study: object_nav_agent_limits
+seed: 0
+n_trials: 20
+episodes_per_trial: 8          # dev episodes per trial (same subset for every trial), one repeat
+rungs: [0.25, 0.5, 1.0]        # successive halving: a trial can be pruned after 2, 4 episodes
+pruner: sha
+reduction_factor: 2
+objective: {success: 1.0, spl: 0.25, collisions: 0.05, time: 0.0}      # score = SR + 0.25 SPL - 0.05 collisions/run
+confirm_top_k: 3
+confirm_repeats: 3
+final_repeats: 3
+stack_restart_cmd: null        # REQUIRED for the real stack: restarts the framework nodes with X30_CONFIG_OVERLAY={overlay} (see docs/requests/eval-to-bringup.md)
+params:
+  agent/object_nav.model.temperature: {type: float, low: 0.0, high: 0.7}
+  agent/object_nav.limits.repeat_refuse_at: {type: int, low: 2, high: 5}
+  agent/object_nav.limits.scan_min_separation_m: {type: float, low: 0.5, high: 3.0}
+  modes/object_nav.no_progress_window_s: {type: float, low: 60.0, high: 180.0}

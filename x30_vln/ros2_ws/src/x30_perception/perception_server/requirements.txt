@@ -1,0 +1,8 @@
+# Python packages the perception server needs on top of a CUDA + PyTorch + ultralytics image
+fastapi
+uvicorn[standard]
+numpy
+opencv-python-headless
+PyYAML
+# YOLOE text encoder (mobileclip) is loaded from mobileclip_blt.ts in the cache directory
+ultralytics>=8.3.150

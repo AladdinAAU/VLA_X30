@@ -1,0 +1,1122 @@
+[
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_01",
+  "pose": {
+   "x": -0.252,
+   "y": -0.939,
+   "z": 0.635,
+   "yaw": 0.0
+  },
+  "size": [
+   0.062,
+   0.032,
+   0.074
+  ],
+  "bbox": [
+   -0.283,
+   -0.955,
+   0.635,
+   -0.221,
+   -0.923,
+   0.709
+  ],
+  "size_local": [
+   0.062,
+   0.032,
+   0.074
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_text",
+  "source_id": 1,
+  "region": null,
+  "source": "replica",
+  "id": 0
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_02",
+  "pose": {
+   "x": -0.467,
+   "y": -0.738,
+   "z": 0.622,
+   "yaw": 0.0
+  },
+  "size": [
+   0.19,
+   0.22,
+   0.056
+  ],
+  "bbox": [
+   -0.562,
+   -0.848,
+   0.622,
+   -0.372,
+   -0.628,
+   0.677
+  ],
+  "size_local": [
+   0.19,
+   0.22,
+   0.056
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_picture",
+  "source_id": 2,
+  "region": null,
+  "source": "replica",
+  "id": 1
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_03",
+  "pose": {
+   "x": 2.072,
+   "y": -1.109,
+   "z": 0.872,
+   "yaw": 0.0
+  },
+  "size": [
+   0.138,
+   1.206,
+   0.676
+  ],
+  "bbox": [
+   2.003,
+   -1.712,
+   0.872,
+   2.141,
+   -0.506,
+   1.548
+  ],
+  "size_local": [
+   0.138,
+   1.206,
+   0.676
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_picture",
+  "source_id": 3,
+  "region": null,
+  "source": "replica",
+  "id": 2
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": 0.408,
+   "y": -0.532,
+   "z": -0.011,
+   "yaw": 0.0
+  },
+  "size": [
+   0.704,
+   0.685,
+   0.772
+  ],
+  "bbox": [
+   0.055,
+   -0.875,
+   -0.011,
+   0.76,
+   -0.189,
+   0.761
+  ],
+  "size_local": [
+   0.704,
+   0.685,
+   0.772
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "chair",
+  "source_id": 4,
+  "region": null,
+  "source": "replica",
+  "id": 3
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_01",
+  "pose": {
+   "x": 0.401,
+   "y": -0.945,
+   "z": -0.032,
+   "yaw": 0.0
+  },
+  "size": [
+   3.927,
+   4.41,
+   0.164
+  ],
+  "bbox": [
+   -1.562,
+   -3.149,
+   -0.032,
+   2.365,
+   1.26,
+   0.132
+  ],
+  "size_local": [
+   3.927,
+   4.41,
+   0.164
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "rug",
+  "source_id": 5,
+  "region": null,
+  "source": "replica",
+  "id": 4
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_04",
+  "pose": {
+   "x": -0.309,
+   "y": -0.844,
+   "z": 0.649,
+   "yaw": 0.0
+  },
+  "size": [
+   0.057,
+   0.042,
+   0.068
+  ],
+  "bbox": [
+   -0.338,
+   -0.866,
+   0.649,
+   -0.281,
+   -0.823,
+   0.717
+  ],
+  "size_local": [
+   0.057,
+   0.042,
+   0.068
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_text",
+  "source_id": 6,
+  "region": null,
+  "source": "replica",
+  "id": 5
+ },
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_01",
+  "pose": {
+   "x": -1.074,
+   "y": 1.006,
+   "z": -0.023,
+   "yaw": 0.0
+  },
+  "size": [
+   1.856,
+   1.103,
+   0.712
+  ],
+  "bbox": [
+   -2.002,
+   0.454,
+   -0.023,
+   -0.146,
+   1.557,
+   0.689
+  ],
+  "size_local": [
+   1.856,
+   1.103,
+   0.712
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "sofa",
+  "source_id": 7,
+  "region": null,
+  "source": "replica",
+  "id": 6
+ },
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_02",
+  "pose": {
+   "x": -1.251,
+   "y": -1.054,
+   "z": -0.039,
+   "yaw": 0.0
+  },
+  "size": [
+   1.285,
+   3.026,
+   0.729
+  ],
+  "bbox": [
+   -1.893,
+   -2.567,
+   -0.039,
+   -0.608,
+   0.459,
+   0.69
+  ],
+  "size_local": [
+   1.285,
+   3.026,
+   0.729
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "sofa",
+  "source_id": 9,
+  "region": null,
+  "source": "replica",
+  "id": 7
+ },
+ {
+  "label": "camera",
+  "label_id": 84,
+  "instance": "camera_01",
+  "pose": {
+   "x": 2.066,
+   "y": -0.492,
+   "z": 1.589,
+   "yaw": 0.0
+  },
+  "size": [
+   0.172,
+   0.135,
+   0.149
+  ],
+  "bbox": [
+   1.979,
+   -0.56,
+   1.589,
+   2.152,
+   -0.425,
+   1.738
+  ],
+  "size_local": [
+   0.172,
+   0.135,
+   0.149
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "camera",
+  "source_id": 11,
+  "region": null,
+  "source": "replica",
+  "id": 8
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 1.867,
+   "y": -0.467,
+   "z": -0.01,
+   "yaw": 0.0
+  },
+  "size": [
+   0.61,
+   0.597,
+   0.607
+  ],
+  "bbox": [
+   1.563,
+   -0.765,
+   -0.01,
+   2.172,
+   -0.168,
+   0.597
+  ],
+  "size_local": [
+   0.61,
+   0.597,
+   0.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 12,
+  "region": null,
+  "source": "replica",
+  "id": 9
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_05",
+  "pose": {
+   "x": -0.297,
+   "y": -0.758,
+   "z": 0.641,
+   "yaw": 0.0
+  },
+  "size": [
+   0.026,
+   0.051,
+   0.065
+  ],
+  "bbox": [
+   -0.31,
+   -0.784,
+   0.641,
+   -0.284,
+   -0.733,
+   0.706
+  ],
+  "size_local": [
+   0.026,
+   0.051,
+   0.065
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_text",
+  "source_id": 13,
+  "region": null,
+  "source": "replica",
+  "id": 10
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_01",
+  "pose": {
+   "x": 1.358,
+   "y": 1.717,
+   "z": 0.366,
+   "yaw": 0.0
+  },
+  "size": [
+   0.615,
+   0.179,
+   2.223
+  ],
+  "bbox": [
+   1.051,
+   1.627,
+   0.366,
+   1.666,
+   1.807,
+   2.59
+  ],
+  "size_local": [
+   0.615,
+   0.179,
+   2.223
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 15,
+  "region": null,
+  "source": "replica",
+  "id": 11
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_01",
+  "pose": {
+   "x": 1.35,
+   "y": 1.766,
+   "z": -0.012,
+   "yaw": 0.0
+  },
+  "size": [
+   0.99,
+   0.18,
+   2.728
+  ],
+  "bbox": [
+   0.854,
+   1.676,
+   -0.012,
+   1.845,
+   1.856,
+   2.715
+  ],
+  "size_local": [
+   0.99,
+   0.18,
+   2.728
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "door",
+  "source_id": 16,
+  "region": null,
+  "source": "replica",
+  "id": 12
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_01",
+  "pose": {
+   "x": 0.529,
+   "y": 1.481,
+   "z": -0.019,
+   "yaw": 0.0
+  },
+  "size": [
+   0.375,
+   0.344,
+   0.386
+  ],
+  "bbox": [
+   0.341,
+   1.309,
+   -0.019,
+   0.716,
+   1.653,
+   0.367
+  ],
+  "size_local": [
+   0.375,
+   0.344,
+   0.386
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "bin",
+  "source_id": 19,
+  "region": null,
+  "source": "replica",
+  "id": 13
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_02",
+  "pose": {
+   "x": 0.515,
+   "y": -2.944,
+   "z": -0.011,
+   "yaw": 0.0
+  },
+  "size": [
+   3.016,
+   0.419,
+   2.714
+  ],
+  "bbox": [
+   -0.993,
+   -3.154,
+   -0.011,
+   2.023,
+   -2.734,
+   2.703
+  ],
+  "size_local": [
+   3.016,
+   0.419,
+   2.714
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 20,
+  "region": null,
+  "source": "replica",
+  "id": 14
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_01",
+  "pose": {
+   "x": 0.963,
+   "y": -0.599,
+   "z": 2.856,
+   "yaw": 0.0
+  },
+  "size": [
+   0.382,
+   1.202,
+   0.029
+  ],
+  "bbox": [
+   0.772,
+   -1.2,
+   2.856,
+   1.154,
+   0.002,
+   2.884
+  ],
+  "size_local": [
+   0.382,
+   1.202,
+   0.029
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 21,
+  "region": null,
+  "source": "replica",
+  "id": 15
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_01",
+  "pose": {
+   "x": 1.868,
+   "y": -2.255,
+   "z": 0.903,
+   "yaw": 0.0
+  },
+  "size": [
+   1.012,
+   1.299,
+   1.165
+  ],
+  "bbox": [
+   1.362,
+   -2.904,
+   0.903,
+   2.374,
+   -1.605,
+   2.068
+  ],
+  "size_local": [
+   1.012,
+   1.299,
+   1.165
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "indoor-plant",
+  "source_id": 22,
+  "region": null,
+  "source": "replica",
+  "id": 16
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_06",
+  "pose": {
+   "x": -0.285,
+   "y": -0.886,
+   "z": 0.579,
+   "yaw": 0.0
+  },
+  "size": [
+   0.17,
+   0.151,
+   0.212
+  ],
+  "bbox": [
+   -0.37,
+   -0.961,
+   0.579,
+   -0.2,
+   -0.81,
+   0.791
+  ],
+  "size_local": [
+   0.17,
+   0.151,
+   0.212
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "tissue-paper",
+  "source_id": 28,
+  "region": null,
+  "source": "replica",
+  "id": 17
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_07",
+  "pose": {
+   "x": 1.94,
+   "y": 0.124,
+   "z": 0.87,
+   "yaw": 0.0
+  },
+  "size": [
+   0.13,
+   1.22,
+   0.686
+  ],
+  "bbox": [
+   1.874,
+   -0.487,
+   0.87,
+   2.005,
+   0.734,
+   1.556
+  ],
+  "size_local": [
+   0.13,
+   1.22,
+   0.686
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "anonymize_picture",
+  "source_id": 30,
+  "region": null,
+  "source": "replica",
+  "id": 18
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_02",
+  "pose": {
+   "x": 0.12,
+   "y": 1.453,
+   "z": -0.026,
+   "yaw": 0.0
+  },
+  "size": [
+   0.368,
+   0.313,
+   0.395
+  ],
+  "bbox": [
+   -0.064,
+   1.296,
+   -0.026,
+   0.304,
+   1.61,
+   0.369
+  ],
+  "size_local": [
+   0.368,
+   0.313,
+   0.395
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "bin",
+  "source_id": 34,
+  "region": null,
+  "source": "replica",
+  "id": 19
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_02",
+  "pose": {
+   "x": -0.552,
+   "y": -0.769,
+   "z": 2.852,
+   "yaw": 0.0
+  },
+  "size": [
+   0.379,
+   1.197,
+   0.028
+  ],
+  "bbox": [
+   -0.741,
+   -1.368,
+   2.852,
+   -0.362,
+   -0.171,
+   2.88
+  ],
+  "size_local": [
+   0.379,
+   1.197,
+   0.028
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 37,
+  "region": null,
+  "source": "replica",
+  "id": 20
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_08",
+  "pose": {
+   "x": -0.097,
+   "y": -0.736,
+   "z": 0.607,
+   "yaw": 0.0
+  },
+  "size": [
+   0.332,
+   0.213,
+   0.222
+  ],
+  "bbox": [
+   -0.263,
+   -0.843,
+   0.607,
+   0.069,
+   -0.63,
+   0.829
+  ],
+  "size_local": [
+   0.332,
+   0.213,
+   0.222
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "desk-organizer",
+  "source_id": 44,
+  "region": null,
+  "source": "replica",
+  "id": 21
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_09",
+  "pose": {
+   "x": -1.439,
+   "y": -3.08,
+   "z": -0.004,
+   "yaw": 0.0
+  },
+  "size": [
+   0.172,
+   0.134,
+   2.854
+  ],
+  "bbox": [
+   -1.526,
+   -3.147,
+   -0.004,
+   -1.353,
+   -3.013,
+   2.849
+  ],
+  "size_local": [
+   0.172,
+   0.134,
+   2.854
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "pillar",
+  "source_id": 56,
+  "region": null,
+  "source": "replica",
+  "id": 22
+ },
+ {
+  "label": "clock",
+  "label_id": 72,
+  "instance": "clock_01",
+  "pose": {
+   "x": 2.132,
+   "y": -0.475,
+   "z": 1.972,
+   "yaw": 0.0
+  },
+  "size": [
+   0.053,
+   0.243,
+   0.195
+  ],
+  "bbox": [
+   2.105,
+   -0.597,
+   1.972,
+   2.159,
+   -0.353,
+   2.168
+  ],
+  "size_local": [
+   0.053,
+   0.243,
+   0.195
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "clock",
+  "source_id": 57,
+  "region": null,
+  "source": "replica",
+  "id": 23
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_02",
+  "pose": {
+   "x": -0.192,
+   "y": -0.304,
+   "z": -0.013,
+   "yaw": 0.0
+  },
+  "size": [
+   1.067,
+   1.287,
+   0.637
+  ],
+  "bbox": [
+   -0.725,
+   -0.947,
+   -0.013,
+   0.342,
+   0.34,
+   0.624
+  ],
+  "size_local": [
+   1.067,
+   1.287,
+   0.637
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 58,
+  "region": null,
+  "source": "replica",
+  "id": 24
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_02",
+  "pose": {
+   "x": 0.375,
+   "y": 0.219,
+   "z": -0.008,
+   "yaw": 0.0
+  },
+  "size": [
+   0.752,
+   0.702,
+   0.762
+  ],
+  "bbox": [
+   -0.001,
+   -0.132,
+   -0.008,
+   0.751,
+   0.57,
+   0.753
+  ],
+  "size_local": [
+   0.752,
+   0.702,
+   0.762
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "chair",
+  "source_id": 61,
+  "region": null,
+  "source": "replica",
+  "id": 25
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_10",
+  "pose": {
+   "x": -0.471,
+   "y": -0.734,
+   "z": 0.606,
+   "yaw": 0.0
+  },
+  "size": [
+   0.232,
+   0.259,
+   0.075
+  ],
+  "bbox": [
+   -0.587,
+   -0.864,
+   0.606,
+   -0.355,
+   -0.604,
+   0.681
+  ],
+  "size_local": [
+   0.232,
+   0.259,
+   0.075
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "tablet",
+  "source_id": 64,
+  "region": null,
+  "source": "replica",
+  "id": 26
+ },
+ {
+  "label": "tv",
+  "label_id": 21,
+  "instance": "tv_01",
+  "pose": {
+   "x": 2.08,
+   "y": -0.501,
+   "z": 0.666,
+   "yaw": 0.0
+  },
+  "size": [
+   0.434,
+   2.546,
+   1.137
+  ],
+  "bbox": [
+   1.863,
+   -1.774,
+   0.666,
+   2.297,
+   0.772,
+   1.802
+  ],
+  "size_local": [
+   0.434,
+   2.546,
+   1.137
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "tv-screen",
+  "source_id": 66,
+  "region": null,
+  "source": "replica",
+  "id": 27
+ }
+]

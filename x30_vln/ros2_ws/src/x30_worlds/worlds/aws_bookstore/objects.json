@@ -1,0 +1,2518 @@
+[
+ {
+  "id": 0,
+  "label": "air_conditioner",
+  "label_id": 62,
+  "instance": "air_conditioner_01",
+  "pose": {
+   "x": 7.458,
+   "y": 1.422,
+   "z": 3.291,
+   "yaw": -1.5642
+  },
+  "size": [
+   0.365,
+   1.609,
+   0.019
+  ],
+  "bbox": [
+   7.278,
+   0.618,
+   3.288,
+   7.643,
+   2.227,
+   3.307
+  ],
+  "size_local": [
+   0.365,
+   1.609,
+   0.019
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_AirConditionerC_01"
+ },
+ {
+  "id": 1,
+  "label": "bicycle",
+  "label_id": 57,
+  "instance": "bicycle_01",
+  "pose": {
+   "x": 5.681,
+   "y": -2.242,
+   "z": 0.931,
+   "yaw": 0.0
+  },
+  "size": [
+   0.201,
+   0.11,
+   0.126
+  ],
+  "bbox": [
+   5.583,
+   -2.299,
+   0.931,
+   5.784,
+   -2.189,
+   1.057
+  ],
+  "size_local": [
+   0.201,
+   0.11,
+   0.126
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Bicycle_01"
+ },
+ {
+  "id": 2,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_01",
+  "pose": {
+   "x": 1.405,
+   "y": -1.45,
+   "z": 0.038,
+   "yaw": 0.0007
+  },
+  "size": [
+   0.724,
+   1.484,
+   2.121
+  ],
+  "bbox": [
+   1.034,
+   -2.196,
+   0.033,
+   1.758,
+   -0.712,
+   2.154
+  ],
+  "size_local": [
+   0.724,
+   1.484,
+   2.121
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfA_01"
+ },
+ {
+  "id": 3,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_02",
+  "pose": {
+   "x": 1.405,
+   "y": -4.762,
+   "z": 0.003,
+   "yaw": 0.0
+  },
+  "size": [
+   0.723,
+   1.476,
+   2.116
+  ],
+  "bbox": [
+   1.035,
+   -5.5,
+   0.002,
+   1.758,
+   -4.024,
+   2.118
+  ],
+  "size_local": [
+   0.723,
+   1.476,
+   2.116
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfA_01"
+ },
+ {
+  "id": 4,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_03",
+  "pose": {
+   "x": -2.554,
+   "y": -1.487,
+   "z": 0.006,
+   "yaw": 0.0318
+  },
+  "size": [
+   0.77,
+   1.498,
+   2.119
+  ],
+  "bbox": [
+   -2.948,
+   -2.237,
+   0.003,
+   -2.179,
+   -0.739,
+   2.121
+  ],
+  "size_local": [
+   0.77,
+   1.498,
+   2.119
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfA_01"
+ },
+ {
+  "id": 5,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_04",
+  "pose": {
+   "x": -2.609,
+   "y": -4.762,
+   "z": 0.003,
+   "yaw": 0.0
+  },
+  "size": [
+   0.723,
+   1.476,
+   2.116
+  ],
+  "bbox": [
+   -2.979,
+   -5.5,
+   0.002,
+   -2.256,
+   -4.024,
+   2.118
+  ],
+  "size_local": [
+   0.723,
+   1.476,
+   2.116
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfA_01"
+ },
+ {
+  "id": 6,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_05",
+  "pose": {
+   "x": -6.19,
+   "y": -6.786,
+   "z": -0.009,
+   "yaw": -0.0321
+  },
+  "size": [
+   2.681,
+   0.434,
+   2.159
+  ],
+  "bbox": [
+   -7.53,
+   -7.006,
+   -0.014,
+   -4.849,
+   -6.571,
+   2.145
+  ],
+  "size_local": [
+   2.681,
+   0.434,
+   2.159
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 7,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_06",
+  "pose": {
+   "x": -2.209,
+   "y": -6.971,
+   "z": 0.017,
+   "yaw": 0.0004
+  },
+  "size": [
+   2.672,
+   0.343,
+   2.158
+  ],
+  "bbox": [
+   -3.546,
+   -7.142,
+   0.013,
+   -0.874,
+   -6.799,
+   2.171
+  ],
+  "size_local": [
+   2.672,
+   0.343,
+   2.158
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 8,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_07",
+  "pose": {
+   "x": 0.522,
+   "y": -6.971,
+   "z": 0.018,
+   "yaw": 0.0
+  },
+  "size": [
+   2.672,
+   0.348,
+   2.158
+  ],
+  "bbox": [
+   -0.814,
+   -7.141,
+   0.013,
+   1.858,
+   -6.793,
+   2.172
+  ],
+  "size_local": [
+   2.672,
+   0.348,
+   2.158
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 9,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_08",
+  "pose": {
+   "x": 3.293,
+   "y": -6.964,
+   "z": 0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   2.672,
+   0.341,
+   2.157
+  ],
+  "bbox": [
+   1.958,
+   -7.134,
+   0.013,
+   4.629,
+   -6.792,
+   2.171
+  ],
+  "size_local": [
+   2.672,
+   0.341,
+   2.157
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 10,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_09",
+  "pose": {
+   "x": 6.08,
+   "y": -6.988,
+   "z": 0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   2.672,
+   0.342,
+   2.157
+  ],
+  "bbox": [
+   4.745,
+   -7.158,
+   0.013,
+   7.416,
+   -6.816,
+   2.171
+  ],
+  "size_local": [
+   2.672,
+   0.342,
+   2.157
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 11,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_10",
+  "pose": {
+   "x": 7.478,
+   "y": -5.298,
+   "z": 0.017,
+   "yaw": 1.5541
+  },
+  "size": [
+   0.39,
+   2.677,
+   2.158
+  ],
+  "bbox": [
+   7.28,
+   -6.637,
+   0.013,
+   7.67,
+   -3.96,
+   2.171
+  ],
+  "size_local": [
+   0.39,
+   2.677,
+   2.158
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 12,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_11",
+  "pose": {
+   "x": 7.478,
+   "y": -2.511,
+   "z": 0.017,
+   "yaw": 1.5621
+  },
+  "size": [
+   0.365,
+   2.674,
+   2.157
+  ],
+  "bbox": [
+   7.295,
+   -3.848,
+   0.013,
+   7.66,
+   -1.173,
+   2.171
+  ],
+  "size_local": [
+   0.365,
+   2.674,
+   2.157
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 13,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_12",
+  "pose": {
+   "x": 7.478,
+   "y": 0.403,
+   "z": 0.017,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.341,
+   2.672,
+   2.158
+  ],
+  "bbox": [
+   7.307,
+   -0.934,
+   0.013,
+   7.648,
+   1.738,
+   2.171
+  ],
+  "size_local": [
+   0.341,
+   2.672,
+   2.158
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfB_01"
+ },
+ {
+  "id": 14,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_13",
+  "pose": {
+   "x": 2.911,
+   "y": -1.31,
+   "z": 0.008,
+   "yaw": 0.0006
+  },
+  "size": [
+   0.857,
+   0.876,
+   0.764
+  ],
+  "bbox": [
+   2.482,
+   -1.747,
+   0.005,
+   3.34,
+   -0.871,
+   0.77
+  ],
+  "size_local": [
+   0.857,
+   0.876,
+   0.764
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfC_01"
+ },
+ {
+  "id": 15,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_14",
+  "pose": {
+   "x": 2.915,
+   "y": -4.762,
+   "z": -0.003,
+   "yaw": 0.0
+  },
+  "size": [
+   0.857,
+   0.875,
+   0.764
+  ],
+  "bbox": [
+   2.487,
+   -5.198,
+   -0.007,
+   3.344,
+   -4.323,
+   0.758
+  ],
+  "size_local": [
+   0.857,
+   0.875,
+   0.764
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfC_01"
+ },
+ {
+  "id": 16,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_15",
+  "pose": {
+   "x": -4.517,
+   "y": -1.31,
+   "z": 0.046,
+   "yaw": 0.0
+  },
+  "size": [
+   0.857,
+   0.873,
+   0.761
+  ],
+  "bbox": [
+   -4.946,
+   -1.744,
+   0.044,
+   -4.089,
+   -0.872,
+   0.805
+  ],
+  "size_local": [
+   0.857,
+   0.873,
+   0.761
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfC_01"
+ },
+ {
+  "id": 17,
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_16",
+  "pose": {
+   "x": -4.614,
+   "y": -4.762,
+   "z": 0.046,
+   "yaw": 0.0
+  },
+  "size": [
+   0.857,
+   0.873,
+   0.761
+  ],
+  "bbox": [
+   -5.043,
+   -5.196,
+   0.044,
+   -4.186,
+   -4.323,
+   0.805
+  ],
+  "size_local": [
+   0.857,
+   0.873,
+   0.761
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_BookshelfC_01"
+ },
+ {
+  "id": 18,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": 6.644,
+   "y": -0.21,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   6.407,
+   -0.497,
+   0.023,
+   6.862,
+   -0.053,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 19,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_02",
+  "pose": {
+   "x": 6.644,
+   "y": -1.622,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   6.407,
+   -1.908,
+   0.023,
+   6.862,
+   -1.464,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 20,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_03",
+  "pose": {
+   "x": 6.644,
+   "y": -3.247,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   6.407,
+   -3.533,
+   0.023,
+   6.862,
+   -3.089,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 21,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_04",
+  "pose": {
+   "x": 6.644,
+   "y": -4.682,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   6.407,
+   -4.968,
+   0.023,
+   6.862,
+   -4.524,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 22,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_05",
+  "pose": {
+   "x": 4.653,
+   "y": -0.21,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   4.416,
+   -0.497,
+   0.023,
+   4.871,
+   -0.053,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 23,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_06",
+  "pose": {
+   "x": 4.653,
+   "y": -1.622,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   4.416,
+   -1.908,
+   0.023,
+   4.871,
+   -1.464,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 24,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_07",
+  "pose": {
+   "x": 4.653,
+   "y": -3.247,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   4.416,
+   -3.533,
+   0.023,
+   4.871,
+   -3.089,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 25,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_08",
+  "pose": {
+   "x": 4.653,
+   "y": -4.682,
+   "z": 0.022,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "bbox": [
+   4.416,
+   -4.968,
+   0.023,
+   4.871,
+   -4.524,
+   0.771
+  ],
+  "size_local": [
+   0.455,
+   0.444,
+   0.748
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 26,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_09",
+  "pose": {
+   "x": -4.603,
+   "y": 5.022,
+   "z": 0.03,
+   "yaw": 0.0014
+  },
+  "size": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "bbox": [
+   -4.84,
+   4.736,
+   0.032,
+   -4.385,
+   5.181,
+   0.778
+  ],
+  "size_local": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 27,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_10",
+  "pose": {
+   "x": -6.11,
+   "y": 5.026,
+   "z": 0.027,
+   "yaw": 0.0002
+  },
+  "size": [
+   0.455,
+   0.445,
+   0.747
+  ],
+  "bbox": [
+   -6.347,
+   4.74,
+   0.028,
+   -5.892,
+   5.185,
+   0.775
+  ],
+  "size_local": [
+   0.455,
+   0.445,
+   0.747
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 28,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_11",
+  "pose": {
+   "x": -4.616,
+   "y": 3.277,
+   "z": 0.032,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "bbox": [
+   -4.853,
+   2.991,
+   0.033,
+   -4.398,
+   3.435,
+   0.78
+  ],
+  "size_local": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 29,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_12",
+  "pose": {
+   "x": -6.091,
+   "y": 3.293,
+   "z": 0.029,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "bbox": [
+   -6.328,
+   3.007,
+   0.031,
+   -5.873,
+   3.452,
+   0.777
+  ],
+  "size_local": [
+   0.455,
+   0.445,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 30,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_13",
+  "pose": {
+   "x": -4.59,
+   "y": 1.816,
+   "z": 0.032,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "bbox": [
+   -4.827,
+   1.53,
+   0.034,
+   -4.372,
+   1.973,
+   0.78
+  ],
+  "size_local": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 31,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_14",
+  "pose": {
+   "x": -6.13,
+   "y": 1.799,
+   "z": 0.029,
+   "yaw": 0.0001
+  },
+  "size": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "bbox": [
+   -6.367,
+   1.512,
+   0.031,
+   -5.912,
+   1.955,
+   0.777
+  ],
+  "size_local": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 32,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_15",
+  "pose": {
+   "x": -4.608,
+   "y": 0.204,
+   "z": 0.03,
+   "yaw": 0.0002
+  },
+  "size": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "bbox": [
+   -4.844,
+   -0.083,
+   0.032,
+   -4.39,
+   0.36,
+   0.778
+  ],
+  "size_local": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 33,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_16",
+  "pose": {
+   "x": -6.121,
+   "y": 0.195,
+   "z": 0.027,
+   "yaw": 0.0033
+  },
+  "size": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "bbox": [
+   -6.359,
+   -0.091,
+   0.029,
+   -5.904,
+   0.352,
+   0.775
+  ],
+  "size_local": [
+   0.455,
+   0.443,
+   0.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_ChairB_01"
+ },
+ {
+  "id": 34,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_01",
+  "pose": {
+   "x": 0.285,
+   "y": 4.951,
+   "z": 1.085,
+   "yaw": -0.0107
+  },
+  "size": [
+   0.341,
+   0.542,
+   0.442
+  ],
+  "bbox": [
+   0.112,
+   4.681,
+   1.083,
+   0.454,
+   5.223,
+   1.525
+  ],
+  "size_local": [
+   0.341,
+   0.542,
+   0.442
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Computer_01"
+ },
+ {
+  "id": 35,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_01",
+  "pose": {
+   "x": 1.011,
+   "y": 5.033,
+   "z": 0.012,
+   "yaw": -0.0251
+  },
+  "size": [
+   2.241,
+   3.229,
+   1.101
+  ],
+  "bbox": [
+   -0.084,
+   3.402,
+   -0.007,
+   2.156,
+   6.632,
+   1.095
+  ],
+  "size_local": [
+   2.241,
+   3.229,
+   1.101
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_InfoDesk_01"
+ },
+ {
+  "id": 36,
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 5.623,
+   "y": -2.475,
+   "z": -0.181,
+   "yaw": 0.0
+  },
+  "size": [
+   0.751,
+   5.995,
+   1.11
+  ],
+  "bbox": [
+   5.247,
+   -5.471,
+   -0.181,
+   5.998,
+   0.524,
+   0.929
+  ],
+  "size_local": [
+   0.751,
+   5.995,
+   1.11
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskB_01"
+ },
+ {
+  "id": 37,
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_02",
+  "pose": {
+   "x": -5.401,
+   "y": 2.581,
+   "z": -0.181,
+   "yaw": 0.0
+  },
+  "size": [
+   0.751,
+   5.995,
+   1.11
+  ],
+  "bbox": [
+   -5.776,
+   -0.416,
+   -0.181,
+   -5.025,
+   5.579,
+   0.929
+  ],
+  "size_local": [
+   0.751,
+   5.995,
+   1.11
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskB_01"
+ },
+ {
+  "id": 38,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_02",
+  "pose": {
+   "x": -2.341,
+   "y": 3.2,
+   "z": 0.015,
+   "yaw": 0.0004
+  },
+  "size": [
+   3.618,
+   1.027,
+   1.023
+  ],
+  "bbox": [
+   -4.15,
+   2.686,
+   0.013,
+   -0.531,
+   3.714,
+   1.036
+  ],
+  "size_local": [
+   3.618,
+   1.027,
+   1.023
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskA_01"
+ },
+ {
+  "id": 39,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_03",
+  "pose": {
+   "x": -2.37,
+   "y": 0.836,
+   "z": 0.009,
+   "yaw": 0.0
+  },
+  "size": [
+   3.618,
+   1.026,
+   1.03
+  ],
+  "bbox": [
+   -4.181,
+   0.324,
+   0.004,
+   -0.563,
+   1.35,
+   1.034
+  ],
+  "size_local": [
+   3.618,
+   1.026,
+   1.03
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskA_01"
+ },
+ {
+  "id": 40,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_04",
+  "pose": {
+   "x": -6.255,
+   "y": -3.979,
+   "z": -0.005,
+   "yaw": -1.5696
+  },
+  "size": [
+   1.03,
+   3.619,
+   1.029
+  ],
+  "bbox": [
+   -6.772,
+   -5.79,
+   -0.009,
+   -5.741,
+   -2.171,
+   1.02
+  ],
+  "size_local": [
+   1.03,
+   3.619,
+   1.029
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskA_01"
+ },
+ {
+  "id": 41,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_05",
+  "pose": {
+   "x": -0.702,
+   "y": -4.049,
+   "z": 0.015,
+   "yaw": -1.5661
+  },
+  "size": [
+   1.043,
+   3.623,
+   1.023
+  ],
+  "bbox": [
+   -1.223,
+   -5.861,
+   0.013,
+   -0.18,
+   -2.238,
+   1.036
+  ],
+  "size_local": [
+   1.043,
+   3.623,
+   1.023
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskA_01"
+ },
+ {
+  "id": 42,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_06",
+  "pose": {
+   "x": 2.298,
+   "y": 0.862,
+   "z": 0.015,
+   "yaw": 0.0
+  },
+  "size": [
+   3.618,
+   1.026,
+   1.035
+  ],
+  "bbox": [
+   0.493,
+   0.349,
+   0.007,
+   4.111,
+   1.375,
+   1.042
+  ],
+  "size_local": [
+   3.618,
+   1.026,
+   1.035
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_retail_DeskA_01"
+ },
+ {
+  "id": 43,
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_01",
+  "pose": {
+   "x": -2.492,
+   "y": 7.219,
+   "z": -0.035,
+   "yaw": 0.0
+  },
+  "size": [
+   5.081,
+   0.231,
+   3.254
+  ],
+  "bbox": [
+   -5.038,
+   7.099,
+   -0.059,
+   0.044,
+   7.33,
+   3.195
+  ],
+  "size_local": [
+   5.081,
+   0.231,
+   3.254
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_DoorB_01"
+ },
+ {
+  "id": 44,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_02",
+  "pose": {
+   "x": -0.888,
+   "y": -2.526,
+   "z": 1.181,
+   "yaw": -3.125
+  },
+  "size": [
+   0.117,
+   0.145,
+   0.091
+  ],
+  "bbox": [
+   -0.946,
+   -2.596,
+   1.14,
+   -0.829,
+   -2.451,
+   1.231
+  ],
+  "size_local": [
+   0.117,
+   0.145,
+   0.091
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 45,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_03",
+  "pose": {
+   "x": -0.491,
+   "y": -2.526,
+   "z": 1.181,
+   "yaw": -3.125
+  },
+  "size": [
+   0.117,
+   0.145,
+   0.091
+  ],
+  "bbox": [
+   -0.55,
+   -2.596,
+   1.14,
+   -0.432,
+   -2.451,
+   1.231
+  ],
+  "size_local": [
+   0.117,
+   0.145,
+   0.091
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 46,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_04",
+  "pose": {
+   "x": -0.598,
+   "y": -5.571,
+   "z": 1.185,
+   "yaw": 0.0
+  },
+  "size": [
+   0.115,
+   0.142,
+   0.093
+  ],
+  "bbox": [
+   -0.656,
+   -5.644,
+   1.142,
+   -0.541,
+   -5.502,
+   1.235
+  ],
+  "size_local": [
+   0.115,
+   0.142,
+   0.093
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 47,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_05",
+  "pose": {
+   "x": -1.037,
+   "y": -5.571,
+   "z": 1.185,
+   "yaw": 0.0
+  },
+  "size": [
+   0.115,
+   0.142,
+   0.093
+  ],
+  "bbox": [
+   -1.094,
+   -5.644,
+   1.142,
+   -0.979,
+   -5.502,
+   1.235
+  ],
+  "size_local": [
+   0.115,
+   0.142,
+   0.093
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 48,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_06",
+  "pose": {
+   "x": -0.379,
+   "y": -4.955,
+   "z": 1.185,
+   "yaw": 1.5645
+  },
+  "size": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "bbox": [
+   -0.449,
+   -5.014,
+   1.144,
+   -0.304,
+   -4.896,
+   1.234
+  ],
+  "size_local": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 49,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_07",
+  "pose": {
+   "x": -0.379,
+   "y": -4.227,
+   "z": 1.185,
+   "yaw": 1.5645
+  },
+  "size": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "bbox": [
+   -0.449,
+   -4.286,
+   1.144,
+   -0.304,
+   -4.168,
+   1.234
+  ],
+  "size_local": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 50,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_08",
+  "pose": {
+   "x": -0.379,
+   "y": -3.281,
+   "z": 1.185,
+   "yaw": 1.5645
+  },
+  "size": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "bbox": [
+   -0.449,
+   -3.339,
+   1.144,
+   -0.304,
+   -3.222,
+   1.234
+  ],
+  "size_local": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 51,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_09",
+  "pose": {
+   "x": -1.004,
+   "y": -4.965,
+   "z": 1.185,
+   "yaw": -1.6041
+  },
+  "size": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "bbox": [
+   -1.08,
+   -5.022,
+   1.142,
+   -0.932,
+   -4.907,
+   1.236
+  ],
+  "size_local": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 52,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_10",
+  "pose": {
+   "x": -1.004,
+   "y": -4.224,
+   "z": 1.185,
+   "yaw": -1.6041
+  },
+  "size": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "bbox": [
+   -1.08,
+   -4.281,
+   1.142,
+   -0.932,
+   -4.166,
+   1.236
+  ],
+  "size_local": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 53,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_11",
+  "pose": {
+   "x": -1.004,
+   "y": -3.276,
+   "z": 1.185,
+   "yaw": -1.6041
+  },
+  "size": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "bbox": [
+   -1.08,
+   -3.333,
+   1.142,
+   -0.932,
+   -3.218,
+   1.236
+  ],
+  "size_local": [
+   0.148,
+   0.115,
+   0.094
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 54,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_12",
+  "pose": {
+   "x": -5.915,
+   "y": -3.032,
+   "z": 1.185,
+   "yaw": 1.5645
+  },
+  "size": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "bbox": [
+   -5.985,
+   -3.09,
+   1.144,
+   -5.84,
+   -2.973,
+   1.234
+  ],
+  "size_local": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 55,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_13",
+  "pose": {
+   "x": -5.915,
+   "y": -4.612,
+   "z": 1.185,
+   "yaw": 1.5645
+  },
+  "size": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "bbox": [
+   -5.985,
+   -4.671,
+   1.144,
+   -5.84,
+   -4.554,
+   1.234
+  ],
+  "size_local": [
+   0.145,
+   0.117,
+   0.09
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_TabletB_01"
+ },
+ {
+  "id": 56,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_14",
+  "pose": {
+   "x": -1.846,
+   "y": 0.489,
+   "z": 1.181,
+   "yaw": -0.0079
+  },
+  "size": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "bbox": [
+   -1.907,
+   0.402,
+   1.125,
+   -1.785,
+   0.57,
+   1.244
+  ],
+  "size_local": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 57,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_15",
+  "pose": {
+   "x": -2.65,
+   "y": 0.489,
+   "z": 1.181,
+   "yaw": -0.0079
+  },
+  "size": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "bbox": [
+   -2.711,
+   0.402,
+   1.125,
+   -2.589,
+   0.57,
+   1.244
+  ],
+  "size_local": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 58,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_16",
+  "pose": {
+   "x": -1.069,
+   "y": 0.489,
+   "z": 1.181,
+   "yaw": -0.0079
+  },
+  "size": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "bbox": [
+   -1.13,
+   0.402,
+   1.125,
+   -1.008,
+   0.57,
+   1.244
+  ],
+  "size_local": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 59,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_17",
+  "pose": {
+   "x": -3.639,
+   "y": 0.489,
+   "z": 1.181,
+   "yaw": -0.0079
+  },
+  "size": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "bbox": [
+   -3.7,
+   0.402,
+   1.125,
+   -3.578,
+   0.57,
+   1.244
+  ],
+  "size_local": [
+   0.122,
+   0.168,
+   0.119
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 60,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_18",
+  "pose": {
+   "x": -1.073,
+   "y": 1.164,
+   "z": 1.178,
+   "yaw": 3.1101
+  },
+  "size": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "bbox": [
+   -1.133,
+   1.078,
+   1.13,
+   -1.012,
+   1.255,
+   1.234
+  ],
+  "size_local": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 61,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_19",
+  "pose": {
+   "x": -1.877,
+   "y": 1.164,
+   "z": 1.178,
+   "yaw": 3.1101
+  },
+  "size": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "bbox": [
+   -1.937,
+   1.078,
+   1.13,
+   -1.816,
+   1.255,
+   1.234
+  ],
+  "size_local": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 62,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_20",
+  "pose": {
+   "x": -2.65,
+   "y": 1.164,
+   "z": 1.178,
+   "yaw": 3.1101
+  },
+  "size": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "bbox": [
+   -2.71,
+   1.078,
+   1.13,
+   -2.589,
+   1.255,
+   1.234
+  ],
+  "size_local": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 63,
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_21",
+  "pose": {
+   "x": -3.637,
+   "y": 1.164,
+   "z": 1.178,
+   "yaw": 3.1101
+  },
+  "size": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "bbox": [
+   -3.697,
+   1.078,
+   1.13,
+   -3.576,
+   1.255,
+   1.234
+  ],
+  "size_local": [
+   0.121,
+   0.177,
+   0.103
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 33.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_Tablet_01"
+ },
+ {
+  "id": 64,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_01",
+  "pose": {
+   "x": 5.668,
+   "y": -5.175,
+   "z": 0.969,
+   "yaw": -1.5554
+  },
+  "size": [
+   0.077,
+   0.076,
+   0.076
+  ],
+  "bbox": [
+   5.592,
+   -5.213,
+   0.931,
+   5.669,
+   -5.138,
+   1.007
+  ],
+  "size_local": [
+   0.077,
+   0.076,
+   0.076
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_MagicCube_01"
+ },
+ {
+  "id": 65,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_02",
+  "pose": {
+   "x": -5.384,
+   "y": 5.178,
+   "z": 0.969,
+   "yaw": -1.5554
+  },
+  "size": [
+   0.076,
+   0.076,
+   0.075
+  ],
+  "bbox": [
+   -5.459,
+   5.139,
+   0.931,
+   -5.383,
+   5.215,
+   1.006
+  ],
+  "size_local": [
+   0.076,
+   0.076,
+   0.075
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_MagicCube_01"
+ },
+ {
+  "id": 66,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_03",
+  "pose": {
+   "x": -3.147,
+   "y": 2.928,
+   "z": 1.036,
+   "yaw": 0.0
+  },
+  "size": [
+   0.075,
+   0.075,
+   0.075
+  ],
+  "bbox": [
+   -3.184,
+   2.891,
+   1.036,
+   -3.109,
+   2.966,
+   1.11
+  ],
+  "size_local": [
+   0.075,
+   0.075,
+   0.075
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_MagicCube_01"
+ },
+ {
+  "id": 67,
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_01",
+  "pose": {
+   "x": -7.738,
+   "y": 0.016,
+   "z": -0.18,
+   "yaw": 0.0
+  },
+  "size": [
+   0.325,
+   14.132,
+   3.414
+  ],
+  "bbox": [
+   -7.901,
+   -7.05,
+   -0.18,
+   -7.575,
+   7.082,
+   3.234
+  ],
+  "size_local": [
+   0.325,
+   14.132,
+   3.414
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_retail_ShopWindow_01"
+ }
+]

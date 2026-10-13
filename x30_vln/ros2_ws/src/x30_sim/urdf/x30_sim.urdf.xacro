@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<!--
+  X30 with the real sensor suite, built on the upstream x30_description (quadruped_ros2_control).
+  All sensor numbers come from configs/robot_sim.yaml (path given as xacro arg robot_config); see that file for sources.
+
+  Frames (INTERFACES section 1): base_link is added by a static transform in the launch file (base_link -> base, identity);
+  lidar_link (merged cloud frame) is the body frame; lidar_{fl,fr,rl,rr}_link are the four Livox sensors;
+  imu_link is the upstream imu link moved to the documented IMU position (docker patch); camera_link/camera_optical_frame and
+  thermal_link/thermal_optical_frame are the cameras.
+-->
+<robot name="x30" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="GAZEBO" default="true"/>
+  <xacro:arg name="CLASSIC" default="false"/>
+  <xacro:arg name="robot_config" default=""/>
+  <xacro:arg name="thermal" default="true"/>
+  <xacro:include filename="$(find x30_description)/xacro/robot.xacro"/>
+
+  <xacro:property name="cfg" value="${xacro.load_yaml('$(arg robot_config)')}"/>
+  <xacro:property name="lc" value="${cfg['lidar']}"/>
+  <xacro:property name="cam" value="${cfg['camera']}"/>
+  <xacro:property name="th" value="${cfg['thermal']}"/>
+  <xacro:property name="imu_cfg" value="${cfg['imu']}"/>
+
+  <!-- ===================================================== merged-cloud frame (= body frame, bag) -->
+  <link name="lidar_link"/>
+  <joint name="lidar_link_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="TORSO"/>
+    <child link="lidar_link"/>
+  </joint>
+
+  <!-- ===================================================== four Livox gpu_lidar sensors -->
+  <xacro:macro name="livox" params="key">
+    <xacro:property name="m" value="${lc['mounts'][key]}"/>
+    <xacro:property name="sgn" value="${1.0 if m['side'] == 'front' else -1.0}"/>
+    <xacro:property name="pitch" value="${radians(m['boresight_pitch_deg'])}"/>
+    <!-- sensor z axis = boresight (sgn*cos(pitch), 0, sin(pitch)); rotation about y by beta maps z to (sin b, 0, cos b) -->
+    <xacro:property name="beta" value="${atan2(sgn * cos(pitch), sin(pitch))}"/>
+    <link name="lidar_${key}_link">
+      <inertial>
+        <mass value="0.01"/>
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+      </inertial>
+    </link>
+    <joint name="lidar_${key}_joint" type="fixed">
+      <origin xyz="${m['position_mm'][0] / 1000.0} ${m['position_mm'][1] / 1000.0} ${m['position_mm'][2] / 1000.0}" rpy="0 ${beta} 0"/>
+      <parent link="TORSO"/>
+      <child link="lidar_${key}_link"/>
+    </joint>
+    <gazebo reference="lidar_${key}_link">
+      <sensor name="lidar_${key}" type="gpu_lidar">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>lidar/${key}/scan</topic>
+        <gz_frame_id>lidar_${key}_link</gz_frame_id>
+        <update_rate>${lc['rate_hz']}</update_rate>
+        <always_on>1</always_on>
+        <visualize>false</visualize>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>${lc['horizontal_samples']}</samples>
+              <resolution>1</resolution>
+              <min_angle>${-pi}</min_angle>
+              <max_angle>${pi - 2 * pi / lc['horizontal_samples']}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>${lc['vertical_samples']}</samples>
+              <resolution>1</resolution>
+              <min_angle>${radians(lc['vertical_min_deg'])}</min_angle>
+              <max_angle>${radians(lc['vertical_max_deg'])}</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>${lc['range_min_m']}</min>
+            <max>${lc['range_max_m']}</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>${lc['noise_stddev_m']}</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+  <xacro:livox key="fl"/>
+  <xacro:livox key="fr"/>
+  <xacro:livox key="rl"/>
+  <xacro:livox key="rr"/>
+
+  <!-- ===================================================== ROS-facing body IMU (the upstream imu_link keeps feeding the controller) -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_ros" type="imu">
+      <always_on>1</always_on>
+      <update_rate>${imu_cfg['rate_hz']}</update_rate>
+      <visualize>false</visualize>
+      <topic>imu_ros</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <imu>
+        <angular_velocity>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['gyro_noise_std']}</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['gyro_noise_std']}</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['gyro_noise_std']}</stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['accel_noise_std']}</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['accel_noise_std']}</stddev></noise></y>
+          <z><noise type="gaussian"><mean>0.0</mean><stddev>${imu_cfg['accel_noise_std']}</stddev></noise></z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <!-- ===================================================== RGB(-D) camera -->
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+    </inertial>
+    <visual>
+      <geometry><box size="0.02 0.08 0.025"/></geometry>
+    </visual>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="${cam['position_m'][0]} ${cam['position_m'][1]} ${cam['position_m'][2]}" rpy="0 0 0"/>
+    <parent link="TORSO"/>
+    <child link="camera_link"/>
+  </joint>
+  <link name="camera_optical_frame"/>
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi / 2} 0 ${-pi / 2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+  </joint>
+  <gazebo reference="camera_link">
+    <xacro:if value="${cam['depth']}">
+      <sensor name="rgbd_camera" type="rgbd_camera">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>camera</topic>
+        <gz_frame_id>camera_optical_frame</gz_frame_id>
+        <update_rate>${cam['rate_hz']}</update_rate>
+        <always_on>1</always_on>
+        <visualize>false</visualize>
+        <camera>
+          <horizontal_fov>${radians(cam['hfov_deg'])}</horizontal_fov>
+          <image><width>${cam['width']}</width><height>${cam['height']}</height></image>
+          <clip><near>${cam['clip_near_m']}</near><far>${cam['clip_far_m']}</far></clip>
+          <optical_frame_id>camera_optical_frame</optical_frame_id>
+        </camera>
+      </sensor>
+    </xacro:if>
+    <xacro:unless value="${cam['depth']}">
+      <sensor name="rgb_camera" type="camera">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>camera/image</topic>
+        <gz_frame_id>camera_optical_frame</gz_frame_id>
+        <update_rate>${cam['rate_hz']}</update_rate>
+        <always_on>1</always_on>
+        <visualize>false</visualize>
+        <camera>
+          <horizontal_fov>${radians(cam['hfov_deg'])}</horizontal_fov>
+          <image><width>${cam['width']}</width><height>${cam['height']}</height></image>
+          <clip><near>${cam['clip_near_m']}</near><far>${cam['clip_far_m']}</far></clip>
+          <optical_frame_id>camera_optical_frame</optical_frame_id>
+        </camera>
+      </sensor>
+    </xacro:unless>
+  </gazebo>
+
+  <!-- ===================================================== thermal camera (optional payload, not stock on the X30) -->
+  <xacro:if value="$(arg thermal)">
+    <link name="thermal_link">
+      <inertial>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+      <visual>
+        <geometry><box size="0.02 0.04 0.03"/></geometry>
+      </visual>
+    </link>
+    <joint name="thermal_joint" type="fixed">
+      <origin xyz="${th['position_m'][0]} ${th['position_m'][1]} ${th['position_m'][2]}" rpy="0 0 0"/>
+      <parent link="TORSO"/>
+      <child link="thermal_link"/>
+    </joint>
+    <link name="thermal_optical_frame"/>
+    <joint name="thermal_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-pi / 2} 0 ${-pi / 2}"/>
+      <parent link="thermal_link"/>
+      <child link="thermal_optical_frame"/>
+    </joint>
+    <gazebo reference="thermal_link">
+      <sensor name="thermal_camera" type="thermal">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>thermal/image</topic>
+        <gz_frame_id>thermal_optical_frame</gz_frame_id>
+        <update_rate>${th['rate_hz']}</update_rate>
+        <always_on>1</always_on>
+        <visualize>false</visualize>
+        <camera>
+          <horizontal_fov>${radians(th['hfov_deg'])}</horizontal_fov>
+          <image><width>${th['width']}</width><height>${th['height']}</height><format>L16</format></image>
+          <clip><near>${th['clip_near_m']}</near><far>${th['clip_far_m']}</far></clip>
+          <optical_frame_id>thermal_optical_frame</optical_frame_id>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:if>
+
+  <!-- ===================================================== ground-truth pose of the model in the world frame -->
+  <gazebo>
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+      <dimensions>3</dimensions>
+      <odom_frame>world</odom_frame>
+      <robot_base_frame>base</robot_base_frame>
+      <odom_publish_frequency>100</odom_publish_frequency>
+      <odom_topic>gt/odom_raw</odom_topic>
+      <tf_topic>gt/tf_unused</tf_topic>
+    </plugin>
+  </gazebo>
+
+</robot>

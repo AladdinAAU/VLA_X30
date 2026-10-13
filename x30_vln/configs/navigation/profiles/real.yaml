@@ -1,0 +1,12 @@
+# Overrides for the real robot. Applied after navigation.yaml.
+# Leg odometry of the X30 is planar (x, y, yaw), 200 Hz, with zero covariances and unknown drift (docs/robot/x30-interfaces.md),
+# so the fused source (legs for smoothness, lidar pose for drift) is the default; lidar alone is the fallback.
+odom_selector:
+  ros__parameters:
+    odom_source: fused
+    leg_topic: /odom
+    auto_fallback: true
+
+cloud_leveler:
+  ros__parameters:
+    tilt_source: auto

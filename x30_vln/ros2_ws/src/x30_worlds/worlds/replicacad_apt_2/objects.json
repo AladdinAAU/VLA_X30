@@ -1,0 +1,4962 @@
+[
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_01",
+  "pose": {
+   "x": 3.837,
+   "y": -1.643,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.963,
+   2.141,
+   0.801
+  ],
+  "bbox": [
+   3.355,
+   -2.713,
+   0.016,
+   4.319,
+   -0.572,
+   0.817
+  ],
+  "size_local": [
+   0.963,
+   2.141,
+   0.801
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_sofa",
+  "source_id": 0,
+  "region": null,
+  "source": "replicacad",
+  "id": 0
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_01",
+  "pose": {
+   "x": -0.578,
+   "y": 0.947,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.334,
+   0.466,
+   0.611
+  ],
+  "bbox": [
+   -0.745,
+   0.714,
+   0.016,
+   -0.41,
+   1.18,
+   0.627
+  ],
+  "size_local": [
+   0.334,
+   0.466,
+   0.611
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bin_03",
+  "source_id": 1,
+  "region": null,
+  "source": "replicacad",
+  "id": 1
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_02",
+  "pose": {
+   "x": -1.206,
+   "y": -3.955,
+   "z": 0.007,
+   "yaw": 0.0
+  },
+  "size": [
+   0.354,
+   0.242,
+   0.607
+  ],
+  "bbox": [
+   -1.383,
+   -4.076,
+   0.007,
+   -1.029,
+   -3.834,
+   0.614
+  ],
+  "size_local": [
+   0.354,
+   0.242,
+   0.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bin_01",
+  "source_id": 2,
+  "region": null,
+  "source": "replicacad",
+  "id": 2
+ },
+ {
+  "label": "box",
+  "label_id": 45,
+  "instance": "box_01",
+  "pose": {
+   "x": 0.563,
+   "y": -4.585,
+   "z": 1.67,
+   "yaw": 0.0
+  },
+  "size": [
+   0.266,
+   0.346,
+   0.172
+  ],
+  "bbox": [
+   0.43,
+   -4.758,
+   1.67,
+   0.696,
+   -4.412,
+   1.842
+  ],
+  "size_local": [
+   0.266,
+   0.346,
+   0.172
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_box",
+  "source_id": 3,
+  "region": null,
+  "source": "replicacad",
+  "id": 3
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_01",
+  "pose": {
+   "x": 0.635,
+   "y": -5.575,
+   "z": 0.799,
+   "yaw": 0.0
+  },
+  "size": [
+   0.351,
+   0.482,
+   0.622
+  ],
+  "bbox": [
+   0.459,
+   -5.816,
+   0.799,
+   0.81,
+   -5.334,
+   1.421
+  ],
+  "size_local": [
+   0.351,
+   0.482,
+   0.622
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_lamp_01",
+  "source_id": 4,
+  "region": null,
+  "source": "replicacad",
+  "id": 4
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 0.562,
+   "y": -1.479,
+   "z": 0.021,
+   "yaw": 0.0
+  },
+  "size": [
+   0.808,
+   1.281,
+   0.918
+  ],
+  "bbox": [
+   0.159,
+   -2.12,
+   0.021,
+   0.966,
+   -0.838,
+   0.939
+  ],
+  "size_local": [
+   0.808,
+   1.281,
+   0.918
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_table_02",
+  "source_id": 5,
+  "region": null,
+  "source": "replicacad",
+  "id": 5
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_02",
+  "pose": {
+   "x": 2.742,
+   "y": -1.599,
+   "z": 0.018,
+   "yaw": 0.0
+  },
+  "size": [
+   0.471,
+   0.471,
+   0.491
+  ],
+  "bbox": [
+   2.507,
+   -1.835,
+   0.018,
+   2.978,
+   -1.364,
+   0.51
+  ],
+  "size_local": [
+   0.471,
+   0.471,
+   0.491
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_table_04",
+  "source_id": 6,
+  "region": null,
+  "source": "replicacad",
+  "id": 6
+ },
+ {
+  "label": "remote_control",
+  "label_id": 82,
+  "instance": "remote_control_01",
+  "pose": {
+   "x": 2.072,
+   "y": -7.642,
+   "z": 0.626,
+   "yaw": 0.0
+  },
+  "size": [
+   0.068,
+   0.175,
+   0.013
+  ],
+  "bbox": [
+   2.038,
+   -7.73,
+   0.626,
+   2.106,
+   -7.554,
+   0.638
+  ],
+  "size_local": [
+   0.068,
+   0.175,
+   0.013
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_remote-control_01",
+  "source_id": 7,
+  "region": null,
+  "source": "replicacad",
+  "id": 7
+ },
+ {
+  "label": "bag",
+  "label_id": 73,
+  "instance": "bag_01",
+  "pose": {
+   "x": -2.356,
+   "y": 1.981,
+   "z": 1.748,
+   "yaw": 0.0
+  },
+  "size": [
+   0.221,
+   0.318,
+   0.386
+  ],
+  "bbox": [
+   -2.467,
+   1.823,
+   1.748,
+   -2.245,
+   2.14,
+   2.134
+  ],
+  "size_local": [
+   0.221,
+   0.318,
+   0.386
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_handbag",
+  "source_id": 8,
+  "region": null,
+  "source": "replicacad",
+  "id": 8
+ },
+ {
+  "label": "box",
+  "label_id": 45,
+  "instance": "box_02",
+  "pose": {
+   "x": 4.229,
+   "y": -5.968,
+   "z": 0.826,
+   "yaw": 0.0
+  },
+  "size": [
+   0.266,
+   0.343,
+   0.168
+  ],
+  "bbox": [
+   4.096,
+   -6.139,
+   0.826,
+   4.362,
+   -5.797,
+   0.994
+  ],
+  "size_local": [
+   0.266,
+   0.343,
+   0.168
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_box",
+  "source_id": 9,
+  "region": null,
+  "source": "replicacad",
+  "id": 9
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_02",
+  "pose": {
+   "x": 4.217,
+   "y": -4.23,
+   "z": 0.764,
+   "yaw": 0.0
+  },
+  "size": [
+   0.24,
+   0.234,
+   0.346
+  ],
+  "bbox": [
+   4.097,
+   -4.347,
+   0.764,
+   4.337,
+   -4.113,
+   1.11
+  ],
+  "size_local": [
+   0.24,
+   0.234,
+   0.346
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_lamp_02",
+  "source_id": 10,
+  "region": null,
+  "source": "replicacad",
+  "id": 10
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_03",
+  "pose": {
+   "x": 2.645,
+   "y": -5.873,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   1.364,
+   1.342,
+   0.397
+  ],
+  "bbox": [
+   1.963,
+   -6.544,
+   0.016,
+   3.327,
+   -5.202,
+   0.413
+  ],
+  "size_local": [
+   1.364,
+   1.342,
+   0.397
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_table_03",
+  "source_id": 11,
+  "region": null,
+  "source": "replicacad",
+  "id": 11
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_04",
+  "pose": {
+   "x": 3.927,
+   "y": -4.192,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.852,
+   1.399,
+   0.742
+  ],
+  "bbox": [
+   3.501,
+   -4.892,
+   0.016,
+   4.353,
+   -3.493,
+   0.759
+  ],
+  "size_local": [
+   0.852,
+   1.399,
+   0.742
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_table_01",
+  "source_id": 12,
+  "region": null,
+  "source": "replicacad",
+  "id": 12
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_01",
+  "pose": {
+   "x": 3.786,
+   "y": -1.677,
+   "z": 0.41,
+   "yaw": 0.0
+  },
+  "size": [
+   0.489,
+   0.566,
+   0.303
+  ],
+  "bbox": [
+   3.541,
+   -1.96,
+   0.41,
+   4.031,
+   -1.394,
+   0.713
+  ],
+  "size_local": [
+   0.489,
+   0.566,
+   0.303
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cushion_03",
+  "source_id": 13,
+  "region": null,
+  "source": "replicacad",
+  "id": 13
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": 2.162,
+   "y": -0.683,
+   "z": 0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   0.885,
+   0.882,
+   0.755
+  ],
+  "bbox": [
+   1.719,
+   -1.124,
+   0.017,
+   2.605,
+   -0.242,
+   0.772
+  ],
+  "size_local": [
+   0.885,
+   0.882,
+   0.755
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_01",
+  "source_id": 14,
+  "region": null,
+  "source": "replicacad",
+  "id": 14
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_01",
+  "pose": {
+   "x": 2.452,
+   "y": -5.581,
+   "z": -0.007,
+   "yaw": 0.0
+  },
+  "size": [
+   2.788,
+   2.514,
+   0.018
+  ],
+  "bbox": [
+   1.058,
+   -6.838,
+   -0.007,
+   3.847,
+   -4.324,
+   0.011
+  ],
+  "size_local": [
+   2.788,
+   2.514,
+   0.018
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_rug_02",
+  "source_id": 15,
+  "region": null,
+  "source": "replicacad",
+  "id": 15
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_02",
+  "pose": {
+   "x": 3.438,
+   "y": -1.614,
+   "z": -0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   1.709,
+   2.494,
+   0.018
+  ],
+  "bbox": [
+   2.583,
+   -2.86,
+   -0.001,
+   4.292,
+   -0.367,
+   0.017
+  ],
+  "size_local": [
+   1.709,
+   2.494,
+   0.018
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_rug_01",
+  "source_id": 16,
+  "region": null,
+  "source": "replicacad",
+  "id": 16
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_03",
+  "pose": {
+   "x": -1.551,
+   "y": -1.534,
+   "z": -0.005,
+   "yaw": 0.0
+  },
+  "size": [
+   0.598,
+   0.958,
+   0.018
+  ],
+  "bbox": [
+   -1.85,
+   -2.013,
+   -0.005,
+   -1.252,
+   -1.055,
+   0.013
+  ],
+  "size_local": [
+   0.598,
+   0.958,
+   0.018
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_mat",
+  "source_id": 17,
+  "region": null,
+  "source": "replicacad",
+  "id": 17
+ },
+ {
+  "label": "clock",
+  "label_id": 72,
+  "instance": "clock_01",
+  "pose": {
+   "x": 0.572,
+   "y": -4.597,
+   "z": 0.525,
+   "yaw": 0.0
+  },
+  "size": [
+   0.063,
+   0.261,
+   0.166
+  ],
+  "bbox": [
+   0.54,
+   -4.728,
+   0.525,
+   0.604,
+   -4.467,
+   0.691
+  ],
+  "size_local": [
+   0.063,
+   0.261,
+   0.166
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_clock",
+  "source_id": 18,
+  "region": null,
+  "source": "replicacad",
+  "id": 18
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_01",
+  "pose": {
+   "x": 0.361,
+   "y": -3.654,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.67,
+   0.712,
+   1.79
+  ],
+  "bbox": [
+   0.026,
+   -4.01,
+   0.014,
+   0.696,
+   -3.298,
+   1.804
+  ],
+  "size_local": [
+   0.67,
+   0.712,
+   1.79
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_indoor_plant_02",
+  "source_id": 19,
+  "region": null,
+  "source": "replicacad",
+  "id": 19
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_02",
+  "pose": {
+   "x": 3.355,
+   "y": 4.132,
+   "z": 1.184,
+   "yaw": 0.0
+  },
+  "size": [
+   0.517,
+   0.49,
+   1.491
+  ],
+  "bbox": [
+   3.097,
+   3.886,
+   1.184,
+   3.614,
+   4.377,
+   2.674
+  ],
+  "size_local": [
+   0.517,
+   0.49,
+   1.491
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_indoor_plant_01",
+  "source_id": 20,
+  "region": null,
+  "source": "replicacad",
+  "id": 20
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_01",
+  "pose": {
+   "x": 4.22,
+   "y": -6.524,
+   "z": 0.827,
+   "yaw": 0.0
+  },
+  "size": [
+   0.147,
+   0.049,
+   0.18
+  ],
+  "bbox": [
+   4.147,
+   -6.548,
+   0.827,
+   4.294,
+   -6.5,
+   1.007
+  ],
+  "size_local": [
+   0.147,
+   0.049,
+   0.18
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 21,
+  "region": null,
+  "source": "replicacad",
+  "id": 21
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_02",
+  "pose": {
+   "x": 4.229,
+   "y": -5.966,
+   "z": 0.62,
+   "yaw": 0.0
+  },
+  "size": [
+   0.138,
+   0.22,
+   0.056
+  ],
+  "bbox": [
+   4.16,
+   -6.075,
+   0.62,
+   4.298,
+   -5.856,
+   0.676
+  ],
+  "size_local": [
+   0.138,
+   0.22,
+   0.056
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_02",
+  "source_id": 22,
+  "region": null,
+  "source": "replicacad",
+  "id": 22
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_03",
+  "pose": {
+   "x": 4.226,
+   "y": -6.201,
+   "z": 1.408,
+   "yaw": 0.0
+  },
+  "size": [
+   0.11,
+   0.165,
+   0.016
+  ],
+  "bbox": [
+   4.17,
+   -6.284,
+   1.408,
+   4.281,
+   -6.119,
+   1.425
+  ],
+  "size_local": [
+   0.11,
+   0.165,
+   0.016
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_03",
+  "source_id": 23,
+  "region": null,
+  "source": "replicacad",
+  "id": 23
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_04",
+  "pose": {
+   "x": 4.227,
+   "y": -6.549,
+   "z": 0.825,
+   "yaw": 0.0
+  },
+  "size": [
+   0.106,
+   0.023,
+   0.153
+  ],
+  "bbox": [
+   4.174,
+   -6.561,
+   0.825,
+   4.28,
+   -6.537,
+   0.979
+  ],
+  "size_local": [
+   0.106,
+   0.023,
+   0.153
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_04",
+  "source_id": 24,
+  "region": null,
+  "source": "replicacad",
+  "id": 24
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_05",
+  "pose": {
+   "x": 4.244,
+   "y": -6.43,
+   "z": 1.408,
+   "yaw": 0.0
+  },
+  "size": [
+   0.168,
+   0.175,
+   0.023
+  ],
+  "bbox": [
+   4.16,
+   -6.518,
+   1.408,
+   4.327,
+   -6.343,
+   1.431
+  ],
+  "size_local": [
+   0.168,
+   0.175,
+   0.023
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_05",
+  "source_id": 25,
+  "region": null,
+  "source": "replicacad",
+  "id": 25
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_06",
+  "pose": {
+   "x": 4.246,
+   "y": -5.96,
+   "z": 0.541,
+   "yaw": 0.0
+  },
+  "size": [
+   0.196,
+   0.268,
+   0.079
+  ],
+  "bbox": [
+   4.148,
+   -6.094,
+   0.541,
+   4.344,
+   -5.826,
+   0.62
+  ],
+  "size_local": [
+   0.196,
+   0.268,
+   0.079
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_06",
+  "source_id": 26,
+  "region": null,
+  "source": "replicacad",
+  "id": 26
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_02",
+  "pose": {
+   "x": 2.118,
+   "y": -0.602,
+   "z": 0.402,
+   "yaw": 0.0
+  },
+  "size": [
+   0.462,
+   0.406,
+   0.39
+  ],
+  "bbox": [
+   1.887,
+   -0.805,
+   0.402,
+   2.349,
+   -0.399,
+   0.791
+  ],
+  "size_local": [
+   0.462,
+   0.406,
+   0.39
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cushion_01",
+  "source_id": 27,
+  "region": null,
+  "source": "replicacad",
+  "id": 27
+ },
+ {
+  "label": "pan",
+  "label_id": 78,
+  "instance": "pan_01",
+  "pose": {
+   "x": 0.797,
+   "y": -1.791,
+   "z": 0.235,
+   "yaw": 0.0
+  },
+  "size": [
+   0.25,
+   0.271,
+   0.11
+  ],
+  "bbox": [
+   0.672,
+   -1.926,
+   0.235,
+   0.923,
+   -1.655,
+   0.346
+  ],
+  "size_local": [
+   0.25,
+   0.271,
+   0.11
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_pan_01",
+  "source_id": 28,
+  "region": null,
+  "source": "replicacad",
+  "id": 28
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_01",
+  "pose": {
+   "x": 0.753,
+   "y": -1.275,
+   "z": 0.582,
+   "yaw": 0.0
+  },
+  "size": [
+   0.311,
+   0.685,
+   0.13
+  ],
+  "bbox": [
+   0.598,
+   -1.617,
+   0.582,
+   0.909,
+   -0.933,
+   0.712
+  ],
+  "size_local": [
+   0.311,
+   0.685,
+   0.13
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_05",
+  "source_id": 29,
+  "region": null,
+  "source": "replicacad",
+  "id": 29
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_02",
+  "pose": {
+   "x": 0.763,
+   "y": -1.174,
+   "z": 0.251,
+   "yaw": 0.0
+  },
+  "size": [
+   0.271,
+   0.355,
+   0.162
+  ],
+  "bbox": [
+   0.627,
+   -1.351,
+   0.251,
+   0.899,
+   -0.996,
+   0.413
+  ],
+  "size_local": [
+   0.271,
+   0.355,
+   0.162
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_01",
+  "source_id": 30,
+  "region": null,
+  "source": "replicacad",
+  "id": 30
+ },
+ {
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_01",
+  "pose": {
+   "x": -2.07,
+   "y": 2.661,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.843,
+   0.315,
+   0.626
+  ],
+  "bbox": [
+   -2.492,
+   2.503,
+   0.014,
+   -1.649,
+   2.818,
+   0.641
+  ],
+  "size_local": [
+   0.843,
+   0.315,
+   0.626
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_rack_01",
+  "source_id": 31,
+  "region": null,
+  "source": "replicacad",
+  "id": 31
+ },
+ {
+  "label": "shoe",
+  "label_id": 74,
+  "instance": "shoe_01",
+  "pose": {
+   "x": -1.852,
+   "y": 2.599,
+   "z": 0.106,
+   "yaw": 0.0
+  },
+  "size": [
+   0.272,
+   0.289,
+   0.147
+  ],
+  "bbox": [
+   -1.988,
+   2.455,
+   0.106,
+   -1.716,
+   2.743,
+   0.252
+  ],
+  "size_local": [
+   0.272,
+   0.289,
+   0.147
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_shoe_04",
+  "source_id": 32,
+  "region": null,
+  "source": "replicacad",
+  "id": 32
+ },
+ {
+  "label": "clothes",
+  "label_id": 91,
+  "instance": "clothes_01",
+  "pose": {
+   "x": -2.214,
+   "y": 2.475,
+   "z": 0.658,
+   "yaw": 0.0
+  },
+  "size": [
+   0.759,
+   0.198,
+   1.009
+  ],
+  "bbox": [
+   -2.593,
+   2.376,
+   0.658,
+   -1.834,
+   2.575,
+   1.667
+  ],
+  "size_local": [
+   0.759,
+   0.198,
+   1.009
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cloth_01",
+  "source_id": 33,
+  "region": null,
+  "source": "replicacad",
+  "id": 33
+ },
+ {
+  "label": "shoe",
+  "label_id": 74,
+  "instance": "shoe_02",
+  "pose": {
+   "x": -1.827,
+   "y": 2.657,
+   "z": 0.314,
+   "yaw": 0.0
+  },
+  "size": [
+   0.262,
+   0.332,
+   0.126
+  ],
+  "bbox": [
+   -1.958,
+   2.491,
+   0.314,
+   -1.696,
+   2.823,
+   0.44
+  ],
+  "size_local": [
+   0.262,
+   0.332,
+   0.126
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_shoe_01",
+  "source_id": 34,
+  "region": null,
+  "source": "replicacad",
+  "id": 34
+ },
+ {
+  "label": "shoe",
+  "label_id": 74,
+  "instance": "shoe_03",
+  "pose": {
+   "x": -2.092,
+   "y": 2.644,
+   "z": 0.314,
+   "yaw": 0.0
+  },
+  "size": [
+   0.262,
+   0.329,
+   0.126
+  ],
+  "bbox": [
+   -2.223,
+   2.479,
+   0.314,
+   -1.961,
+   2.808,
+   0.44
+  ],
+  "size_local": [
+   0.262,
+   0.329,
+   0.126
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_shoe_02",
+  "source_id": 35,
+  "region": null,
+  "source": "replicacad",
+  "id": 35
+ },
+ {
+  "label": "shoe",
+  "label_id": 74,
+  "instance": "shoe_04",
+  "pose": {
+   "x": -2.331,
+   "y": 2.599,
+   "z": 0.313,
+   "yaw": 0.0
+  },
+  "size": [
+   0.214,
+   0.269,
+   0.11
+  ],
+  "bbox": [
+   -2.437,
+   2.465,
+   0.313,
+   -2.224,
+   2.734,
+   0.423
+  ],
+  "size_local": [
+   0.214,
+   0.269,
+   0.11
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_shoe_03",
+  "source_id": 36,
+  "region": null,
+  "source": "replicacad",
+  "id": 36
+ },
+ {
+  "label": "bicycle",
+  "label_id": 57,
+  "instance": "bicycle_01",
+  "pose": {
+   "x": -1.799,
+   "y": 1.512,
+   "z": 0.015,
+   "yaw": 0.0
+  },
+  "size": [
+   0.534,
+   1.674,
+   0.975
+  ],
+  "bbox": [
+   -2.066,
+   0.675,
+   0.015,
+   -1.531,
+   2.349,
+   0.99
+  ],
+  "size_local": [
+   0.534,
+   1.674,
+   0.975
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bike_01",
+  "source_id": 37,
+  "region": null,
+  "source": "replicacad",
+  "id": 37
+ },
+ {
+  "label": "bicycle",
+  "label_id": 57,
+  "instance": "bicycle_02",
+  "pose": {
+   "x": 0.426,
+   "y": 0.359,
+   "z": 0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   1.674,
+   0.559,
+   0.967
+  ],
+  "bbox": [
+   -0.411,
+   0.079,
+   0.017,
+   1.263,
+   0.638,
+   0.984
+  ],
+  "size_local": [
+   1.674,
+   0.559,
+   0.967
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bike_02",
+  "source_id": 38,
+  "region": null,
+  "source": "replicacad",
+  "id": 38
+ },
+ {
+  "label": "clothes",
+  "label_id": 91,
+  "instance": "clothes_02",
+  "pose": {
+   "x": -2.245,
+   "y": 2.333,
+   "z": 0.433,
+   "yaw": 0.0
+  },
+  "size": [
+   0.546,
+   0.039,
+   1.235
+  ],
+  "bbox": [
+   -2.518,
+   2.313,
+   0.433,
+   -1.972,
+   2.352,
+   1.668
+  ],
+  "size_local": [
+   0.546,
+   0.039,
+   1.235
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cloth_02",
+  "source_id": 39,
+  "region": null,
+  "source": "replicacad",
+  "id": 39
+ },
+ {
+  "label": "clothes",
+  "label_id": 91,
+  "instance": "clothes_03",
+  "pose": {
+   "x": -2.235,
+   "y": 2.233,
+   "z": 0.871,
+   "yaw": 0.0
+  },
+  "size": [
+   0.528,
+   0.126,
+   0.785
+  ],
+  "bbox": [
+   -2.499,
+   2.17,
+   0.871,
+   -1.971,
+   2.296,
+   1.656
+  ],
+  "size_local": [
+   0.528,
+   0.126,
+   0.785
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cloth_03",
+  "source_id": 40,
+  "region": null,
+  "source": "replicacad",
+  "id": 40
+ },
+ {
+  "label": "clothes",
+  "label_id": 91,
+  "instance": "clothes_04",
+  "pose": {
+   "x": -2.234,
+   "y": 1.873,
+   "z": 0.727,
+   "yaw": 0.0
+  },
+  "size": [
+   0.7,
+   0.185,
+   0.943
+  ],
+  "bbox": [
+   -2.584,
+   1.781,
+   0.727,
+   -1.884,
+   1.965,
+   1.67
+  ],
+  "size_local": [
+   0.7,
+   0.185,
+   0.943
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cloth_04",
+  "source_id": 41,
+  "region": null,
+  "source": "replicacad",
+  "id": 41
+ },
+ {
+  "label": "small_appliance",
+  "label_id": 83,
+  "instance": "small_appliance_01",
+  "pose": {
+   "x": 0.443,
+   "y": 0.559,
+   "z": 1.015,
+   "yaw": 0.0
+  },
+  "size": [
+   0.166,
+   0.151,
+   0.067
+  ],
+  "bbox": [
+   0.36,
+   0.483,
+   1.015,
+   0.525,
+   0.634,
+   1.082
+  ],
+  "size_local": [
+   0.166,
+   0.151,
+   0.067
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_setupbox",
+  "source_id": 42,
+  "region": null,
+  "source": "replicacad",
+  "id": 42
+ },
+ {
+  "label": "tv",
+  "label_id": 21,
+  "instance": "tv_01",
+  "pose": {
+   "x": 2.665,
+   "y": -7.658,
+   "z": 0.627,
+   "yaw": 0.0
+  },
+  "size": [
+   0.291,
+   0.247,
+   0.065
+  ],
+  "bbox": [
+   2.519,
+   -7.782,
+   0.627,
+   2.81,
+   -7.535,
+   0.692
+  ],
+  "size_local": [
+   0.291,
+   0.247,
+   0.065
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_tv_object",
+  "source_id": 43,
+  "region": null,
+  "source": "replicacad",
+  "id": 43
+ },
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_01",
+  "pose": {
+   "x": 0.559,
+   "y": -4.59,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.38,
+   0.491,
+   1.961
+  ],
+  "bbox": [
+   0.369,
+   -4.835,
+   0.016,
+   0.749,
+   -4.345,
+   1.977
+  ],
+  "size_local": [
+   0.38,
+   0.491,
+   1.961
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_wall_cabinet_01",
+  "source_id": 44,
+  "region": null,
+  "source": "replicacad",
+  "id": 44
+ },
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_02",
+  "pose": {
+   "x": 4.221,
+   "y": -6.166,
+   "z": 0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.38,
+   0.941,
+   1.982
+  ],
+  "bbox": [
+   4.031,
+   -6.636,
+   0.016,
+   4.411,
+   -5.695,
+   1.998
+  ],
+  "size_local": [
+   0.38,
+   0.941,
+   1.982
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_wall_cabinet_02",
+  "source_id": 45,
+  "region": null,
+  "source": "replicacad",
+  "id": 45
+ },
+ {
+  "label": "monitor",
+  "label_id": 22,
+  "instance": "monitor_01",
+  "pose": {
+   "x": 0.436,
+   "y": 0.544,
+   "z": 1.098,
+   "yaw": 0.0
+  },
+  "size": [
+   0.692,
+   0.178,
+   0.656
+  ],
+  "bbox": [
+   0.09,
+   0.455,
+   1.098,
+   0.782,
+   0.633,
+   1.755
+  ],
+  "size_local": [
+   0.692,
+   0.178,
+   0.656
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_monitor",
+  "source_id": 46,
+  "region": null,
+  "source": "replicacad",
+  "id": 46
+ },
+ {
+  "label": "beanbag",
+  "label_id": 77,
+  "instance": "beanbag_01",
+  "pose": {
+   "x": 2.09,
+   "y": -5.053,
+   "z": 0.004,
+   "yaw": 0.0
+  },
+  "size": [
+   1.09,
+   1.033,
+   0.753
+  ],
+  "bbox": [
+   1.545,
+   -5.57,
+   0.004,
+   2.635,
+   -4.536,
+   0.757
+  ],
+  "size_local": [
+   1.09,
+   1.033,
+   0.753
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_beanbag",
+  "source_id": 47,
+  "region": null,
+  "source": "replicacad",
+  "id": 47
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_02",
+  "pose": {
+   "x": 0.678,
+   "y": -7.726,
+   "z": 0.43,
+   "yaw": 0.0
+  },
+  "size": [
+   0.402,
+   0.399,
+   0.41
+  ],
+  "bbox": [
+   0.477,
+   -7.925,
+   0.43,
+   0.878,
+   -7.526,
+   0.84
+  ],
+  "size_local": [
+   0.402,
+   0.399,
+   0.41
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_stool_02",
+  "source_id": 48,
+  "region": null,
+  "source": "replicacad",
+  "id": 48
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_01",
+  "pose": {
+   "x": -0.364,
+   "y": 3.006,
+   "z": 1.108,
+   "yaw": 0.0
+  },
+  "size": [
+   0.039,
+   0.43,
+   0.547
+  ],
+  "bbox": [
+   -0.384,
+   2.791,
+   1.108,
+   -0.345,
+   3.221,
+   1.655
+  ],
+  "size_local": [
+   0.039,
+   0.43,
+   0.547
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_picture_01",
+  "source_id": 49,
+  "region": null,
+  "source": "replicacad",
+  "id": 49
+ },
+ {
+  "label": "towel",
+  "label_id": 80,
+  "instance": "towel_01",
+  "pose": {
+   "x": 2.213,
+   "y": -2.32,
+   "z": 0.391,
+   "yaw": 0.0
+  },
+  "size": [
+   0.502,
+   0.63,
+   0.19
+  ],
+  "bbox": [
+   1.962,
+   -2.635,
+   0.391,
+   2.464,
+   -2.005,
+   0.58
+  ],
+  "size_local": [
+   0.502,
+   0.63,
+   0.19
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_towel",
+  "source_id": 50,
+  "region": null,
+  "source": "replicacad",
+  "id": 50
+ },
+ {
+  "label": "bowl",
+  "label_id": 67,
+  "instance": "bowl_01",
+  "pose": {
+   "x": 0.739,
+   "y": -1.87,
+   "z": 0.583,
+   "yaw": 0.0
+  },
+  "size": [
+   0.329,
+   0.329,
+   0.129
+  ],
+  "bbox": [
+   0.574,
+   -2.035,
+   0.583,
+   0.903,
+   -1.705,
+   0.711
+  ],
+  "size_local": [
+   0.329,
+   0.329,
+   0.129
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bowl_07",
+  "source_id": 51,
+  "region": null,
+  "source": "replicacad",
+  "id": 51
+ },
+ {
+  "label": "tv",
+  "label_id": 21,
+  "instance": "tv_02",
+  "pose": {
+   "x": 2.312,
+   "y": -7.897,
+   "z": 0.925,
+   "yaw": 0.0
+  },
+  "size": [
+   1.793,
+   0.221,
+   0.863
+  ],
+  "bbox": [
+   1.416,
+   -8.008,
+   0.925,
+   3.209,
+   -7.787,
+   1.787
+  ],
+  "size_local": [
+   1.793,
+   0.221,
+   0.863
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_tv_screen",
+  "source_id": 52,
+  "region": null,
+  "source": "replicacad",
+  "id": 52
+ },
+ {
+  "label": "beanbag",
+  "label_id": 77,
+  "instance": "beanbag_02",
+  "pose": {
+   "x": 3.81,
+   "y": -7.34,
+   "z": 0.004,
+   "yaw": 0.0
+  },
+  "size": [
+   1.072,
+   1.023,
+   0.753
+  ],
+  "bbox": [
+   3.274,
+   -7.851,
+   0.004,
+   4.346,
+   -6.828,
+   0.756
+  ],
+  "size_local": [
+   1.072,
+   1.023,
+   0.753
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_beanbag",
+  "source_id": 53,
+  "region": null,
+  "source": "replicacad",
+  "id": 53
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_02",
+  "pose": {
+   "x": 4.246,
+   "y": -6.142,
+   "z": 1.127,
+   "yaw": 0.0
+  },
+  "size": [
+   0.033,
+   0.168,
+   0.213
+  ],
+  "bbox": [
+   4.23,
+   -6.226,
+   1.127,
+   4.262,
+   -6.058,
+   1.34
+  ],
+  "size_local": [
+   0.033,
+   0.168,
+   0.213
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_picture_04",
+  "source_id": 54,
+  "region": null,
+  "source": "replicacad",
+  "id": 54
+ },
+ {
+  "label": "camera",
+  "label_id": 84,
+  "instance": "camera_01",
+  "pose": {
+   "x": 0.464,
+   "y": 0.588,
+   "z": 1.714,
+   "yaw": 0.0
+  },
+  "size": [
+   0.185,
+   0.104,
+   0.136
+  ],
+  "bbox": [
+   0.371,
+   0.536,
+   1.714,
+   0.557,
+   0.64,
+   1.85
+  ],
+  "size_local": [
+   0.185,
+   0.104,
+   0.136
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_camera_02",
+  "source_id": 55,
+  "region": null,
+  "source": "replicacad",
+  "id": 55
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_03",
+  "pose": {
+   "x": 3.984,
+   "y": -3.485,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.49,
+   0.528,
+   0.858
+  ],
+  "bbox": [
+   3.739,
+   -3.749,
+   0.014,
+   4.229,
+   -3.221,
+   0.871
+  ],
+  "size_local": [
+   0.49,
+   0.528,
+   0.858
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_04",
+  "source_id": 56,
+  "region": null,
+  "source": "replicacad",
+  "id": 56
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_04",
+  "pose": {
+   "x": 3.984,
+   "y": -4.937,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.49,
+   0.528,
+   0.858
+  ],
+  "bbox": [
+   3.739,
+   -5.201,
+   0.014,
+   4.229,
+   -4.673,
+   0.872
+  ],
+  "size_local": [
+   0.49,
+   0.528,
+   0.858
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_04",
+  "source_id": 57,
+  "region": null,
+  "source": "replicacad",
+  "id": 57
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_07",
+  "pose": {
+   "x": 4.221,
+   "y": -6.458,
+   "z": 1.127,
+   "yaw": 0.0
+  },
+  "size": [
+   0.155,
+   0.184,
+   0.027
+  ],
+  "bbox": [
+   4.143,
+   -6.55,
+   1.127,
+   4.299,
+   -6.366,
+   1.154
+  ],
+  "size_local": [
+   0.155,
+   0.184,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 58,
+  "region": null,
+  "source": "replicacad",
+  "id": 58
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_08",
+  "pose": {
+   "x": 4.22,
+   "y": -6.455,
+   "z": 1.154,
+   "yaw": 0.0
+  },
+  "size": [
+   0.176,
+   0.201,
+   0.027
+  ],
+  "bbox": [
+   4.132,
+   -6.555,
+   1.154,
+   4.308,
+   -6.354,
+   1.181
+  ],
+  "size_local": [
+   0.176,
+   0.201,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 59,
+  "region": null,
+  "source": "replicacad",
+  "id": 59
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_09",
+  "pose": {
+   "x": 4.222,
+   "y": -6.458,
+   "z": 1.181,
+   "yaw": 0.0
+  },
+  "size": [
+   0.156,
+   0.185,
+   0.027
+  ],
+  "bbox": [
+   4.144,
+   -6.55,
+   1.181,
+   4.3,
+   -6.366,
+   1.208
+  ],
+  "size_local": [
+   0.156,
+   0.185,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 60,
+  "region": null,
+  "source": "replicacad",
+  "id": 60
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_10",
+  "pose": {
+   "x": 4.22,
+   "y": -6.496,
+   "z": 0.827,
+   "yaw": 0.0
+  },
+  "size": [
+   0.147,
+   0.05,
+   0.18
+  ],
+  "bbox": [
+   4.147,
+   -6.521,
+   0.827,
+   4.294,
+   -6.471,
+   1.007
+  ],
+  "size_local": [
+   0.147,
+   0.05,
+   0.18
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 61,
+  "region": null,
+  "source": "replicacad",
+  "id": 61
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_11",
+  "pose": {
+   "x": 4.226,
+   "y": -6.188,
+   "z": 1.696,
+   "yaw": 0.0
+  },
+  "size": [
+   0.135,
+   0.22,
+   0.056
+  ],
+  "bbox": [
+   4.159,
+   -6.298,
+   1.696,
+   4.294,
+   -6.078,
+   1.751
+  ],
+  "size_local": [
+   0.135,
+   0.22,
+   0.056
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_02",
+  "source_id": 62,
+  "region": null,
+  "source": "replicacad",
+  "id": 62
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_12",
+  "pose": {
+   "x": 4.228,
+   "y": -6.429,
+   "z": 1.208,
+   "yaw": 0.0
+  },
+  "size": [
+   0.106,
+   0.153,
+   0.015
+  ],
+  "bbox": [
+   4.175,
+   -6.505,
+   1.208,
+   4.281,
+   -6.352,
+   1.223
+  ],
+  "size_local": [
+   0.106,
+   0.153,
+   0.015
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_04",
+  "source_id": 63,
+  "region": null,
+  "source": "replicacad",
+  "id": 63
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_13",
+  "pose": {
+   "x": 4.227,
+   "y": -6.44,
+   "z": 0.827,
+   "yaw": 0.0
+  },
+  "size": [
+   0.106,
+   0.092,
+   0.135
+  ],
+  "bbox": [
+   4.174,
+   -6.486,
+   0.827,
+   4.28,
+   -6.394,
+   0.962
+  ],
+  "size_local": [
+   0.106,
+   0.092,
+   0.135
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_04",
+  "source_id": 64,
+  "region": null,
+  "source": "replicacad",
+  "id": 64
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_14",
+  "pose": {
+   "x": 4.243,
+   "y": -5.984,
+   "z": 1.408,
+   "yaw": 0.0
+  },
+  "size": [
+   0.17,
+   0.176,
+   0.023
+  ],
+  "bbox": [
+   4.158,
+   -6.072,
+   1.408,
+   4.328,
+   -5.896,
+   1.431
+  ],
+  "size_local": [
+   0.17,
+   0.176,
+   0.023
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_05",
+  "source_id": 65,
+  "region": null,
+  "source": "replicacad",
+  "id": 65
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_15",
+  "pose": {
+   "x": 4.244,
+   "y": -6.106,
+   "z": 1.425,
+   "yaw": 0.0
+  },
+  "size": [
+   0.17,
+   0.176,
+   0.031
+  ],
+  "bbox": [
+   4.159,
+   -6.193,
+   1.425,
+   4.329,
+   -6.018,
+   1.456
+  ],
+  "size_local": [
+   0.17,
+   0.176,
+   0.031
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_05",
+  "source_id": 66,
+  "region": null,
+  "source": "replicacad",
+  "id": 66
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_16",
+  "pose": {
+   "x": 4.278,
+   "y": -5.883,
+   "z": 1.408,
+   "yaw": 0.0
+  },
+  "size": [
+   0.168,
+   0.173,
+   0.063
+  ],
+  "bbox": [
+   4.194,
+   -5.97,
+   1.408,
+   4.362,
+   -5.796,
+   1.471
+  ],
+  "size_local": [
+   0.168,
+   0.173,
+   0.063
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_05",
+  "source_id": 67,
+  "region": null,
+  "source": "replicacad",
+  "id": 67
+ },
+ {
+  "label": "remote_control",
+  "label_id": 82,
+  "instance": "remote_control_02",
+  "pose": {
+   "x": 1.912,
+   "y": -7.64,
+   "z": 0.626,
+   "yaw": 0.0
+  },
+  "size": [
+   0.053,
+   0.177,
+   0.013
+  ],
+  "bbox": [
+   1.885,
+   -7.729,
+   0.626,
+   1.938,
+   -7.551,
+   0.638
+  ],
+  "size_local": [
+   0.053,
+   0.177,
+   0.013
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_remote-control_01",
+  "source_id": 68,
+  "region": null,
+  "source": "replicacad",
+  "id": 68
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_05",
+  "pose": {
+   "x": 0.686,
+   "y": -7.733,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.399,
+   0.402,
+   0.41
+  ],
+  "bbox": [
+   0.486,
+   -7.934,
+   0.014,
+   0.885,
+   -7.532,
+   0.424
+  ],
+  "size_local": [
+   0.399,
+   0.402,
+   0.41
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_stool_02",
+  "source_id": 69,
+  "region": null,
+  "source": "replicacad",
+  "id": 69
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_17",
+  "pose": {
+   "x": 0.569,
+   "y": -4.713,
+   "z": 1.388,
+   "yaw": 0.0
+  },
+  "size": [
+   0.11,
+   0.15,
+   0.064
+  ],
+  "bbox": [
+   0.515,
+   -4.788,
+   1.388,
+   0.624,
+   -4.638,
+   1.452
+  ],
+  "size_local": [
+   0.11,
+   0.15,
+   0.064
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_04",
+  "source_id": 70,
+  "region": null,
+  "source": "replicacad",
+  "id": 70
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_18",
+  "pose": {
+   "x": 0.575,
+   "y": -4.606,
+   "z": 1.379,
+   "yaw": 0.0
+  },
+  "size": [
+   0.156,
+   0.185,
+   0.027
+  ],
+  "bbox": [
+   0.497,
+   -4.698,
+   1.379,
+   0.652,
+   -4.514,
+   1.406
+  ],
+  "size_local": [
+   0.156,
+   0.185,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_01",
+  "source_id": 71,
+  "region": null,
+  "source": "replicacad",
+  "id": 71
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_19",
+  "pose": {
+   "x": 0.568,
+   "y": -4.61,
+   "z": 1.406,
+   "yaw": 0.0
+  },
+  "size": [
+   0.106,
+   0.153,
+   0.015
+  ],
+  "bbox": [
+   0.515,
+   -4.686,
+   1.406,
+   0.621,
+   -4.533,
+   1.421
+  ],
+  "size_local": [
+   0.106,
+   0.153,
+   0.015
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_book_04",
+  "source_id": 72,
+  "region": null,
+  "source": "replicacad",
+  "id": 72
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_03",
+  "pose": {
+   "x": 3.703,
+   "y": -2.208,
+   "z": 0.421,
+   "yaw": 0.0
+  },
+  "size": [
+   0.525,
+   0.458,
+   0.277
+  ],
+  "bbox": [
+   3.441,
+   -2.437,
+   0.421,
+   3.966,
+   -1.979,
+   0.698
+  ],
+  "size_local": [
+   0.525,
+   0.458,
+   0.277
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cushion_03",
+  "source_id": 73,
+  "region": null,
+  "source": "replicacad",
+  "id": 73
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_04",
+  "pose": {
+   "x": 3.716,
+   "y": -1.118,
+   "z": 0.42,
+   "yaw": 0.0
+  },
+  "size": [
+   0.499,
+   0.438,
+   0.265
+  ],
+  "bbox": [
+   3.467,
+   -1.337,
+   0.42,
+   3.965,
+   -0.899,
+   0.685
+  ],
+  "size_local": [
+   0.499,
+   0.438,
+   0.265
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cushion_03",
+  "source_id": 74,
+  "region": null,
+  "source": "replicacad",
+  "id": 74
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_06",
+  "pose": {
+   "x": 2.175,
+   "y": -2.408,
+   "z": 0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   0.883,
+   0.874,
+   0.755
+  ],
+  "bbox": [
+   1.734,
+   -2.845,
+   0.017,
+   2.617,
+   -1.971,
+   0.772
+  ],
+  "size_local": [
+   0.883,
+   0.874,
+   0.755
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_01",
+  "source_id": 75,
+  "region": null,
+  "source": "replicacad",
+  "id": 75
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_03",
+  "pose": {
+   "x": 3.997,
+   "y": 0.236,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.67,
+   0.712,
+   1.79
+  ],
+  "bbox": [
+   3.662,
+   -0.12,
+   0.014,
+   4.332,
+   0.592,
+   1.804
+  ],
+  "size_local": [
+   0.67,
+   0.712,
+   1.79
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_indoor_plant_02",
+  "source_id": 76,
+  "region": null,
+  "source": "replicacad",
+  "id": 76
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_03",
+  "pose": {
+   "x": 0.746,
+   "y": -1.166,
+   "z": 0.234,
+   "yaw": 0.0
+  },
+  "size": [
+   0.272,
+   0.354,
+   0.014
+  ],
+  "bbox": [
+   0.61,
+   -1.343,
+   0.234,
+   0.882,
+   -0.989,
+   0.248
+  ],
+  "size_local": [
+   0.272,
+   0.354,
+   0.014
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_choppingboard_02",
+  "source_id": 77,
+  "region": null,
+  "source": "replicacad",
+  "id": 77
+ },
+ {
+  "label": "basket",
+  "label_id": 66,
+  "instance": "basket_01",
+  "pose": {
+   "x": -1.986,
+   "y": -0.039,
+   "z": 0.952,
+   "yaw": 0.0
+  },
+  "size": [
+   0.296,
+   0.329,
+   0.309
+  ],
+  "bbox": [
+   -2.134,
+   -0.204,
+   0.952,
+   -1.838,
+   0.125,
+   1.26
+  ],
+  "size_local": [
+   0.296,
+   0.329,
+   0.309
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_basket",
+  "source_id": 78,
+  "region": null,
+  "source": "replicacad",
+  "id": 78
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_03",
+  "pose": {
+   "x": -2.122,
+   "y": 0.473,
+   "z": 0.015,
+   "yaw": 0.0
+  },
+  "size": [
+   0.56,
+   0.32,
+   0.725
+  ],
+  "bbox": [
+   -2.402,
+   0.313,
+   0.015,
+   -1.842,
+   0.632,
+   0.741
+  ],
+  "size_local": [
+   0.56,
+   0.32,
+   0.725
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bin_02",
+  "source_id": 79,
+  "region": null,
+  "source": "replicacad",
+  "id": 79
+ },
+ {
+  "label": "bowl",
+  "label_id": 67,
+  "instance": "bowl_02",
+  "pose": {
+   "x": -2.288,
+   "y": -2.503,
+   "z": 1.915,
+   "yaw": 0.0
+  },
+  "size": [
+   0.253,
+   0.252,
+   0.124
+  ],
+  "bbox": [
+   -2.414,
+   -2.629,
+   1.915,
+   -2.161,
+   -2.377,
+   2.039
+  ],
+  "size_local": [
+   0.253,
+   0.252,
+   0.124
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bowl_01",
+  "source_id": 80,
+  "region": null,
+  "source": "replicacad",
+  "id": 80
+ },
+ {
+  "label": "bowl",
+  "label_id": 67,
+  "instance": "bowl_03",
+  "pose": {
+   "x": -2.304,
+   "y": -2.246,
+   "z": 1.906,
+   "yaw": 0.0
+  },
+  "size": [
+   0.235,
+   0.234,
+   0.115
+  ],
+  "bbox": [
+   -2.422,
+   -2.363,
+   1.906,
+   -2.187,
+   -2.129,
+   2.021
+  ],
+  "size_local": [
+   0.235,
+   0.234,
+   0.115
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bowl_02",
+  "source_id": 81,
+  "region": null,
+  "source": "replicacad",
+  "id": 81
+ },
+ {
+  "label": "bowl",
+  "label_id": 67,
+  "instance": "bowl_04",
+  "pose": {
+   "x": -2.3,
+   "y": -2.027,
+   "z": 1.906,
+   "yaw": 0.0
+  },
+  "size": [
+   0.189,
+   0.189,
+   0.101
+  ],
+  "bbox": [
+   -2.395,
+   -2.121,
+   1.906,
+   -2.205,
+   -1.932,
+   2.007
+  ],
+  "size_local": [
+   0.189,
+   0.189,
+   0.101
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bowl_03",
+  "source_id": 82,
+  "region": null,
+  "source": "replicacad",
+  "id": 82
+ },
+ {
+  "label": "bowl",
+  "label_id": 67,
+  "instance": "bowl_05",
+  "pose": {
+   "x": -2.015,
+   "y": -1.944,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.16,
+   0.161,
+   0.074
+  ],
+  "bbox": [
+   -2.095,
+   -2.024,
+   0.95,
+   -1.935,
+   -1.863,
+   1.025
+  ],
+  "size_local": [
+   0.16,
+   0.161,
+   0.074
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_bowl_06",
+  "source_id": 83,
+  "region": null,
+  "source": "replicacad",
+  "id": 83
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_04",
+  "pose": {
+   "x": -2.471,
+   "y": -0.3,
+   "z": 0.949,
+   "yaw": 0.0
+  },
+  "size": [
+   0.079,
+   0.272,
+   0.351
+  ],
+  "bbox": [
+   -2.51,
+   -0.435,
+   0.949,
+   -2.431,
+   -0.164,
+   1.3
+  ],
+  "size_local": [
+   0.079,
+   0.272,
+   0.351
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_choppingboard_02",
+  "source_id": 84,
+  "region": null,
+  "source": "replicacad",
+  "id": 84
+ },
+ {
+  "label": "cup",
+  "label_id": 68,
+  "instance": "cup_01",
+  "pose": {
+   "x": -2.234,
+   "y": -2.553,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.106,
+   0.131,
+   0.079
+  ],
+  "bbox": [
+   -2.287,
+   -2.619,
+   0.95,
+   -2.181,
+   -2.488,
+   1.029
+  ],
+  "size_local": [
+   0.106,
+   0.131,
+   0.079
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cup_01",
+  "source_id": 85,
+  "region": null,
+  "source": "replicacad",
+  "id": 85
+ },
+ {
+  "label": "cup",
+  "label_id": 68,
+  "instance": "cup_02",
+  "pose": {
+   "x": -2.215,
+   "y": -2.029,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.107,
+   0.118,
+   0.102
+  ],
+  "bbox": [
+   -2.269,
+   -2.088,
+   0.95,
+   -2.162,
+   -1.97,
+   1.051
+  ],
+  "size_local": [
+   0.107,
+   0.118,
+   0.102
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cup_02",
+  "source_id": 86,
+  "region": null,
+  "source": "replicacad",
+  "id": 86
+ },
+ {
+  "label": "cup",
+  "label_id": 68,
+  "instance": "cup_03",
+  "pose": {
+   "x": -2.015,
+   "y": -2.637,
+   "z": 0.964,
+   "yaw": 0.0
+  },
+  "size": [
+   0.139,
+   0.162,
+   0.076
+  ],
+  "bbox": [
+   -2.085,
+   -2.718,
+   0.964,
+   -1.946,
+   -2.556,
+   1.04
+  ],
+  "size_local": [
+   0.139,
+   0.162,
+   0.076
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cup_03",
+  "source_id": 87,
+  "region": null,
+  "source": "replicacad",
+  "id": 87
+ },
+ {
+  "label": "cup",
+  "label_id": 68,
+  "instance": "cup_04",
+  "pose": {
+   "x": -2.261,
+   "y": 0.088,
+   "z": 1.589,
+   "yaw": 0.0
+  },
+  "size": [
+   0.139,
+   0.123,
+   0.068
+  ],
+  "bbox": [
+   -2.33,
+   0.026,
+   1.589,
+   -2.192,
+   0.149,
+   1.657
+  ],
+  "size_local": [
+   0.139,
+   0.123,
+   0.068
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_cup_05",
+  "source_id": 88,
+  "region": null,
+  "source": "replicacad",
+  "id": 88
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_05",
+  "pose": {
+   "x": -2.386,
+   "y": -1.883,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.092,
+   0.096,
+   0.182
+  ],
+  "bbox": [
+   -2.432,
+   -1.931,
+   0.95,
+   -2.34,
+   -1.835,
+   1.132
+  ],
+  "size_local": [
+   0.092,
+   0.096,
+   0.182
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_02",
+  "source_id": 89,
+  "region": null,
+  "source": "replicacad",
+  "id": 89
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_06",
+  "pose": {
+   "x": -2.439,
+   "y": -0.807,
+   "z": 1.023,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.464,
+   -0.834,
+   1.023,
+   -2.413,
+   -0.78,
+   1.13
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 90,
+  "region": null,
+  "source": "replicacad",
+  "id": 90
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_07",
+  "pose": {
+   "x": -2.437,
+   "y": -0.752,
+   "z": 1.023,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.463,
+   -0.779,
+   1.023,
+   -2.411,
+   -0.725,
+   1.13
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 91,
+  "region": null,
+  "source": "replicacad",
+  "id": 91
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_08",
+  "pose": {
+   "x": -2.434,
+   "y": -0.698,
+   "z": 1.023,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.46,
+   -0.725,
+   1.023,
+   -2.409,
+   -0.671,
+   1.13
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 92,
+  "region": null,
+  "source": "replicacad",
+  "id": 92
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_09",
+  "pose": {
+   "x": -2.431,
+   "y": -0.644,
+   "z": 1.023,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.457,
+   -0.671,
+   1.023,
+   -2.406,
+   -0.616,
+   1.13
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 93,
+  "region": null,
+  "source": "replicacad",
+  "id": 93
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_10",
+  "pose": {
+   "x": -2.37,
+   "y": -0.801,
+   "z": 0.995,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.108
+  ],
+  "bbox": [
+   -2.396,
+   -0.828,
+   0.995,
+   -2.344,
+   -0.774,
+   1.102
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.108
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 94,
+  "region": null,
+  "source": "replicacad",
+  "id": 94
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_11",
+  "pose": {
+   "x": -2.37,
+   "y": -0.744,
+   "z": 0.995,
+   "yaw": 0.0
+  },
+  "size": [
+   0.051,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.396,
+   -0.772,
+   0.995,
+   -2.344,
+   -0.717,
+   1.102
+  ],
+  "size_local": [
+   0.051,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 95,
+  "region": null,
+  "source": "replicacad",
+  "id": 95
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_12",
+  "pose": {
+   "x": -2.37,
+   "y": -0.689,
+   "z": 0.995,
+   "yaw": 0.0
+  },
+  "size": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.396,
+   -0.716,
+   0.995,
+   -2.344,
+   -0.662,
+   1.102
+  ],
+  "size_local": [
+   0.052,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 96,
+  "region": null,
+  "source": "replicacad",
+  "id": 96
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_13",
+  "pose": {
+   "x": -2.37,
+   "y": -0.633,
+   "z": 0.995,
+   "yaw": 0.0
+  },
+  "size": [
+   0.051,
+   0.054,
+   0.107
+  ],
+  "bbox": [
+   -2.396,
+   -0.66,
+   0.995,
+   -2.344,
+   -0.606,
+   1.102
+  ],
+  "size_local": [
+   0.051,
+   0.054,
+   0.107
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_03",
+  "source_id": 97,
+  "region": null,
+  "source": "replicacad",
+  "id": 97
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_14",
+  "pose": {
+   "x": -2.377,
+   "y": -0.721,
+   "z": 0.949,
+   "yaw": 0.0
+  },
+  "size": [
+   0.198,
+   0.315,
+   0.103
+  ],
+  "bbox": [
+   -2.476,
+   -0.879,
+   0.949,
+   -2.278,
+   -0.564,
+   1.052
+  ],
+  "size_local": [
+   0.198,
+   0.315,
+   0.103
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_04",
+  "source_id": 98,
+  "region": null,
+  "source": "replicacad",
+  "id": 98
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_15",
+  "pose": {
+   "x": -2.37,
+   "y": -0.498,
+   "z": 0.952,
+   "yaw": 0.0
+  },
+  "size": [
+   0.101,
+   0.1,
+   0.124
+  ],
+  "bbox": [
+   -2.42,
+   -0.548,
+   0.952,
+   -2.319,
+   -0.448,
+   1.076
+  ],
+  "size_local": [
+   0.101,
+   0.1,
+   0.124
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_06",
+  "source_id": 99,
+  "region": null,
+  "source": "replicacad",
+  "id": 99
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_16",
+  "pose": {
+   "x": -2.204,
+   "y": -0.279,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.118,
+   0.118,
+   0.15
+  ],
+  "bbox": [
+   -2.263,
+   -0.338,
+   0.95,
+   -2.145,
+   -0.22,
+   1.1
+  ],
+  "size_local": [
+   0.118,
+   0.118,
+   0.15
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_08",
+  "source_id": 100,
+  "region": null,
+  "source": "replicacad",
+  "id": 100
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_17",
+  "pose": {
+   "x": -2.29,
+   "y": -0.177,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.098,
+   0.104,
+   0.204
+  ],
+  "bbox": [
+   -2.339,
+   -0.229,
+   0.95,
+   -2.24,
+   -0.125,
+   1.154
+  ],
+  "size_local": [
+   0.098,
+   0.104,
+   0.204
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_kitchen_utensil_09",
+  "source_id": 101,
+  "region": null,
+  "source": "replicacad",
+  "id": 101
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_18",
+  "pose": {
+   "x": -2.348,
+   "y": -0.31,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.101,
+   0.152,
+   0.3
+  ],
+  "bbox": [
+   -2.399,
+   -0.386,
+   0.95,
+   -2.298,
+   -0.234,
+   1.25
+  ],
+  "size_local": [
+   0.101,
+   0.152,
+   0.3
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_knifeblock",
+  "source_id": 102,
+  "region": null,
+  "source": "replicacad",
+  "id": 102
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_03",
+  "pose": {
+   "x": -2.381,
+   "y": -2.378,
+   "z": 0.951,
+   "yaw": 0.0
+  },
+  "size": [
+   0.24,
+   0.234,
+   0.347
+  ],
+  "bbox": [
+   -2.501,
+   -2.496,
+   0.951,
+   -2.261,
+   -2.261,
+   1.298
+  ],
+  "size_local": [
+   0.24,
+   0.234,
+   0.347
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_lamp_02",
+  "source_id": 103,
+  "region": null,
+  "source": "replicacad",
+  "id": 103
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_03",
+  "pose": {
+   "x": -2.434,
+   "y": 1.32,
+   "z": 1.281,
+   "yaw": 0.0
+  },
+  "size": [
+   0.149,
+   0.402,
+   0.505
+  ],
+  "bbox": [
+   -2.509,
+   1.119,
+   1.281,
+   -2.36,
+   1.521,
+   1.786
+  ],
+  "size_local": [
+   0.149,
+   0.402,
+   0.505
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_picture_02",
+  "source_id": 104,
+  "region": null,
+  "source": "replicacad",
+  "id": 104
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_04",
+  "pose": {
+   "x": -2.202,
+   "y": -0.411,
+   "z": 0.949,
+   "yaw": 0.0
+  },
+  "size": [
+   0.281,
+   0.044,
+   0.221
+  ],
+  "bbox": [
+   -2.342,
+   -0.433,
+   0.949,
+   -2.062,
+   -0.389,
+   1.17
+  ],
+  "size_local": [
+   0.281,
+   0.044,
+   0.221
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_picture_03",
+  "source_id": 105,
+  "region": null,
+  "source": "replicacad",
+  "id": 105
+ },
+ {
+  "label": "plate",
+  "label_id": 69,
+  "instance": "plate_01",
+  "pose": {
+   "x": -2.024,
+   "y": -2.615,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.249,
+   0.262,
+   0.027
+  ],
+  "bbox": [
+   -2.148,
+   -2.746,
+   0.95,
+   -1.899,
+   -2.483,
+   0.977
+  ],
+  "size_local": [
+   0.249,
+   0.262,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_plate_01",
+  "source_id": 106,
+  "region": null,
+  "source": "replicacad",
+  "id": 106
+ },
+ {
+  "label": "plate",
+  "label_id": 69,
+  "instance": "plate_02",
+  "pose": {
+   "x": -2.077,
+   "y": -2.236,
+   "z": 0.951,
+   "yaw": 0.0
+  },
+  "size": [
+   0.38,
+   0.361,
+   0.085
+  ],
+  "bbox": [
+   -2.267,
+   -2.416,
+   0.951,
+   -1.887,
+   -2.055,
+   1.036
+  ],
+  "size_local": [
+   0.38,
+   0.361,
+   0.085
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_plate_02",
+  "source_id": 107,
+  "region": null,
+  "source": "replicacad",
+  "id": 107
+ },
+ {
+  "label": "small_appliance",
+  "label_id": 83,
+  "instance": "small_appliance_02",
+  "pose": {
+   "x": -2.18,
+   "y": -1.106,
+   "z": 0.952,
+   "yaw": 0.0
+  },
+  "size": [
+   0.377,
+   0.22,
+   0.358
+  ],
+  "bbox": [
+   -2.369,
+   -1.216,
+   0.952,
+   -1.992,
+   -0.996,
+   1.309
+  ],
+  "size_local": [
+   0.377,
+   0.22,
+   0.358
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_small_appliance_01",
+  "source_id": 108,
+  "region": null,
+  "source": "replicacad",
+  "id": 108
+ },
+ {
+  "label": "small_appliance",
+  "label_id": 83,
+  "instance": "small_appliance_03",
+  "pose": {
+   "x": -2.277,
+   "y": 0.001,
+   "z": 0.951,
+   "yaw": 0.0
+  },
+  "size": [
+   0.291,
+   0.189,
+   0.298
+  ],
+  "bbox": [
+   -2.423,
+   -0.094,
+   0.951,
+   -2.132,
+   0.096,
+   1.249
+  ],
+  "size_local": [
+   0.291,
+   0.189,
+   0.298
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_small_appliance_02",
+  "source_id": 109,
+  "region": null,
+  "source": "replicacad",
+  "id": 109
+ },
+ {
+  "label": "kitchen_utensil",
+  "label_id": 79,
+  "instance": "kitchen_utensil_19",
+  "pose": {
+   "x": -2.357,
+   "y": -2.026,
+   "z": 0.95,
+   "yaw": 0.0
+  },
+  "size": [
+   0.17,
+   0.17,
+   0.114
+  ],
+  "bbox": [
+   -2.442,
+   -2.111,
+   0.95,
+   -2.272,
+   -1.941,
+   1.064
+  ],
+  "size_local": [
+   0.17,
+   0.17,
+   0.114
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_sponge_dish",
+  "source_id": 110,
+  "region": null,
+  "source": "replicacad",
+  "id": 110
+ },
+ {
+  "label": "vase",
+  "label_id": 71,
+  "instance": "vase_01",
+  "pose": {
+   "x": -2.2,
+   "y": -1.942,
+   "z": 1.902,
+   "yaw": 0.0
+  },
+  "size": [
+   0.083,
+   0.086,
+   0.207
+  ],
+  "bbox": [
+   -2.242,
+   -1.985,
+   1.902,
+   -2.158,
+   -1.899,
+   2.109
+  ],
+  "size_local": [
+   0.083,
+   0.086,
+   0.207
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_vase_01",
+  "source_id": 111,
+  "region": null,
+  "source": "replicacad",
+  "id": 111
+ },
+ {
+  "label": "vase",
+  "label_id": 71,
+  "instance": "vase_02",
+  "pose": {
+   "x": -2.274,
+   "y": -2.029,
+   "z": 2.156,
+   "yaw": 0.0
+  },
+  "size": [
+   0.093,
+   0.098,
+   0.25
+  ],
+  "bbox": [
+   -2.32,
+   -2.078,
+   2.156,
+   -2.228,
+   -1.98,
+   2.406
+  ],
+  "size_local": [
+   0.093,
+   0.098,
+   0.25
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_vase_02",
+  "source_id": 112,
+  "region": null,
+  "source": "replicacad",
+  "id": 112
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_07",
+  "pose": {
+   "x": 0.212,
+   "y": -1.202,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.513,
+   0.412,
+   0.9
+  ],
+  "bbox": [
+   -0.044,
+   -1.408,
+   0.014,
+   0.469,
+   -0.996,
+   0.914
+  ],
+  "size_local": [
+   0.513,
+   0.412,
+   0.9
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_05",
+  "source_id": 113,
+  "region": null,
+  "source": "replicacad",
+  "id": 113
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_08",
+  "pose": {
+   "x": 0.192,
+   "y": -1.792,
+   "z": 0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.514,
+   0.414,
+   0.9
+  ],
+  "bbox": [
+   -0.065,
+   -2.0,
+   0.014,
+   0.449,
+   -1.585,
+   0.914
+  ],
+  "size_local": [
+   0.514,
+   0.414,
+   0.9
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_chair_05",
+  "source_id": 114,
+  "region": null,
+  "source": "replicacad",
+  "id": 114
+ },
+ {
+  "label": "umbrella",
+  "label_id": 81,
+  "instance": "umbrella_01",
+  "pose": {
+   "x": -0.524,
+   "y": 1.548,
+   "z": 0.012,
+   "yaw": 0.0
+  },
+  "size": [
+   0.265,
+   0.345,
+   0.936
+  ],
+  "bbox": [
+   -0.656,
+   1.376,
+   0.012,
+   -0.391,
+   1.72,
+   0.948
+  ],
+  "size_local": [
+   0.265,
+   0.345,
+   0.936
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_umbrella",
+  "source_id": 115,
+  "region": null,
+  "source": "replicacad",
+  "id": 115
+ },
+ {
+  "label": "box",
+  "label_id": 45,
+  "instance": "box_03",
+  "pose": {
+   "x": -0.57,
+   "y": 0.953,
+   "z": 0.633,
+   "yaw": 0.0
+  },
+  "size": [
+   0.299,
+   0.299,
+   0.155
+  ],
+  "bbox": [
+   -0.719,
+   0.803,
+   0.633,
+   -0.42,
+   1.102,
+   0.787
+  ],
+  "size_local": [
+   0.299,
+   0.299,
+   0.155
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "frl_apartment_shoebox_01",
+  "source_id": 116,
+  "region": null,
+  "source": "replicacad",
+  "id": 116
+ },
+ {
+  "label": "tv_stand",
+  "label_id": 32,
+  "instance": "tv_stand_01",
+  "pose": {
+   "x": 2.286,
+   "y": -7.701,
+   "z": 0.021,
+   "yaw": 0.0
+  },
+  "size": [
+   1.519,
+   0.512,
+   0.601
+  ],
+  "bbox": [
+   1.527,
+   -7.957,
+   0.021,
+   3.046,
+   -7.445,
+   0.622
+  ],
+  "size_local": [
+   1.519,
+   0.512,
+   0.601
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "frl_apartment_tvstand",
+  "source_id": 117,
+  "region": null,
+  "source": "replicacad",
+  "id": 117
+ },
+ {
+  "label": "refrigerator",
+  "label_id": 24,
+  "instance": "refrigerator_01",
+  "pose": {
+   "x": -2.126,
+   "y": -3.233,
+   "z": 0.022,
+   "yaw": 0.0
+  },
+  "size": [
+   0.755,
+   0.709,
+   1.921
+  ],
+  "bbox": [
+   -2.503,
+   -3.588,
+   0.022,
+   -1.748,
+   -2.879,
+   1.944
+  ],
+  "size_local": [
+   0.755,
+   0.709,
+   1.921
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "fridge",
+  "source_id": 118,
+  "region": null,
+  "source": "replicacad",
+  "id": 118
+ },
+ {
+  "label": "kitchen_counter",
+  "label_id": 25,
+  "instance": "kitchen_counter_01",
+  "pose": {
+   "x": -2.168,
+   "y": -1.261,
+   "z": 0.025,
+   "yaw": 0.0
+  },
+  "size": [
+   0.656,
+   3.046,
+   0.959
+  ],
+  "bbox": [
+   -2.496,
+   -2.784,
+   0.025,
+   -1.84,
+   0.262,
+   0.984
+  ],
+  "size_local": [
+   0.656,
+   3.046,
+   0.959
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "kitchen_counter",
+  "source_id": 119,
+  "region": null,
+  "source": "replicacad",
+  "id": 119
+ },
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_03",
+  "pose": {
+   "x": -2.264,
+   "y": -1.223,
+   "z": 1.534,
+   "yaw": 0.0
+  },
+  "size": [
+   0.464,
+   3.011,
+   1.003
+  ],
+  "bbox": [
+   -2.495,
+   -2.729,
+   1.534,
+   -2.032,
+   0.282,
+   2.537
+  ],
+  "size_local": [
+   0.464,
+   3.011,
+   1.003
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "kitchenCupboard_01",
+  "source_id": 120,
+  "region": null,
+  "source": "replicacad",
+  "id": 120
+ },
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_04",
+  "pose": {
+   "x": -2.319,
+   "y": 1.334,
+   "z": -0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.372,
+   0.883,
+   1.278
+  ],
+  "bbox": [
+   -2.505,
+   0.892,
+   -0.001,
+   -2.133,
+   1.775,
+   1.276
+  ],
+  "size_local": [
+   0.372,
+   0.883,
+   1.278
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "chestOfDrawers_01",
+  "source_id": 121,
+  "region": null,
+  "source": "replicacad",
+  "id": 121
+ },
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_05",
+  "pose": {
+   "x": 0.571,
+   "y": -5.68,
+   "z": 0.02,
+   "yaw": 0.0
+  },
+  "size": [
+   0.427,
+   1.588,
+   0.778
+  ],
+  "bbox": [
+   0.357,
+   -6.474,
+   0.02,
+   0.785,
+   -4.886,
+   0.798
+  ],
+  "size_local": [
+   0.427,
+   1.588,
+   0.778
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "cabinet",
+  "source_id": 122,
+  "region": null,
+  "source": "replicacad",
+  "id": 122
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_01",
+  "pose": {
+   "x": -0.813,
+   "y": 2.673,
+   "z": -0.042,
+   "yaw": 0.0
+  },
+  "size": [
+   0.917,
+   0.103,
+   2.434
+  ],
+  "bbox": [
+   -1.272,
+   2.621,
+   -0.042,
+   -0.355,
+   2.725,
+   2.392
+  ],
+  "size_local": [
+   0.917,
+   0.103,
+   2.434
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "door2",
+  "source_id": 123,
+  "region": null,
+  "source": "replicacad",
+  "id": 123
+ }
+]

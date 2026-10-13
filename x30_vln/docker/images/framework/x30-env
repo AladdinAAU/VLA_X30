@@ -1,0 +1,12 @@
+# Sourced by the entrypoint, login shells and ~/.bashrc. Idempotent.
+# Sets up ROS, the workspace overlay and the shared DDS defaults (see docker/dds/cyclonedds.xml).
+[ -f "/opt/ros/${ROS_DISTRO:-humble}/setup.bash" ] && . "/opt/ros/${ROS_DISTRO:-humble}/setup.bash"
+[ -f /ws/install/setup.bash ] && . /ws/install/setup.bash
+
+export RMW_IMPLEMENTATION="${RMW_IMPLEMENTATION:-rmw_cyclonedds_cpp}"
+export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}"
+if [ -z "${CYCLONEDDS_URI:-}" ] && [ -f /etc/x30/cyclonedds.xml ]; then
+    export CYCLONEDDS_URI="file:///etc/x30/cyclonedds.xml"
+fi
+export X30_ROOT="${X30_ROOT:-/x30}"
+export X30_CONFIGS="${X30_CONFIGS:-/x30/configs}"

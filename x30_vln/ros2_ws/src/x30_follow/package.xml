@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>x30_follow</name>
+  <version>0.1.0</version>
+  <description>follow_person mode of the X30 VLN framework: person tracker on lidar-lifted detections and a velocity controller that keeps a set distance (action /x30/follow_person/run).</description>
+  <maintainer email="burgerbdd@gmail.com">X30 VLN</maintainer>
+  <license>Apache-2.0</license>
+  <depend>rclpy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2_ros_py</depend>
+  <depend>x30_msgs</depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Variant for containers with network_mode: host (Linux workstation next to the real robot; compose.real.yml, docs/INFRA.md).
+  UNTESTED here (no Linux host / robot): written from the verified bridge-network file. All containers share the host stack, so
+  discovery is multicast-for-SPDP on the interface named below and data is unicast. Set the interface that carries the traffic
+  between the ROS 2 containers: "lo" if everything runs on this one machine and the loopback has MULTICAST (check `ip link show lo`;
+  otherwise use a wired NIC that is NOT the robot's internal network). DDS must never be exposed on the robot LAN.
+  The ros1_bridge image (Foxy, Cyclone 0.7) also accepts this file except SocketReceiveBufferSize: for it set
+  X30_DDS_FILE_BRIDGE to a copy of cyclonedds-foxy.xml with the same NetworkInterfaceAddress.
+-->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain id="any">
+    <General>
+      <NetworkInterfaceAddress>lo</NetworkInterfaceAddress>
+      <AllowMulticast>spdp</AllowMulticast>
+      <MaxMessageSize>65500B</MaxMessageSize>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+    </Discovery>
+    <Internal>
+      <SocketReceiveBufferSize min="2MB"/>
+      <Watermarks>
+        <WhcHigh>8MB</WhcHigh>
+      </Watermarks>
+    </Internal>
+  </Domain>
+</CycloneDDS>

@@ -1,0 +1,70 @@
+# x30_modes parameters, profile "sim" (Gazebo or the fake robot). ROS 2 parameter file: loaded by modes.launch.py profile:=sim.
+# Locomotion limits: `kinematic` backend vx 0.6 / vy 0.3 / wz 0.8 (below); the `legged` controller allows only vx 0.4, vy 0.3, wz 0.5 ->
+# set vx_max 0.4 and wz_max 0.5 (and lin_speed 0.25, turn_speed 0.4) when running locomotion:=legged.
+cmd_vel_mux:
+  ros__parameters:
+    rate_hz: 20.0
+    teleop_timeout_s: 0.5
+    nav_timeout_s: 0.5
+    teleop_lockout_s: 0.5
+    gate_by_mode: true
+    initial_mode: idle
+
+safety_guard:
+  ros__parameters:
+    rate_hz: 20.0
+    obstacle_source: costmap_cloud      # costmap_cloud | scan | both
+    # robot rectangle in base_link (x30 body about 0.9 m long; width is a prework estimate, verify on the robot)
+    front: 0.55
+    rear: 0.55
+    half_width: 0.32
+    self_margin: 0.05                # points this close to the footprint are the robot's own body/legs (sim lidar leaks body hits up to ~0.6 m)
+    lateral_margin: 0.04
+    stop_margin: 0.20
+    hard_stop_margin: 0.06
+    latency_s: 0.45                 # raw 80k-point cloud: scan period 0.1 + merge + parse; measured stopping margins in docs/reports/modes.md
+    decel: 1.0
+    ang_decel: 2.0
+    accel_x: 0.8
+    accel_y: 0.6
+    accel_w: 1.5
+    vx_max: 0.6
+    vx_min: -0.3
+    vy_max: 0.3
+    wz_max: 0.8
+    cmd_timeout_s: 0.5
+    obstacle_timeout_s: 1.0
+    require_obstacles: true
+    max_tilt_deg: 35.0
+    z_min: -0.25
+    z_max: 0.70
+
+mode_manager:
+  ros__parameters:
+    profile: sim
+    odom_topic: /odom
+    cancel_wait_s: 6.0
+
+skill_server:
+  ros__parameters:
+    obstacle_source: costmap_cloud
+    front: 0.55
+    rear: 0.55
+    half_width: 0.32
+    self_margin: 0.05
+    lin_speed: 0.30
+    back_speed: 0.15
+    strafe_speed: 0.15
+    turn_speed: 0.50
+    lin_accel: 0.40
+    lin_decel: 0.50
+    turn_accel: 0.80
+    turn_decel: 1.00
+    coast_s: 0.12
+    min_standoff_m: 0.50
+    approach_speed: 0.20
+    goal_tolerance_m: 0.5
+    nav_blocked_abort_s: 6.0
+    nav_stuck_s: 30.0
+    explore_goal_timeout_s: 120.0
+    explore_scan_step_deg: 90.0

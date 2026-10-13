@@ -1,0 +1,23 @@
+#!/bin/bash
+# Resolve and install the package.xml dependencies of the workspace in /ws/src (skipping $X30_SKIP_PKGS).
+#   x30-rosdep            install missing dependencies (apt, via sudo) -- lost when the container is recreated;
+#                         add anything it installs to docker/images/framework/Dockerfile to make it permanent
+#   x30-rosdep --check    only list what is missing
+#   x30-rosdep --dry-run  print the apt commands that would run
+set -eo pipefail
+. /usr/local/bin/x30-env
+cd /ws
+SKIP="${X30_SKIP_PKGS:-x30_sim}"
+MODE="${1:-install}"
+
+[ -d "$HOME/.ros/rosdep" ] || rosdep update --rosdistro "$ROS_DISTRO"
+# shellcheck disable=SC2086
+PATHS=$(colcon list --paths-only --packages-skip $SKIP 2>/dev/null | tr '\n' ' ')
+if [ -z "$PATHS" ]; then echo "[x30-rosdep] no packages in /ws/src"; exit 0; fi
+
+COMMON=(--from-paths $PATHS --ignore-src --rosdistro "$ROS_DISTRO")
+case "$MODE" in
+    --check)   echo "[x30-rosdep] rosdep check"; rosdep check "${COMMON[@]}" || true ;;
+    --dry-run) echo "[x30-rosdep] rosdep install --simulate"; rosdep install "${COMMON[@]}" -r -y --simulate ;;
+    *)         echo "[x30-rosdep] sudo apt-get update && rosdep install"; sudo apt-get update; rosdep install "${COMMON[@]}" -r -y ;;
+esac

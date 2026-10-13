@@ -1,0 +1,29 @@
+# Sourced by the entrypoint, login shells and ~/.bashrc. Idempotent.
+# ROS 2 Jazzy, the upstream controller underlay (/opt/x30_ext), the workspace overlay, shared DDS defaults, rendering mode.
+[ -f "/opt/ros/${ROS_DISTRO:-jazzy}/setup.bash" ] && . "/opt/ros/${ROS_DISTRO:-jazzy}/setup.bash"
+[ -f /opt/x30_ext/install/setup.bash ] && . /opt/x30_ext/install/setup.bash
+[ -f /ws/install/setup.bash ] && . /ws/install/setup.bash
+
+export RMW_IMPLEMENTATION="${RMW_IMPLEMENTATION:-rmw_cyclonedds_cpp}"
+export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}"
+if [ -z "${CYCLONEDDS_URI:-}" ] && [ -f /etc/x30/cyclonedds.xml ]; then
+    export CYCLONEDDS_URI="file:///etc/x30/cyclonedds.xml"
+fi
+export X30_ROOT="${X30_ROOT:-/x30}"
+export X30_CONFIGS="${X30_CONFIGS:-/x30/configs}"
+
+# Rendering for Gazebo sensors (cameras, gpu_lidar): RENDER=sw (default) or gpu.
+#   sw : Mesa llvmpipe through EGL. Measured stable memory; the D3D12 path under WSL leaked about 10 MB/s (docs/reports/sim.md).
+#   gpu: Mesa D3D12 on WSL2 (needs /dev/dxg and /usr/lib/wsl, see docker/compose.sim.gpu.yml); leaks with cameras, use with the memory watchdog.
+case "${RENDER:-sw}" in
+    gpu)
+        export LD_LIBRARY_PATH="/usr/lib/wsl/lib:${LD_LIBRARY_PATH:-}"
+        export MESA_D3D12_DEFAULT_ADAPTER_NAME="${MESA_D3D12_DEFAULT_ADAPTER_NAME:-NVIDIA}"
+        unset LIBGL_ALWAYS_SOFTWARE MESA_LOADER_DRIVER_OVERRIDE
+        export GALLIUM_DRIVER=d3d12 ;;
+    *)
+        export LIBGL_ALWAYS_SOFTWARE=1
+        export GALLIUM_DRIVER=llvmpipe
+        export MESA_LOADER_DRIVER_OVERRIDE=swrast
+        export LP_NUM_THREADS="${LP_NUM_THREADS:-4}" ;;
+esac

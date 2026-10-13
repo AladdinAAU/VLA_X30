@@ -1,0 +1,3 @@
+Image 1 is a crop of map object #$id_a and image 2 a crop of map object #$id_b. Both were detected as "$label" and their estimated positions are $dist m apart.
+
+Return JSON: {"same_object": <true if both crops show the same physical object, false if they are two different objects>, "confidence": <0.0 to 1.0>}

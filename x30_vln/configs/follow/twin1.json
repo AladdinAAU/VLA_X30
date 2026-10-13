@@ -1,0 +1,8 @@
+{
+  "world": "aws_hospital",
+  "_comment": "Twin test: a second nurse in the SAME navy scrubs (look-alike, original Scrubs model) starts behind the robot in the hall, walks into the corridor 0.25 m beside the target lane, overtakes the robot and passes the target while it pauses (t = 31-35 s), so their crops overlap and the colour descriptor cannot tell them apart.",
+  "people": [
+    {"name": "target",      "model": "person_07", "path": "crowd1/target.json", "target": true, "outfit": "navy scrubs"},
+    {"name": "crowd_twin",  "uri": "file:///x30/datasets/external/fuel/models/Scrubs", "path": "twin1/twin.json", "outfit": "navy scrubs (twin)", "delay_s": 3.0}
+  ]
+}

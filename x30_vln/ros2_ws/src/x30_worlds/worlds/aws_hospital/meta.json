@@ -1,0 +1,51 @@
+{
+ "sdf": "worlds/aws_hospital/world.sdf",
+ "spawn": {
+  "x": 0.93,
+  "y": 11.48,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -14.5,
+  -37.0,
+  14.5,
+  23.2
+ ],
+ "objects_file": "worlds/aws_hospital/objects.json",
+ "map_file": "worlds/aws_hospital/map.yaml",
+ "license": "MIT-0 (AWS RoboMaker world and models); OpenRobotics Fuel models CC-BY-4.0",
+ "source": "https://github.com/aws-robotics/aws-robomaker-hospital-world branch ros1, file worlds/hospital.world",
+ "source_dataset": "aws-robomaker",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "includes": 181,
+  "objects": 124,
+  "navigable_area_m2": 781.6,
+  "objects_by_label": {
+   "bathtub": 2,
+   "bed": 3,
+   "cabinet": 8,
+   "cart": 20,
+   "chair": 30,
+   "clutter": 2,
+   "coffee_table": 1,
+   "desk": 1,
+   "kitchen_counter": 3,
+   "medical_device": 12,
+   "nightstand": 3,
+   "person": 13,
+   "refrigerator": 1,
+   "rug": 1,
+   "shelf": 7,
+   "sofa": 3,
+   "table": 2,
+   "toilet": 6,
+   "trash_can": 3,
+   "tv": 1,
+   "vending_machine": 2
+  },
+  "skipped_non_include_models": [],
+  "models_copied": 69
+ }
+}

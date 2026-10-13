@@ -1,0 +1,20 @@
+# Parameters layered over configs/modes/sim.yaml when the real simulator is used and no navigation stack is running yet:
+# the guard reads the raw merged lidar cloud (frame lidar_link) instead of the navigation agent's /costmap_cloud.
+safety_guard:
+  ros__parameters:
+    costmap_cloud_topic: /lidar_points
+    # the raw sim cloud contains the robot's legs beside the body (as the real one: 53k of 80k bag points are within 0.8 m)
+    legs_x: 0.95
+    legs_y_min: 0.28
+    legs_y_max: 0.45
+    use_sim_time: true
+skill_server:
+  ros__parameters:
+    costmap_cloud_topic: /lidar_points
+    use_sim_time: true
+mode_manager:
+  ros__parameters:
+    use_sim_time: true
+cmd_vel_mux:
+  ros__parameters:
+    use_sim_time: true

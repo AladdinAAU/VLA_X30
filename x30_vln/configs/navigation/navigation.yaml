@@ -1,0 +1,151 @@
+# Parameters of the x30_navigation nodes (odometry, mapping, frontier exploration). Loaded by
+# x30_navigation/launch/*.launch.py; profile specific overrides live in profiles/<profile>.yaml (loaded after this file).
+# Lengths in metres, angles in radians. Node names equal the launch node names (no namespace).
+
+lidar_odometry:
+  ros__parameters:
+    cloud_topic: /lidar_points
+    odom_topic: /odometry/lidar
+    odom_frame: odom
+    base_frame: base_link
+    # KISS-ICP tuning for the merged 4-lidar cloud (80k points per scan at 10 Hz, 4 x Livox Mid-360 class).
+    # Measured on the 2026-10-06 lab bag: 5 ms per scan (single core), jitter of a stationary robot ~3 mm per scan.
+    max_range: 30.0          # far returns are sparse/noisy; the bag has isolated outliers at 40+ m and z = -26 m
+    min_range: 0.9           # the sensors see the robot's own legs and body (53 000 of 80 000 points of the bag are within 0.8 m)
+    voxel_size: 0.4          # KISS-ICP map voxel; indoor 0.3-0.5. Smaller is slower and not better on this sensor
+    max_points_per_voxel: 20
+    deskew: true             # uses the per-point `timestamp` field (normalised per scan, unit independent)
+    min_motion_th: 0.05      # adaptive-threshold floor; a walking quadruped moves < 0.1 m between scans
+    initial_threshold: 1.0
+    max_num_iterations: 100
+    convergence_criterion: 0.0001
+    gravity_align: true      # odom z axis = ground normal at start, base_link height from the first ground fit
+    fixed_sensor_height: 0.45
+    publish_map_3d: false    # /map_3d accumulated voxel map (odom frame), low rate
+    map_3d_period: 5.0
+    map_3d_voxel: 0.15
+
+odom_selector:
+  ros__parameters:
+    odom_source: fused       # gt | leg | lidar | fused (profile files set the default per profile)
+    leg_topic: /odom
+    lidar_topic: /odometry/lidar
+    gt_topic: /gt/pose
+    active_topic: /odometry/active
+    odom_frame: odom
+    base_frame: base_link
+    publish_tf: true
+    max_publish_rate: 50.0
+    auto_fallback: false     # leg/gt stale or jumping while lidar is healthy: switch to lidar and report
+    fusion:
+      k_pos: 0.35            # lidar pose gain per update (10 Hz): drift of the legs is pulled back with a ~0.25 s time constant
+      k_yaw: 0.35
+      gate_pos: 1.0          # innovations above these are rejected and counted (lidar jump or legs far off)
+      gate_yaw: 0.8
+    watchdog:
+      max_speed: 3.0         # m/s; consecutive poses implying more are a jump (the X30 tops out near 1.5)
+      max_yaw_rate: 6.0
+      max_step: 0.8
+      stale_after: 1.0
+      hold: 5.0              # s a jump flag stays raised
+      window: 6.0            # leg vs lidar comparison window
+      min_travel: 0.8
+      max_ratio: 1.6         # path length ratio above which the two sources "disagree"
+      max_yaw_diff: 0.6
+
+cloud_leveler:
+  ros__parameters:
+    cloud_topic: /lidar_points
+    imu_topic: /imu/data
+    output_topic: /nav/cloud_level
+    base_frame: base_link
+    level_frame: base_footprint
+    tilt_source: auto        # auto = IMU orientation seeds the ground fit; ground = fit only; none = body assumed level
+    fixed_sensor_height: 0.45
+    imu_max_age: 0.5
+    max_abs_z: 20.0
+    band:                    # heights above the local ground plane
+      ground_max: 0.08       # below: ground (free-space evidence, never an obstacle)
+      obstacle_min: 0.15     # above: obstacle; the gap absorbs floor noise and door sills
+      obstacle_max: 0.90     # robot height + clearance; ceilings and anything above are ignored, overhangs below are kept
+      min_range: 0.10        # sensor minimum range
+      body_half_x: 0.70      # box around base_link treated as the robot itself: in the sim the legs return points at (+-0.5..0.63, +-0.32) that
+                             # otherwise sit inside the footprint inflation and block every trajectory
+      body_half_y: 0.40
+      max_range: 12.0
+    ground:
+      near_min_range: 0.5
+      near_max_range: 4.0
+      low_band: 0.25
+      bin_size: 0.03
+      min_bin_points: 30
+      inlier_dist: 0.04
+      ransac_iters: 60
+      min_inliers: 150
+      max_tilt_deg: 30.0
+      max_points: 6000
+      seed: 7
+      smooth: 0.5
+
+cloud_to_scan:
+  ros__parameters:
+    input_topic: /nav/cloud_level
+    output_topic: /scan
+    num_beams: 720
+    range_min: 0.10
+    range_max: 12.0
+
+obstacle_cloud:
+  ros__parameters:
+    input_topic: /nav/cloud_level
+    output_topic: /costmap_cloud
+    max_range: 8.0
+    min_range: 0.10
+    voxel_size: 0.05
+    min_points: 2
+    speckle_factor: 2.0
+
+occupancy_mapper:
+  ros__parameters:
+    input_topic: /nav/cloud_level
+    map_topic: /map
+    map_frame: map
+    odom_frame: odom
+    publish_map_odom_tf: true
+    publish_period: 1.0
+    max_obstacle_range: 10.0
+    grid:
+      resolution: 0.05
+      initial_size: 30.0
+      grow_pad: 10.0
+      max_size: 400.0
+      log_hit: 0.7
+      log_free: 0.35
+      log_min: -3.0
+      log_max: 3.5
+      occupied_thr: 1.0
+      free_thr: -0.3
+      num_bins: 1024
+      max_free_range: 12.0
+
+frontier_explorer:
+  ros__parameters:
+    map_topic: /map
+    map_frame: map
+    base_frame: base_link
+    autonomous: false
+    strategy: informative
+    loop_period: 1.0
+    goal_timeout: 150.0
+    replan_check_period: 3.0
+    max_consecutive_empty: 8
+    blacklist_radius: 0.8
+    frontier:
+      downsample: 2
+      robot_radius: 0.35
+      min_frontier_length: 0.5
+      gain_radius: 2.5
+      exclude_radius: 0.8
+      assumed_depth: 2.0
+      min_goal_distance: 0.4
+      goal_clearance: 0.6

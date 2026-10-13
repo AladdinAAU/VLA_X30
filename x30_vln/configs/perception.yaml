@@ -1,0 +1,161 @@
+# Perception configuration: what to look for, how confident to be, thermal rules.
+# Read by the perception server (default vocabulary, env PERCEPTION_CONFIG) and by the perception_client node
+# (parameter `config_file`). Numeric tuning of the lidar projection lives in the node parameters
+# (ros2_ws/src/x30_perception/config/perception_client.yaml), sensor topics and extrinsics in configs/robot_*.yaml / TF.
+#
+# STATUS: the vocabulary and the thresholds below are a first guess for indoor scenes. They were NOT tuned on indoor
+# frames (none were available when this file was written); the lessons carried over from the drone project are that large
+# structures (buildings there; doors, windows, stairs here) score far below small objects and need their own, lower
+# threshold, and that far small objects need a larger input size or a region pass. Tune with frames from the X30 camera.
+
+server:
+  url: http://perception:8100        # overridden by models.yaml `perception.url` / env PERCEPTION_URL when the launch file passes it
+  timeout_s: 5.0
+  imgsz: 640                         # YOLOE input size; 1280 costs +4 ms on the RTX 3090 Ti (docs/reports/perception.md)
+  # Enlarged re-run of image regions (fractions x1,y1,x2,y2), for small far objects. Empty = off.
+  regions: []
+  region_imgsz: 1280
+  send_max_side: 960                 # the client downscales larger camera images before JPEG encoding (wide-angle USB cams are often 1080p)
+  jpeg_quality: 90
+
+# Prompts sent to the open-vocabulary model on every frame. Keep it moderate: cost grows with the number of phrases.
+# Task-specific phrases are added at run time with the service /perception/vocabulary (see README).
+max_phrases: 120
+vocabulary:
+  # furniture
+  - chair
+  - office chair
+  - armchair
+  - sofa
+  - table
+  - desk
+  - coffee table
+  - bed
+  - bookshelf
+  - shelf
+  - cabinet
+  - cupboard
+  - wardrobe
+  - stool
+  - bench
+  - drawer
+  # appliances and electronics
+  - refrigerator
+  - microwave
+  - oven
+  - sink
+  - toilet
+  - washing machine
+  - television
+  - monitor
+  - computer
+  - laptop
+  - keyboard
+  - printer
+  - lamp
+  - ceiling light
+  - fan
+  - air conditioner
+  - radiator
+  - water dispenser
+  - coffee machine
+  # structure
+  - door
+  - open door
+  - glass door
+  - window
+  - stairs
+  - elevator
+  - curtain
+  - pillar
+  # safety, signs
+  - fire extinguisher
+  - exit sign
+  - sign
+  - fire alarm
+  - first aid kit
+  - trash can
+  - recycling bin
+  # people and everyday things
+  - person
+  - backpack
+  - bag
+  - box
+  - cardboard box
+  - crate
+  - bottle
+  - cup
+  - book
+  - plant
+  - potted plant
+  - vase
+  - picture frame
+  - whiteboard
+  - clock
+  - mirror
+  - carpet
+  # lab / industrial
+  - robot
+  - cart
+  - ladder
+  - tripod
+  - toolbox
+  - barrel
+  - pallet
+
+# Prompt -> label that is published (so synonyms of one object class end up as one label in the semantic map).
+aliases:
+  office chair: chair
+  armchair: chair
+  couch: sofa
+  desk: table
+  coffee table: table
+  cupboard: cabinet
+  wardrobe: cabinet
+  shelf: bookshelf
+  stool: chair
+  television: monitor
+  computer: monitor
+  laptop: monitor
+  ceiling light: lamp
+  open door: door
+  glass door: door
+  recycling bin: trash can
+  cardboard box: box
+  crate: box
+  potted plant: plant
+  picture frame: picture
+  whiteboard: picture
+  cart: trolley
+
+# Minimum detector score per published label (the server is asked with the lowest of them, the client filters).
+thresholds:
+  default: 0.25
+  person: 0.30
+  door: 0.12
+  window: 0.12
+  stairs: 0.12
+  elevator: 0.12
+  curtain: 0.15
+  pillar: 0.12
+  carpet: 0.15
+  sign: 0.15
+  exit sign: 0.15
+  robot: 0.20
+
+# Detections to drop by 2D location (fractions x1,y1,x2,y2 of the image), e.g. parts of the robot's own body in the view.
+ignore_regions: []
+# Masks smaller than this (pixels at the sent resolution) are ignored.
+min_mask_px: 60
+
+# Thermal camera: optional hardware (not part of the stock X30). Everything below is only used when /thermal/* exists.
+thermal:
+  # Mapping of the normalised mono8 thermal image to degrees C when no /thermal/temperature is published. null = unknown,
+  # then thermal values stay NaN. With auto-ranging cameras this is only a relative measure; use radiometric data if you can.
+  norm_range_c: null                 # example: [10.0, 50.0]
+  # Attribute rules: an object gets `attribute` when ALL given conditions hold. delta = object mean - median of the whole
+  # thermal image (an estimate of ambient). Evaluated by x30_perception.thermal.attributes_from_stats (used by the semantic mapper).
+  rules:
+    - {attribute: warm, min_mean_c: 28.0, min_delta_c: 3.0}
+    - {attribute: hot, min_max_c: 45.0, min_delta_c: 10.0}
+    - {attribute: person-like, labels: [person], min_mean_c: 27.0, min_delta_c: 3.0}

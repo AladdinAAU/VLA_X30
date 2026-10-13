@@ -1,0 +1,55 @@
+# X30 simulator (ROS 2 Jazzy + Gazebo Harmonic). Service `sim`, profile `sim`. Assembled by the launcher together with compose.yml
+# (which provides the network x30_net and the framework service); standalone use also works:
+#   docker compose -f docker/compose.sim.yml --profile sim up -d sim
+#   docker exec -it x30-sim x30-build                                   # first time and after code changes (x30_msgs, x30_sim, x30_worlds)
+#   docker exec -it x30-sim ros2 launch x30_sim sim.launch.py world:=default_arena locomotion:=kinematic
+# Rendering: RENDER=sw (default, llvmpipe, stable memory) or RENDER=gpu (WSL2 D3D12, add -f docker/compose.sim.gpu.yml).
+# The colcon build/install/log of this Jazzy workspace live in their own named volumes (the framework's Humble build must not be reused).
+name: x30
+
+networks:
+  x30_net:
+    name: x30_net
+    driver: bridge
+
+volumes:
+  x30_sim_ws_build:
+    name: x30_sim_ws_build
+  x30_sim_ws_install:
+    name: x30_sim_ws_install
+  x30_sim_ws_log:
+    name: x30_sim_ws_log
+
+services:
+  sim:
+    profiles: [sim]
+    image: x30-sim:latest
+    build:
+      context: images/sim
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    container_name: x30-sim
+    hostname: sim
+    init: true
+    tty: true
+    stdin_open: true
+    command: ["sleep", "infinity"]
+    shm_size: 2gb
+    environment:
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+      CYCLONEDDS_URI: file:///etc/x30/${X30_DDS_FILE:-cyclonedds.xml}
+      X30_ROOT: /x30
+      X30_CONFIGS: /x30/configs
+      X30_BUILD_JOBS: ${X30_BUILD_JOBS:-4}
+      RENDER: ${RENDER:-sw}
+      LP_NUM_THREADS: ${LP_NUM_THREADS:-4}
+    volumes:
+      - ../ros2_ws/src:/ws/src
+      - ..:/x30
+      - x30_sim_ws_build:/ws/build
+      - x30_sim_ws_install:/ws/install
+      - x30_sim_ws_log:/ws/log
+      - ./dds:/etc/x30:ro
+    networks: [x30_net]

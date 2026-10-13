@@ -1,0 +1,264 @@
+{
+ "world": "apt_02",
+ "wall_height": 2.6,
+ "rooms": [
+  {
+   "id": "hall_1",
+   "type": "hall",
+   "name": "hall",
+   "rect": [
+    0.0,
+    -0.8,
+    13.958,
+    0.8
+   ],
+   "center": [
+    6.979,
+    0.0
+   ],
+   "area": 22.33,
+   "walled": true,
+   "doors": [
+    "door_01",
+    "door_02",
+    "door_03",
+    "door_04",
+    "door_05",
+    "door_06",
+    "door_07"
+   ]
+  },
+  {
+   "id": "kitchen_1",
+   "type": "kitchen",
+   "name": "kitchen",
+   "rect": [
+    0.0,
+    0.8,
+    3.904,
+    5.4
+   ],
+   "center": [
+    1.952,
+    3.1
+   ],
+   "area": 17.96,
+   "walled": true,
+   "doors": [
+    "door_01",
+    "door_08"
+   ]
+  },
+  {
+   "id": "living_room_1",
+   "type": "living_room",
+   "name": "living room",
+   "rect": [
+    3.904,
+    0.8,
+    9.158,
+    5.4
+   ],
+   "center": [
+    6.531,
+    3.1
+   ],
+   "area": 24.17,
+   "walled": true,
+   "doors": [
+    "door_02",
+    "door_08"
+   ]
+  },
+  {
+   "id": "bedroom_1",
+   "type": "bedroom",
+   "name": "bedroom 1",
+   "rect": [
+    9.158,
+    0.8,
+    13.958,
+    5.4
+   ],
+   "center": [
+    11.558,
+    3.1
+   ],
+   "area": 22.08,
+   "walled": true,
+   "doors": [
+    "door_03"
+   ]
+  },
+  {
+   "id": "bedroom_2",
+   "type": "bedroom",
+   "name": "bedroom 2",
+   "rect": [
+    0.0,
+    -4.6,
+    3.627,
+    -0.8
+   ],
+   "center": [
+    1.813,
+    -2.7
+   ],
+   "area": 13.78,
+   "walled": true,
+   "doors": [
+    "door_04"
+   ]
+  },
+  {
+   "id": "bathroom_1",
+   "type": "bathroom",
+   "name": "bathroom",
+   "rect": [
+    3.627,
+    -4.6,
+    6.103,
+    -0.8
+   ],
+   "center": [
+    4.865,
+    -2.7
+   ],
+   "area": 9.41,
+   "walled": true,
+   "doors": [
+    "door_05"
+   ]
+  },
+  {
+   "id": "bedroom_3",
+   "type": "bedroom",
+   "name": "bedroom 3",
+   "rect": [
+    6.103,
+    -4.6,
+    10.177,
+    -0.8
+   ],
+   "center": [
+    8.14,
+    -2.7
+   ],
+   "area": 15.48,
+   "walled": true,
+   "doors": [
+    "door_06"
+   ]
+  },
+  {
+   "id": "bedroom_4",
+   "type": "bedroom",
+   "name": "bedroom 4",
+   "rect": [
+    10.177,
+    -4.6,
+    13.958,
+    -0.8
+   ],
+   "center": [
+    12.068,
+    -2.7
+   ],
+   "area": 14.37,
+   "walled": true,
+   "doors": [
+    "door_07"
+   ]
+  }
+ ],
+ "doors": [
+  {
+   "id": "door_01",
+   "x": 1.549,
+   "y": 0.8,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "kitchen_1"
+   ]
+  },
+  {
+   "id": "door_02",
+   "x": 6.016,
+   "y": 0.8,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "living_room_1"
+   ]
+  },
+  {
+   "id": "door_03",
+   "x": 10.852,
+   "y": 0.8,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "bedroom_1"
+   ]
+  },
+  {
+   "id": "door_04",
+   "x": 2.003,
+   "y": -0.8,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "bedroom_2"
+   ]
+  },
+  {
+   "id": "door_05",
+   "x": 4.865,
+   "y": -0.8,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "bathroom_1"
+   ]
+  },
+  {
+   "id": "door_06",
+   "x": 8.705,
+   "y": -0.8,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "bedroom_3"
+   ]
+  },
+  {
+   "id": "door_07",
+   "x": 12.518,
+   "y": -0.8,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "hall_1",
+    "bedroom_4"
+   ]
+  },
+  {
+   "id": "door_08",
+   "x": 3.904,
+   "y": 3.315,
+   "width": 1.2,
+   "orient": "v",
+   "connects": [
+    "kitchen_1",
+    "living_room_1"
+   ]
+  }
+ ]
+}

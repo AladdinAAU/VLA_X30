@@ -1,0 +1,45 @@
+# x30_nav_bridge parameters. Defaults here equal the code defaults (stage B: bring-up). The launch file of x30_hw
+# overrides the limits per operating stage from configs/robot_real.yaml. Source of every number: docs/robot/x30-interfaces.md.
+nav_bridge_node:
+  ros__parameters:
+    # --- motion host (digest 2.1). Telemetry returns to local_recv_port only if THIS PC is registered in network.toml.
+    motion_host_ip: "192.168.1.103"
+    motion_host_port: 43893
+    local_recv_port: 43897
+
+    # --- control ownership: false = never send a heartbeat until ~/acquire_control or ~/stand (single 0x21 source rule)
+    startup_acquire_control: false
+    heartbeat_interval_ms: 200
+    cmd_vel_rate_hz: 50
+    cmd_vel_timeout_ms: 400          # digest 4.3 item 3 / 5.1: <= 500 ms (upstream 5000)
+    telemetry_stale_ms: 500
+    stand_target_gait: 33            # 32 L_WALK, 33 MOUNTAIN, 34 SILENT, 36 L_STAIR
+
+    # --- topics (prefix keeps us out of the robot's own ROS 1 names)
+    topic_prefix: "/x30"
+    cmd_vel_topic: "/x30/cmd_vel_hw"  # fed only by x30_hw real_adapter, never by the planner directly
+    estop_topic: "/x30/estop"
+
+    # --- frames
+    imu_frame_id: "imu_link"
+    odom_frame_id: "odom"
+    base_frame_id: "base_link"
+    publish_tf: false
+
+    # --- hard limits independent of gait (digest 5.1 stage "bring-up / teleop"); ceilings 0.6 m/s, 0.8 rad/s unless allow_high_speed
+    max_vx_forward: 0.2
+    max_vx_backward: 0.1
+    max_vy: 0.1
+    max_wz: 0.3
+    max_accel_x: 0.5                 # digest 5.1: accel <= 0.5 m/s2
+    max_accel_y: 0.5
+    max_accel_yaw: 1.0               # invented (no vendor value): 2x the linear limit
+    max_decel_x: 0.5
+    max_decel_y: 0.5
+    max_decel_yaw: 1.0
+    max_jerk_x: 2.0                  # invented: 0.5 m/s2 reached in 0.25 s; 0 disables
+    max_jerk_y: 2.0
+    max_jerk_yaw: 4.0
+
+    # --- charge interface talks to the perception host (192.168.1.105); not needed for VLN, off by default
+    enable_charge_interface: false

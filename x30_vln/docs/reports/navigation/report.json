@@ -1,0 +1,53 @@
+{
+  "scans": 178,
+  "points_per_scan_mean": 79999.82022471911,
+  "final_position_m": [
+    -0.0023,
+    0.0026,
+    -0.001
+  ],
+  "final_yaw_deg": 0.05857807390026357,
+  "path_length_m": 0.8163807988789347,
+  "max_step_m": 0.011907284655613883,
+  "position_std_mm": [
+    3.08,
+    2.37,
+    2.38
+  ],
+  "max_displacement_from_start_mm": 11.428844494031864,
+  "ground_height_above_ground_m_mean_std": [
+    0.1091595205759743,
+    0.0001975343049842472
+  ],
+  "ms_per_scan_mean": {
+    "kiss_icp": 9.69,
+    "ground_fit": 11.26,
+    "level_classify": 4.32,
+    "scan": 1.74,
+    "grid": 9.08
+  },
+  "ms_per_scan_max": {
+    "kiss_icp": 25.33,
+    "ground_fit": 70.24,
+    "level_classify": 19.46,
+    "scan": 8.51,
+    "grid": 18.98
+  },
+  "ms_per_scan_total_mean": 36.09,
+  "map": {
+    "shape": [
+      600,
+      600
+    ],
+    "free_cells": 11531,
+    "occupied_cells": 3386,
+    "unknown_cells": 345083,
+    "free_area_m2": 28.8
+  },
+  "kiss_icp": {
+    "max_range": 30.0,
+    "min_range": 0.9,
+    "voxel": 0.4,
+    "deskew": true
+  }
+}

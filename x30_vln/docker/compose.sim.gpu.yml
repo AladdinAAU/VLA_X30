@@ -1,0 +1,19 @@
+# Override for GPU rendering of the simulator on Docker Desktop / WSL2 (Mesa D3D12 on the NVIDIA adapter).
+#   docker compose -f docker/compose.sim.yml -f docker/compose.sim.gpu.yml --profile sim up -d sim     (with RENDER=gpu)
+# Warning: this path leaked about 10 MB/s of host memory with Gazebo cameras in the earlier drone project; see docs/reports/sim.md.
+services:
+  sim:
+    shm_size: 8gb
+    environment:
+      RENDER: gpu
+      DISPLAY: ":0"
+      WAYLAND_DISPLAY: wayland-0
+      XDG_RUNTIME_DIR: /mnt/wslg/runtime-dir
+      LD_LIBRARY_PATH: /usr/lib/wsl/lib
+      MESA_D3D12_DEFAULT_ADAPTER_NAME: NVIDIA
+    volumes:
+      - /run/desktop/mnt/host/wslg/.X11-unix:/tmp/.X11-unix
+      - /run/desktop/mnt/host/wslg:/mnt/wslg
+      - /usr/lib/wsl:/usr/lib/wsl
+    devices:
+      - /dev/dxg:/dev/dxg

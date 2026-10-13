@@ -1,0 +1,41 @@
+# Few-shot transcripts for the object_nav prompt. Invented maps (not the robot's), written after running the scripted
+# baseline in the pure-python test world and tidied by hand; tests/test_prompts.py replays every call against the real
+# skill schemas, so a renamed argument fails the test suite.
+# Rendering: x30_agent.core.prompts.render_examples -> compact text in the system prompt.
+examples:
+  - id: direct
+    task: "Find the fire extinguisher and stop next to it."
+    steps:
+      - map: "#3 fire extinguisher (3.1, 0.4) 2.9 m, bearing 12, hallway\n#5 door (1.0, 4.0) 4.0 m, bearing 80"
+        call: {tool: goto_object, args: {object_id: 3, standoff_m: 1.0}}
+        result: "success. Arrived 1.1 m from #3. NEXT: verify(object_id=3)."
+      - call: {tool: verify, args: {object_id: 3, label: fire extinguisher}}
+        result: "success. answer=yes, plausibility=95, distance_m=1.1. NEXT: finish(success=true) if within 1.5 m."
+      - call: {tool: finish, args: {success: true, reason: "verified fire extinguisher #3, 1.1 m away"}}
+        result: "Task finished."
+  - id: rejected
+    task: "Go to the red chair in the office."
+    steps:
+      - map: "(empty)"
+        call: {tool: search, args: {label: chair}}
+        result: "success. Found 2 candidate(s): #4 chair (blue) 3.5 m, #6 chair (red) 6.0 m. NEXT: goto_object(object_id=4), then verify."
+      - call: {tool: goto_object, args: {object_id: 4}}
+        result: "success. Arrived 1.0 m from #4. NEXT: verify(object_id=4)."
+      - call: {tool: verify, args: {object_id: 4, question: "Is this a red chair in an office?"}}
+        result: "success. answer=no (the chair is blue). NEXT: search(label) again; #4 is rejected."
+      - call: {tool: goto_object, args: {object_id: 6}}
+        result: "success. Arrived 1.1 m from #6. NEXT: verify(object_id=6)."
+      - call: {tool: verify, args: {object_id: 6, question: "Is this a red chair in an office?"}}
+        result: "success. answer=yes, plausibility=90. NEXT: finish(success=true)."
+      - call: {tool: finish, args: {success: true, reason: "red chair #6 verified"}}
+        result: "Task finished."
+  - id: exhausted
+    task: "Find the printer."
+    steps:
+      - map: "(empty)"
+        call: {tool: search, args: {label: printer}}
+        result: "failure. Nothing found, map exhausted (exhausted=true). NEXT: try a synonym label once, or finish(success=false)."
+      - call: {tool: search, args: {label: copier}}
+        result: "failure. Nothing found, map exhausted. NEXT: finish(success=false, reason)."
+      - call: {tool: finish, args: {success: false, reason: "explored everything reachable, no printer or copier"}}
+        result: "Task finished."

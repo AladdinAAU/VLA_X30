@@ -1,0 +1,4629 @@
+[
+ {
+  "id": 0,
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_01",
+  "pose": {
+   "x": 0.0,
+   "y": 1.5,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   7.0,
+   3.5,
+   1.167
+  ],
+  "bbox": [
+   -3.5,
+   2.8,
+   -0.025,
+   3.5,
+   6.3,
+   1.143
+  ],
+  "size_local": [
+   7.0,
+   3.5,
+   1.167
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_hospital_nursesstation_01"
+ },
+ {
+  "id": 1,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_01",
+  "pose": {
+   "x": 11.178,
+   "y": -18.413,
+   "z": 0.0,
+   "yaw": -3.1372
+  },
+  "size": [
+   2.371,
+   1.094,
+   0.909
+  ],
+  "bbox": [
+   9.949,
+   -18.96,
+   -0.002,
+   12.32,
+   -17.866,
+   0.907
+  ],
+  "size_local": [
+   2.371,
+   1.094,
+   0.909
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 2,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_01",
+  "pose": {
+   "x": 9.07,
+   "y": -10.358,
+   "z": -757769000.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "bbox": [
+   8.441,
+   -10.715,
+   -757769000.0,
+   9.699,
+   -10.001,
+   -757768998.26
+  ],
+  "size_local": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRack"
+ },
+ {
+  "id": 3,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_02",
+  "pose": {
+   "x": 11.118,
+   "y": -14.649,
+   "z": 0.0,
+   "yaw": -3.136
+  },
+  "size": [
+   2.372,
+   1.097,
+   0.909
+  ],
+  "bbox": [
+   9.888,
+   -15.198,
+   -0.002,
+   12.26,
+   -14.101,
+   0.907
+  ],
+  "size_local": [
+   2.372,
+   1.097,
+   0.909
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 4,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": -0.603,
+   "y": -0.779,
+   "z": -0.0,
+   "yaw": -1.55
+  },
+  "size": [
+   0.588,
+   0.514,
+   0.817
+  ],
+  "bbox": [
+   -0.898,
+   -0.994,
+   0.0,
+   -0.31,
+   -0.48,
+   0.817
+  ],
+  "size_local": [
+   0.588,
+   0.514,
+   0.817
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Chair"
+ },
+ {
+  "id": 5,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_02",
+  "pose": {
+   "x": 0.626,
+   "y": -0.744,
+   "z": 0.0,
+   "yaw": -1.5345
+  },
+  "size": [
+   0.595,
+   0.516,
+   0.817
+  ],
+  "bbox": [
+   0.327,
+   -0.959,
+   0.0,
+   0.923,
+   -0.443,
+   0.817
+  ],
+  "size_local": [
+   0.595,
+   0.516,
+   0.817
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Chair"
+ },
+ {
+  "id": 6,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_01",
+  "pose": {
+   "x": -9.619,
+   "y": -12.511,
+   "z": 0.0,
+   "yaw": -3.1235
+  },
+  "size": [
+   0.331,
+   0.57,
+   1.621
+  ],
+  "bbox": [
+   -9.818,
+   -12.816,
+   0.0,
+   -9.487,
+   -12.246,
+   1.621
+  ],
+  "size_local": [
+   0.331,
+   0.57,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 7,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_02",
+  "pose": {
+   "x": 0.055,
+   "y": 4.058,
+   "z": 0.0,
+   "yaw": 3.1241
+  },
+  "size": [
+   0.332,
+   0.57,
+   1.621
+  ],
+  "bbox": [
+   -0.145,
+   3.755,
+   0.0,
+   0.187,
+   4.324,
+   1.621
+  ],
+  "size_local": [
+   0.332,
+   0.57,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 8,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_03",
+  "pose": {
+   "x": -5.461,
+   "y": 1.236,
+   "z": 0.0,
+   "yaw": -1.5483
+  },
+  "size": [
+   1.14,
+   0.676,
+   1.285
+  ],
+  "bbox": [
+   -6.029,
+   0.898,
+   0.0,
+   -4.889,
+   1.574,
+   1.285
+  ],
+  "size_local": [
+   1.14,
+   0.676,
+   1.285
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PatientWheelChair"
+ },
+ {
+  "id": 9,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_03",
+  "pose": {
+   "x": -5.385,
+   "y": 1.825,
+   "z": 0.0,
+   "yaw": -1.6376
+  },
+  "size": [
+   0.584,
+   0.359,
+   1.621
+  ],
+  "bbox": [
+   -5.66,
+   1.611,
+   0.0,
+   -5.076,
+   1.971,
+   1.621
+  ],
+  "size_local": [
+   0.584,
+   0.359,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 10,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_04",
+  "pose": {
+   "x": -8.871,
+   "y": 9.157,
+   "z": -757769000.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.563,
+   1.624,
+   0.798
+  ],
+  "bbox": [
+   -9.202,
+   8.345,
+   -757769000.026,
+   -8.639,
+   9.969,
+   -757768999.228
+  ],
+  "size_local": [
+   0.563,
+   1.624,
+   0.798
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:WhiteChipChair"
+ },
+ {
+  "id": 11,
+  "label": "bed",
+  "label_id": 15,
+  "instance": "bed_01",
+  "pose": {
+   "x": 4.859,
+   "y": -4.872,
+   "z": -757769000.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.981,
+   0.848,
+   0.854
+  ],
+  "bbox": [
+   3.869,
+   -5.295,
+   -757769000.0,
+   5.85,
+   -4.447,
+   -757768999.146
+  ],
+  "size_local": [
+   1.981,
+   0.848,
+   0.854
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:TrolleyBed"
+ },
+ {
+  "id": 12,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_01",
+  "pose": {
+   "x": 11.43,
+   "y": 3.563,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.879,
+   0.366,
+   0.701
+  ],
+  "bbox": [
+   10.979,
+   3.389,
+   0.003,
+   11.857,
+   3.755,
+   0.704
+  ],
+  "size_local": [
+   0.879,
+   0.366,
+   0.701
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:SurgicalTrolley"
+ },
+ {
+  "id": 13,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_03",
+  "pose": {
+   "x": -11.23,
+   "y": -21.113,
+   "z": 0.0,
+   "yaw": -3.1183
+  },
+  "size": [
+   2.388,
+   1.131,
+   0.909
+  ],
+  "bbox": [
+   -12.468,
+   -21.681,
+   -0.002,
+   -10.08,
+   -20.55,
+   0.907
+  ],
+  "size_local": [
+   2.388,
+   1.131,
+   0.909
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 14,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_05",
+  "pose": {
+   "x": -7.902,
+   "y": 6.493,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   -8.112,
+   5.68,
+   0.0,
+   -7.633,
+   7.304,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 15,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_06",
+  "pose": {
+   "x": -7.895,
+   "y": 8.02,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   -8.104,
+   7.208,
+   0.0,
+   -7.625,
+   8.832,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 16,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_07",
+  "pose": {
+   "x": -6.391,
+   "y": 6.455,
+   "z": 0.0,
+   "yaw": -3.131
+  },
+  "size": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "bbox": [
+   -6.669,
+   5.64,
+   0.0,
+   -6.173,
+   7.269,
+   0.811
+  ],
+  "size_local": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 17,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_08",
+  "pose": {
+   "x": -6.414,
+   "y": 8.007,
+   "z": 0.0,
+   "yaw": -3.131
+  },
+  "size": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "bbox": [
+   -6.692,
+   7.193,
+   0.0,
+   -6.196,
+   8.822,
+   0.811
+  ],
+  "size_local": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 18,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_09",
+  "pose": {
+   "x": -6.324,
+   "y": 6.475,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   -6.534,
+   5.663,
+   0.0,
+   -6.055,
+   7.287,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 19,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_10",
+  "pose": {
+   "x": -6.324,
+   "y": 8.033,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   -6.534,
+   7.22,
+   0.0,
+   -6.055,
+   8.844,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 20,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_11",
+  "pose": {
+   "x": -4.831,
+   "y": 6.475,
+   "z": 0.0,
+   "yaw": -3.131
+  },
+  "size": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "bbox": [
+   -5.109,
+   5.661,
+   0.0,
+   -4.613,
+   7.29,
+   0.811
+  ],
+  "size_local": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 21,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_12",
+  "pose": {
+   "x": -4.857,
+   "y": 8.033,
+   "z": 0.0,
+   "yaw": -3.131
+  },
+  "size": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "bbox": [
+   -5.135,
+   7.218,
+   0.0,
+   -4.639,
+   8.847,
+   0.811
+  ],
+  "size_local": [
+   0.496,
+   1.629,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 22,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_13",
+  "pose": {
+   "x": -7.692,
+   "y": 6.986,
+   "z": 0.0,
+   "yaw": 1.5678
+  },
+  "size": [
+   0.507,
+   0.314,
+   0.889
+  ],
+  "bbox": [
+   -7.753,
+   6.834,
+   0.104,
+   -7.246,
+   7.148,
+   0.993
+  ],
+  "size_local": [
+   0.507,
+   0.314,
+   0.889
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:VisitorKidSit"
+ },
+ {
+  "id": 23,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_14",
+  "pose": {
+   "x": -7.614,
+   "y": 7.501,
+   "z": 0.0,
+   "yaw": 1.6005
+  },
+  "size": [
+   0.656,
+   0.361,
+   1.231
+  ],
+  "bbox": [
+   -7.759,
+   7.326,
+   0.001,
+   -7.103,
+   7.686,
+   1.232
+  ],
+  "size_local": [
+   0.656,
+   0.361,
+   1.231
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:FemaleVisitorSit"
+ },
+ {
+  "id": 24,
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 1.217,
+   "y": -5.609,
+   "z": 0.0,
+   "yaw": -0.0087
+  },
+  "size": [
+   1.607,
+   0.826,
+   0.804
+  ],
+  "bbox": [
+   0.414,
+   -6.028,
+   0.006,
+   2.021,
+   -5.202,
+   0.811
+  ],
+  "size_local": [
+   1.607,
+   0.826,
+   0.804
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:AdjTable"
+ },
+ {
+  "id": 25,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_15",
+  "pose": {
+   "x": 8.189,
+   "y": 6.612,
+   "z": 0.0,
+   "yaw": 3.1362
+  },
+  "size": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "bbox": [
+   7.916,
+   5.799,
+   0.0,
+   8.403,
+   7.426,
+   0.811
+  ],
+  "size_local": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 26,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_16",
+  "pose": {
+   "x": 8.189,
+   "y": 8.168,
+   "z": 0.0,
+   "yaw": 3.1362
+  },
+  "size": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "bbox": [
+   7.916,
+   7.355,
+   0.0,
+   8.403,
+   8.982,
+   0.811
+  ],
+  "size_local": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 27,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_17",
+  "pose": {
+   "x": 6.803,
+   "y": 6.601,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   6.593,
+   5.789,
+   0.0,
+   7.072,
+   7.413,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 28,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_18",
+  "pose": {
+   "x": 6.803,
+   "y": 8.154,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   6.593,
+   7.342,
+   0.0,
+   7.072,
+   8.966,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 29,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_19",
+  "pose": {
+   "x": 6.737,
+   "y": 6.591,
+   "z": 0.0,
+   "yaw": 3.1362
+  },
+  "size": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "bbox": [
+   6.464,
+   5.779,
+   0.0,
+   6.951,
+   7.405,
+   0.811
+  ],
+  "size_local": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 30,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_20",
+  "pose": {
+   "x": 6.75,
+   "y": 8.155,
+   "z": 0.0,
+   "yaw": 3.1362
+  },
+  "size": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "bbox": [
+   6.477,
+   7.342,
+   0.0,
+   6.964,
+   8.968,
+   0.811
+  ],
+  "size_local": [
+   0.488,
+   1.627,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 31,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_21",
+  "pose": {
+   "x": 5.179,
+   "y": 6.593,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   4.97,
+   5.781,
+   0.0,
+   5.448,
+   7.405,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 32,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_22",
+  "pose": {
+   "x": 5.181,
+   "y": 8.145,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "bbox": [
+   4.972,
+   7.332,
+   0.0,
+   5.45,
+   8.956,
+   0.811
+  ],
+  "size_local": [
+   0.479,
+   1.624,
+   0.811
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PotatoChipChair"
+ },
+ {
+  "id": 33,
+  "label": "coffee_table",
+  "label_id": 31,
+  "instance": "coffee_table_01",
+  "pose": {
+   "x": -10.238,
+   "y": -29.914,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.327,
+   0.668,
+   0.324
+  ],
+  "bbox": [
+   -10.895,
+   -30.244,
+   -0.0,
+   -9.568,
+   -29.576,
+   0.324
+  ],
+  "size_local": [
+   1.327,
+   0.668,
+   0.324
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_CoffeeTable_01"
+ },
+ {
+  "id": 34,
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_01",
+  "pose": {
+   "x": -11.077,
+   "y": -30.554,
+   "z": -0.0,
+   "yaw": 1.5698
+  },
+  "size": [
+   2.458,
+   2.433,
+   0.972
+  ],
+  "bbox": [
+   -12.304,
+   -31.767,
+   -0.0,
+   -9.846,
+   -29.334,
+   0.972
+  ],
+  "size_local": [
+   2.458,
+   2.433,
+   0.972
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_Sofa_01"
+ },
+ {
+  "id": 35,
+  "label": "tv",
+  "label_id": 21,
+  "instance": "tv_01",
+  "pose": {
+   "x": -12.412,
+   "y": -28.459,
+   "z": 1.532,
+   "yaw": 3.14
+  },
+  "size": [
+   0.063,
+   1.329,
+   0.797
+  ],
+  "bbox": [
+   -12.482,
+   -29.09,
+   1.534,
+   -12.42,
+   -27.761,
+   2.33
+  ],
+  "size_local": [
+   0.063,
+   1.329,
+   0.797
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 31.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_residential_TV_02"
+ },
+ {
+  "id": 36,
+  "label": "kitchen_counter",
+  "label_id": 25,
+  "instance": "kitchen_counter_01",
+  "pose": {
+   "x": -11.138,
+   "y": -25.694,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.582,
+   3.227,
+   1.143
+  ],
+  "bbox": [
+   -12.429,
+   -27.31,
+   -0.005,
+   -9.847,
+   -24.082,
+   1.138
+  ],
+  "size_local": [
+   2.582,
+   3.227,
+   1.143
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_KitchenCabinet_01"
+ },
+ {
+  "id": 37,
+  "label": "refrigerator",
+  "label_id": 24,
+  "instance": "refrigerator_01",
+  "pose": {
+   "x": -9.282,
+   "y": -24.502,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.044,
+   0.839,
+   1.961
+  ],
+  "bbox": [
+   -9.804,
+   -24.922,
+   -0.0,
+   -8.76,
+   -24.083,
+   1.961
+  ],
+  "size_local": [
+   1.044,
+   0.839,
+   1.961
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 8.0,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_Refrigerator_01"
+ },
+ {
+  "id": 38,
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_02",
+  "pose": {
+   "x": -10.824,
+   "y": -28.666,
+   "z": -0.0,
+   "yaw": -1.5612
+  },
+  "size": [
+   0.852,
+   0.749,
+   0.913
+  ],
+  "bbox": [
+   -11.25,
+   -29.041,
+   0.0,
+   -10.398,
+   -28.292,
+   0.913
+  ],
+  "size_local": [
+   0.852,
+   0.749,
+   0.913
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_SofaB_01"
+ },
+ {
+  "id": 39,
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_03",
+  "pose": {
+   "x": -9.737,
+   "y": -28.654,
+   "z": -0.0,
+   "yaw": -1.5608
+  },
+  "size": [
+   0.853,
+   0.749,
+   0.913
+  ],
+  "bbox": [
+   -10.163,
+   -29.029,
+   0.0,
+   -9.311,
+   -28.279,
+   0.913
+  ],
+  "size_local": [
+   0.853,
+   0.749,
+   0.913
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_SofaB_01"
+ },
+ {
+  "id": 40,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_02",
+  "pose": {
+   "x": 1.077,
+   "y": -8.59,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.636,
+   0.636,
+   1.174
+  ],
+  "bbox": [
+   0.769,
+   -8.968,
+   -0.0,
+   1.406,
+   -8.333,
+   1.174
+  ],
+  "size_local": [
+   0.636,
+   0.636,
+   1.174
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MopCart3"
+ },
+ {
+  "id": 41,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_23",
+  "pose": {
+   "x": 6.413,
+   "y": 8.187,
+   "z": 0.0,
+   "yaw": -1.5662
+  },
+  "size": [
+   0.759,
+   0.475,
+   1.297
+  ],
+  "bbox": [
+   5.806,
+   7.949,
+   0.001,
+   6.565,
+   8.424,
+   1.298
+  ],
+  "size_local": [
+   0.759,
+   0.475,
+   1.297
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MaleVisitorSit"
+ },
+ {
+  "id": 42,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_01",
+  "pose": {
+   "x": 3.185,
+   "y": -6.542,
+   "z": 0.0,
+   "yaw": -1.5591
+  },
+  "size": [
+   0.505,
+   0.416,
+   0.621
+  ],
+  "bbox": [
+   2.922,
+   -6.75,
+   0.009,
+   3.427,
+   -6.334,
+   0.63
+  ],
+  "size_local": [
+   0.505,
+   0.416,
+   0.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Drawer"
+ },
+ {
+  "id": 43,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_02",
+  "pose": {
+   "x": 3.191,
+   "y": -5.948,
+   "z": 0.0,
+   "yaw": -1.5591
+  },
+  "size": [
+   0.505,
+   0.416,
+   0.621
+  ],
+  "bbox": [
+   2.929,
+   -6.156,
+   0.009,
+   3.433,
+   -5.741,
+   0.63
+  ],
+  "size_local": [
+   0.505,
+   0.416,
+   0.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Drawer"
+ },
+ {
+  "id": 44,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_24",
+  "pose": {
+   "x": 1.202,
+   "y": -6.394,
+   "z": 0.0,
+   "yaw": 3.1313
+  },
+  "size": [
+   0.734,
+   0.772,
+   1.262
+  ],
+  "bbox": [
+   0.833,
+   -6.78,
+   0.0,
+   1.567,
+   -6.008,
+   1.262
+  ],
+  "size_local": [
+   0.734,
+   0.772,
+   1.262
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:OfficeChairBlack"
+ },
+ {
+  "id": 45,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_25",
+  "pose": {
+   "x": -1.253,
+   "y": -6.45,
+   "z": 0.0,
+   "yaw": 3.1313
+  },
+  "size": [
+   0.734,
+   0.772,
+   1.262
+  ],
+  "bbox": [
+   -1.623,
+   -6.837,
+   0.0,
+   -0.889,
+   -6.065,
+   1.262
+  ],
+  "size_local": [
+   0.734,
+   0.772,
+   1.262
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:OfficeChairBlack"
+ },
+ {
+  "id": 46,
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_02",
+  "pose": {
+   "x": -1.267,
+   "y": -5.692,
+   "z": 0.0,
+   "yaw": -0.0087
+  },
+  "size": [
+   1.607,
+   0.826,
+   0.804
+  ],
+  "bbox": [
+   -2.071,
+   -6.111,
+   0.006,
+   -0.464,
+   -5.285,
+   0.811
+  ],
+  "size_local": [
+   1.607,
+   0.826,
+   0.804
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:AdjTable"
+ },
+ {
+  "id": 47,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_03",
+  "pose": {
+   "x": -3.02,
+   "y": -6.543,
+   "z": 0.0,
+   "yaw": 1.5655
+  },
+  "size": [
+   0.503,
+   0.413,
+   0.621
+  ],
+  "bbox": [
+   -3.261,
+   -6.75,
+   0.009,
+   -2.758,
+   -6.337,
+   0.63
+  ],
+  "size_local": [
+   0.503,
+   0.413,
+   0.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Drawer"
+ },
+ {
+  "id": 48,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_04",
+  "pose": {
+   "x": -2.998,
+   "y": -5.948,
+   "z": 0.0,
+   "yaw": 1.5655
+  },
+  "size": [
+   0.503,
+   0.413,
+   0.621
+  ],
+  "bbox": [
+   -3.239,
+   -6.154,
+   0.009,
+   -2.735,
+   -5.742,
+   0.63
+  ],
+  "size_local": [
+   0.503,
+   0.413,
+   0.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Drawer"
+ },
+ {
+  "id": 49,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_04",
+  "pose": {
+   "x": -10.997,
+   "y": 0.231,
+   "z": 0.002,
+   "yaw": 0.0
+  },
+  "size": [
+   2.141,
+   1.089,
+   1.028
+  ],
+  "bbox": [
+   -11.987,
+   -0.313,
+   0.0,
+   -9.846,
+   0.776,
+   1.028
+  ],
+  "size_local": [
+   2.141,
+   1.089,
+   1.028
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ElderLadyPatient"
+ },
+ {
+  "id": 50,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_05",
+  "pose": {
+   "x": -10.813,
+   "y": -13.592,
+   "z": 0.002,
+   "yaw": -0.0251
+  },
+  "size": [
+   2.147,
+   1.138,
+   1.028
+  ],
+  "bbox": [
+   -11.806,
+   -14.164,
+   0.0,
+   -9.659,
+   -13.025,
+   1.028
+  ],
+  "size_local": [
+   2.147,
+   1.138,
+   1.028
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ElderLadyPatient"
+ },
+ {
+  "id": 51,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_04",
+  "pose": {
+   "x": -11.088,
+   "y": -7.01,
+   "z": 0.0,
+   "yaw": 3.1351
+  },
+  "size": [
+   2.373,
+   1.098,
+   0.909
+  ],
+  "bbox": [
+   -12.318,
+   -7.559,
+   -0.002,
+   -9.945,
+   -6.46,
+   0.907
+  ],
+  "size_local": [
+   2.373,
+   1.098,
+   0.909
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 52,
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_01",
+  "pose": {
+   "x": 0.316,
+   "y": -6.582,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "bbox": [
+   0.172,
+   -6.726,
+   -0.0,
+   0.46,
+   -6.439,
+   0.345
+  ],
+  "size_local": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_Trash_01"
+ },
+ {
+  "id": 53,
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_02",
+  "pose": {
+   "x": -0.437,
+   "y": -6.578,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "bbox": [
+   -0.58,
+   -6.721,
+   -0.0,
+   -0.293,
+   -6.435,
+   0.345
+  ],
+  "size_local": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_Trash_01"
+ },
+ {
+  "id": 54,
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_03",
+  "pose": {
+   "x": -12.177,
+   "y": -27.629,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "bbox": [
+   -12.321,
+   -27.773,
+   -0.0,
+   -12.034,
+   -27.486,
+   0.345
+  ],
+  "size_local": [
+   0.287,
+   0.286,
+   0.345
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_residential_Trash_01"
+ },
+ {
+  "id": 55,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_03",
+  "pose": {
+   "x": -11.807,
+   "y": -16.183,
+   "z": 0.0,
+   "yaw": 1.567
+  },
+  "size": [
+   0.522,
+   0.607,
+   1.381
+  ],
+  "bbox": [
+   -12.051,
+   -16.486,
+   0.0,
+   -11.53,
+   -15.879,
+   1.381
+  ],
+  "size_local": [
+   0.522,
+   0.607,
+   1.381
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart1"
+ },
+ {
+  "id": 56,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_06",
+  "pose": {
+   "x": -11.117,
+   "y": -17.238,
+   "z": 0.002,
+   "yaw": 0.0
+  },
+  "size": [
+   2.141,
+   1.089,
+   1.096
+  ],
+  "bbox": [
+   -12.106,
+   -17.782,
+   0.0,
+   -9.965,
+   -16.693,
+   1.096
+  ],
+  "size_local": [
+   2.141,
+   1.089,
+   1.096
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ElderMalePatient"
+ },
+ {
+  "id": 57,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_04",
+  "pose": {
+   "x": -12.091,
+   "y": -1.873,
+   "z": 0.052,
+   "yaw": 1.5777
+  },
+  "size": [
+   0.486,
+   0.702,
+   1.341
+  ],
+  "bbox": [
+   -12.399,
+   -2.224,
+   0.052,
+   -11.913,
+   -1.523,
+   1.393
+  ],
+  "size_local": [
+   0.486,
+   0.702,
+   1.341
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart2"
+ },
+ {
+  "id": 58,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_05",
+  "pose": {
+   "x": -11.523,
+   "y": 1.342,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.699,
+   0.482,
+   1.341
+  ],
+  "bbox": [
+   -11.872,
+   1.167,
+   0.0,
+   -11.173,
+   1.649,
+   1.341
+  ],
+  "size_local": [
+   0.699,
+   0.482,
+   1.341
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart2"
+ },
+ {
+  "id": 59,
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_01",
+  "pose": {
+   "x": -10.734,
+   "y": -29.924,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.467,
+   4.013,
+   0.003
+  ],
+  "bbox": [
+   -12.467,
+   -31.931,
+   -0.01,
+   -9.0,
+   -27.918,
+   -0.007
+  ],
+  "size_local": [
+   3.467,
+   4.013,
+   0.003
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_residential_Carpet_01"
+ },
+ {
+  "id": 60,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_05",
+  "pose": {
+   "x": -11.113,
+   "y": 11.655,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.808,
+   0.449,
+   1.676
+  ],
+  "bbox": [
+   -11.517,
+   11.43,
+   0.0,
+   -10.709,
+   11.879,
+   1.676
+  ],
+  "size_local": [
+   0.808,
+   0.449,
+   1.676
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MetalCabinet"
+ },
+ {
+  "id": 61,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_06",
+  "pose": {
+   "x": -11.188,
+   "y": 4.289,
+   "z": 0.0,
+   "yaw": 3.1387
+  },
+  "size": [
+   0.809,
+   0.45,
+   1.676
+  ],
+  "bbox": [
+   -11.592,
+   4.063,
+   0.0,
+   -10.783,
+   4.513,
+   1.676
+  ],
+  "size_local": [
+   0.809,
+   0.45,
+   1.676
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MetalCabinet"
+ },
+ {
+  "id": 62,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_05",
+  "pose": {
+   "x": -11.011,
+   "y": 8.95,
+   "z": -0.008,
+   "yaw": 3.1339
+  },
+  "size": [
+   2.374,
+   1.123,
+   0.942
+  ],
+  "bbox": [
+   -12.241,
+   8.371,
+   -0.025,
+   -9.867,
+   9.494,
+   0.917
+  ],
+  "size_local": [
+   2.374,
+   1.123,
+   0.942
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 63,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_06",
+  "pose": {
+   "x": -11.025,
+   "y": 7.103,
+   "z": 0.0,
+   "yaw": -3.1376
+  },
+  "size": [
+   2.371,
+   1.107,
+   0.942
+  ],
+  "bbox": [
+   -12.254,
+   6.532,
+   -0.017,
+   -9.883,
+   7.639,
+   0.925
+  ],
+  "size_local": [
+   2.371,
+   1.107,
+   0.942
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 64,
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_01",
+  "pose": {
+   "x": -10.476,
+   "y": 1.394,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   1.074,
+   0.457,
+   1.057
+  ],
+  "bbox": [
+   -11.094,
+   1.166,
+   0.0,
+   -10.021,
+   1.623,
+   1.057
+  ],
+  "size_local": [
+   1.074,
+   0.457,
+   1.057
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BedTable"
+ },
+ {
+  "id": 65,
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_02",
+  "pose": {
+   "x": -10.587,
+   "y": -12.508,
+   "z": 0.001,
+   "yaw": 3.1159
+  },
+  "size": [
+   1.085,
+   0.484,
+   1.057
+  ],
+  "bbox": [
+   -11.048,
+   -12.753,
+   0.0,
+   -9.963,
+   -12.268,
+   1.057
+  ],
+  "size_local": [
+   1.085,
+   0.484,
+   1.057
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BedTable"
+ },
+ {
+  "id": 66,
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_03",
+  "pose": {
+   "x": -12.15,
+   "y": -2.631,
+   "z": 0.0,
+   "yaw": -0.0088
+  },
+  "size": [
+   0.583,
+   0.505,
+   0.895
+  ],
+  "bbox": [
+   -12.435,
+   -2.884,
+   0.0,
+   -11.852,
+   -2.379,
+   0.895
+  ],
+  "size_local": [
+   0.583,
+   0.505,
+   0.895
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BedsideTable"
+ },
+ {
+  "id": 67,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_07",
+  "pose": {
+   "x": -1.285,
+   "y": -21.113,
+   "z": 0.0,
+   "yaw": -3.1297
+  },
+  "size": [
+   1.226,
+   0.775,
+   1.928
+  ],
+  "bbox": [
+   -1.885,
+   -21.5,
+   0.0,
+   -0.659,
+   -20.725,
+   1.928
+  ],
+  "size_local": [
+   1.226,
+   0.775,
+   1.928
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:AnesthesiaMachine"
+ },
+ {
+  "id": 68,
+  "label": "bed",
+  "label_id": 15,
+  "instance": "bed_02",
+  "pose": {
+   "x": -1.832,
+   "y": -19.261,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.377,
+   1.018,
+   0.854
+  ],
+  "bbox": [
+   -3.021,
+   -19.769,
+   0.0,
+   -0.643,
+   -18.751,
+   0.854
+  ],
+  "size_local": [
+   2.377,
+   1.018,
+   0.854
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:TrolleyBedPatient"
+ },
+ {
+  "id": 69,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_07",
+  "pose": {
+   "x": -0.936,
+   "y": -18.225,
+   "z": 0.0,
+   "yaw": 1.6257
+  },
+  "size": [
+   0.581,
+   0.347,
+   1.621
+  ],
+  "bbox": [
+   -1.248,
+   -18.364,
+   0.0,
+   -0.667,
+   -18.017,
+   1.621
+  ],
+  "size_local": [
+   0.581,
+   0.347,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 70,
+  "label": "bathtub",
+  "label_id": 30,
+  "instance": "bathtub_01",
+  "pose": {
+   "x": -1.074,
+   "y": -16.133,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.259,
+   0.19,
+   1.047
+  ],
+  "bbox": [
+   -1.198,
+   -16.236,
+   0.718,
+   -0.939,
+   -16.046,
+   1.765
+  ],
+  "size_local": [
+   0.259,
+   0.19,
+   1.047
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:Shower"
+ },
+ {
+  "id": 71,
+  "label": "bathtub",
+  "label_id": 30,
+  "instance": "bathtub_02",
+  "pose": {
+   "x": 0.853,
+   "y": -16.149,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.259,
+   0.19,
+   1.047
+  ],
+  "bbox": [
+   0.73,
+   -16.252,
+   0.718,
+   0.989,
+   -16.062,
+   1.765
+  ],
+  "size_local": [
+   0.259,
+   0.19,
+   1.047
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:Shower"
+ },
+ {
+  "id": 72,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_06",
+  "pose": {
+   "x": -0.411,
+   "y": -22.209,
+   "z": 0.0,
+   "yaw": -1.5817
+  },
+  "size": [
+   0.367,
+   0.878,
+   0.701
+  ],
+  "bbox": [
+   -0.59,
+   -22.637,
+   0.003,
+   -0.224,
+   -21.759,
+   0.704
+  ],
+  "size_local": [
+   0.367,
+   0.878,
+   0.701
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:SurgicalTrolley"
+ },
+ {
+  "id": 73,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_07",
+  "pose": {
+   "x": 3.117,
+   "y": -19.657,
+   "z": 0.0,
+   "yaw": 1.5703
+  },
+  "size": [
+   0.366,
+   0.879,
+   0.701
+  ],
+  "bbox": [
+   2.926,
+   -20.108,
+   0.003,
+   3.292,
+   -19.229,
+   0.704
+  ],
+  "size_local": [
+   0.366,
+   0.879,
+   0.701
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:SurgicalTrolley"
+ },
+ {
+  "id": 74,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_08",
+  "pose": {
+   "x": 0.771,
+   "y": -19.775,
+   "z": 0.0,
+   "yaw": -1.568
+  },
+  "size": [
+   0.544,
+   1.13,
+   0.704
+  ],
+  "bbox": [
+   0.495,
+   -20.353,
+   -0.0,
+   1.039,
+   -19.223,
+   0.704
+  ],
+  "size_local": [
+   0.544,
+   1.13,
+   0.704
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:SurgicalTrolleyMed"
+ },
+ {
+  "id": 75,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_08",
+  "pose": {
+   "x": -2.667,
+   "y": -18.373,
+   "z": 0.0,
+   "yaw": -1.2403
+  },
+  "size": [
+   0.636,
+   0.482,
+   1.621
+  ],
+  "bbox": [
+   -2.954,
+   -18.642,
+   -0.001,
+   -2.318,
+   -18.16,
+   1.619
+  ],
+  "size_local": [
+   0.636,
+   0.482,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 76,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_09",
+  "pose": {
+   "x": -11.807,
+   "y": -16.183,
+   "z": 0.0,
+   "yaw": 1.567
+  },
+  "size": [
+   0.522,
+   0.607,
+   1.381
+  ],
+  "bbox": [
+   -12.051,
+   -16.486,
+   0.0,
+   -11.53,
+   -15.879,
+   1.381
+  ],
+  "size_local": [
+   0.522,
+   0.607,
+   1.381
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart1"
+ },
+ {
+  "id": 77,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_10",
+  "pose": {
+   "x": -0.87,
+   "y": -17.744,
+   "z": 0.0,
+   "yaw": -0.0026
+  },
+  "size": [
+   0.7,
+   0.483,
+   1.341
+  ],
+  "bbox": [
+   -1.219,
+   -17.92,
+   0.0,
+   -0.519,
+   -17.437,
+   1.341
+  ],
+  "size_local": [
+   0.7,
+   0.483,
+   1.341
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart2"
+ },
+ {
+  "id": 78,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_02",
+  "pose": {
+   "x": 0.546,
+   "y": -18.398,
+   "z": 0.0,
+   "yaw": 1.5658
+  },
+  "size": [
+   0.765,
+   1.281,
+   1.756
+  ],
+  "bbox": [
+   0.17,
+   -19.036,
+   0.0,
+   0.935,
+   -17.754,
+   1.756
+  ],
+  "size_local": [
+   0.765,
+   1.281,
+   1.756
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRackCovered"
+ },
+ {
+  "id": 79,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_03",
+  "pose": {
+   "x": -2.699,
+   "y": -22.418,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "bbox": [
+   -3.328,
+   -22.775,
+   0.0,
+   -2.07,
+   -22.061,
+   1.74
+  ],
+  "size_local": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRack"
+ },
+ {
+  "id": 80,
+  "label": "kitchen_counter",
+  "label_id": 25,
+  "instance": "kitchen_counter_02",
+  "pose": {
+   "x": 3.062,
+   "y": -11.881,
+   "z": -0.002,
+   "yaw": 3.1391
+  },
+  "size": [
+   0.792,
+   0.765,
+   0.916
+  ],
+  "bbox": [
+   2.634,
+   -12.263,
+   0.0,
+   3.426,
+   -11.498,
+   0.916
+  ],
+  "size_local": [
+   0.792,
+   0.765,
+   0.916
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:KitchenSink"
+ },
+ {
+  "id": 81,
+  "label": "kitchen_counter",
+  "label_id": 25,
+  "instance": "kitchen_counter_03",
+  "pose": {
+   "x": -3.093,
+   "y": -11.899,
+   "z": -0.002,
+   "yaw": 0.0
+  },
+  "size": [
+   0.79,
+   0.763,
+   0.916
+  ],
+  "bbox": [
+   -3.455,
+   -12.28,
+   0.0,
+   -2.665,
+   -11.517,
+   0.916
+  ],
+  "size_local": [
+   0.79,
+   0.763,
+   0.916
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:KitchenSink"
+ },
+ {
+  "id": 82,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_01",
+  "pose": {
+   "x": 0.465,
+   "y": -11.802,
+   "z": 0.005,
+   "yaw": 0.0
+  },
+  "size": [
+   0.719,
+   0.579,
+   0.843
+  ],
+  "bbox": [
+   0.042,
+   -12.092,
+   0.0,
+   0.761,
+   -11.513,
+   0.843
+  ],
+  "size_local": [
+   0.719,
+   0.579,
+   0.843
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 83,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_02",
+  "pose": {
+   "x": -0.546,
+   "y": -11.803,
+   "z": 0.0,
+   "yaw": -3.139
+  },
+  "size": [
+   0.725,
+   0.579,
+   0.831
+  ],
+  "bbox": [
+   -0.835,
+   -12.093,
+   0.0,
+   -0.11,
+   -11.514,
+   0.831
+  ],
+  "size_local": [
+   0.725,
+   0.579,
+   0.831
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 84,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_03",
+  "pose": {
+   "x": 7.484,
+   "y": 1.43,
+   "z": 0.0,
+   "yaw": -3.1359
+  },
+  "size": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "bbox": [
+   7.193,
+   1.14,
+   0.0,
+   7.92,
+   1.719,
+   0.831
+  ],
+  "size_local": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 85,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_04",
+  "pose": {
+   "x": -7.012,
+   "y": 1.418,
+   "z": 0.0,
+   "yaw": -3.1359
+  },
+  "size": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "bbox": [
+   -7.302,
+   1.129,
+   0.0,
+   -6.576,
+   1.708,
+   0.831
+  ],
+  "size_local": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 86,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_05",
+  "pose": {
+   "x": -7.029,
+   "y": -12.773,
+   "z": 0.0,
+   "yaw": -3.1359
+  },
+  "size": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "bbox": [
+   -7.319,
+   -13.062,
+   0.0,
+   -6.592,
+   -12.483,
+   0.831
+  ],
+  "size_local": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 87,
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_06",
+  "pose": {
+   "x": 7.487,
+   "y": -12.617,
+   "z": 0.0,
+   "yaw": -3.1359
+  },
+  "size": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "bbox": [
+   7.197,
+   -12.907,
+   0.0,
+   7.923,
+   -12.327,
+   0.831
+  ],
+  "size_local": [
+   0.727,
+   0.579,
+   0.831
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Toilet"
+ },
+ {
+  "id": 88,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_08",
+  "pose": {
+   "x": 10.617,
+   "y": 9.063,
+   "z": -0.008,
+   "yaw": -3.1128
+  },
+  "size": [
+   2.393,
+   1.137,
+   0.943
+  ],
+  "bbox": [
+   9.376,
+   8.472,
+   -0.026,
+   11.77,
+   9.609,
+   0.918
+  ],
+  "size_local": [
+   2.393,
+   1.137,
+   0.943
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 89,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_09",
+  "pose": {
+   "x": 10.601,
+   "y": 6.91,
+   "z": -0.008,
+   "yaw": -3.1058
+  },
+  "size": [
+   2.4,
+   1.151,
+   0.944
+  ],
+  "bbox": [
+   9.357,
+   6.312,
+   -0.026,
+   11.757,
+   7.463,
+   0.918
+  ],
+  "size_local": [
+   2.4,
+   1.151,
+   0.944
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 90,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_07",
+  "pose": {
+   "x": 11.136,
+   "y": 4.338,
+   "z": 0.0,
+   "yaw": 3.1387
+  },
+  "size": [
+   0.809,
+   0.45,
+   1.676
+  ],
+  "bbox": [
+   10.731,
+   4.113,
+   0.0,
+   11.54,
+   4.563,
+   1.676
+  ],
+  "size_local": [
+   0.809,
+   0.45,
+   1.676
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MetalCabinet"
+ },
+ {
+  "id": 91,
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_08",
+  "pose": {
+   "x": 11.132,
+   "y": 11.684,
+   "z": 0.0,
+   "yaw": -0.0237
+  },
+  "size": [
+   0.818,
+   0.46,
+   1.676
+  ],
+  "bbox": [
+   10.723,
+   11.458,
+   0.0,
+   11.541,
+   11.918,
+   1.676
+  ],
+  "size_local": [
+   0.818,
+   0.46,
+   1.676
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MetalCabinet"
+ },
+ {
+  "id": 92,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_11",
+  "pose": {
+   "x": 0.716,
+   "y": -17.15,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.903,
+   0.603,
+   0.868
+  ],
+  "bbox": [
+   0.263,
+   -17.453,
+   0.0,
+   1.166,
+   -16.85,
+   0.868
+  ],
+  "size_local": [
+   0.903,
+   0.603,
+   0.868
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ParkingTrolleyMin"
+ },
+ {
+  "id": 93,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_26",
+  "pose": {
+   "x": -10.89,
+   "y": 9.187,
+   "z": 0.229,
+   "yaw": 1.5816
+  },
+  "size": [
+   0.466,
+   0.607,
+   1.168
+  ],
+  "bbox": [
+   -11.125,
+   9.075,
+   0.233,
+   -10.659,
+   9.682,
+   1.4
+  ],
+  "size_local": [
+   0.466,
+   0.607,
+   1.168
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:PatientFSit"
+ },
+ {
+  "id": 94,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_09",
+  "pose": {
+   "x": -0.76,
+   "y": 7.585,
+   "z": 0.0,
+   "yaw": -1.1497
+  },
+  "size": [
+   0.643,
+   0.62,
+   1.745
+  ],
+  "bbox": [
+   -1.08,
+   7.151,
+   0.0,
+   -0.436,
+   7.771,
+   1.745
+  ],
+  "size_local": [
+   0.643,
+   0.62,
+   1.745
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MaleVisitorOnPhone"
+ },
+ {
+  "id": 95,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_10",
+  "pose": {
+   "x": 0.417,
+   "y": 7.444,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.553,
+   0.479,
+   1.634
+  ],
+  "bbox": [
+   0.105,
+   7.105,
+   0.0,
+   0.657,
+   7.583,
+   1.634
+  ],
+  "size_local": [
+   0.553,
+   0.479,
+   1.634
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:FemaleVisitor"
+ },
+ {
+  "id": 96,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_27",
+  "pose": {
+   "x": -5.986,
+   "y": 6.413,
+   "z": 0.0,
+   "yaw": 1.5881
+  },
+  "size": [
+   0.766,
+   0.485,
+   1.296
+  ],
+  "bbox": [
+   -6.142,
+   6.174,
+   0.002,
+   -5.376,
+   6.659,
+   1.298
+  ],
+  "size_local": [
+   0.766,
+   0.485,
+   1.296
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MaleVisitorSit"
+ },
+ {
+  "id": 97,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_11",
+  "pose": {
+   "x": -1.295,
+   "y": -20.409,
+   "z": 0.0,
+   "yaw": -1.5107
+  },
+  "size": [
+   0.582,
+   0.35,
+   1.621
+  ],
+  "bbox": [
+   -1.564,
+   -20.619,
+   0.0,
+   -0.982,
+   -20.269,
+   1.621
+  ],
+  "size_local": [
+   0.582,
+   0.35,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 98,
+  "label": "bed",
+  "label_id": 15,
+  "instance": "bed_03",
+  "pose": {
+   "x": 11.377,
+   "y": -7.389,
+   "z": 0.002,
+   "yaw": 3.116
+  },
+  "size": [
+   2.148,
+   1.139,
+   1.08
+  ],
+  "bbox": [
+   10.223,
+   -7.956,
+   0.0,
+   12.37,
+   -6.817,
+   1.08
+  ],
+  "size_local": [
+   2.148,
+   1.139,
+   1.08
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:MalePatientBed"
+ },
+ {
+  "id": 99,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_10",
+  "pose": {
+   "x": 11.361,
+   "y": -21.887,
+   "z": 0.0,
+   "yaw": -3.1229
+  },
+  "size": [
+   2.384,
+   1.122,
+   0.909
+  ],
+  "bbox": [
+   10.126,
+   -22.449,
+   -0.002,
+   12.51,
+   -21.327,
+   0.907
+  ],
+  "size_local": [
+   2.384,
+   1.122,
+   0.909
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:CGMClassic"
+ },
+ {
+  "id": 100,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_04",
+  "pose": {
+   "x": 9.15,
+   "y": 3.443,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.301,
+   0.781,
+   1.799
+  ],
+  "bbox": [
+   8.5,
+   3.067,
+   0.0,
+   9.8,
+   3.848,
+   1.799
+  ],
+  "size_local": [
+   1.301,
+   0.781,
+   1.799
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRackCoverOpen"
+ },
+ {
+  "id": 101,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_01",
+  "pose": {
+   "x": -10.555,
+   "y": 15.03,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.773,
+   2.06,
+   1.76
+  ],
+  "bbox": [
+   -11.442,
+   14.0,
+   0.03,
+   -9.669,
+   16.06,
+   1.79
+  ],
+  "size_local": [
+   1.773,
+   2.06,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 102,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_02",
+  "pose": {
+   "x": 10.823,
+   "y": 15.215,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "bbox": [
+   9.739,
+   14.215,
+   0.03,
+   11.9,
+   16.217,
+   1.116
+  ],
+  "size_local": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringA_01"
+ },
+ {
+  "id": 103,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_05",
+  "pose": {
+   "x": -10.118,
+   "y": -10.469,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "bbox": [
+   -10.747,
+   -10.827,
+   0.0,
+   -9.489,
+   -10.112,
+   1.74
+  ],
+  "size_local": [
+   1.258,
+   0.714,
+   1.74
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRack"
+ },
+ {
+  "id": 104,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_06",
+  "pose": {
+   "x": -9.916,
+   "y": 3.564,
+   "z": -0.0,
+   "yaw": -0.0003
+  },
+  "size": [
+   1.258,
+   0.715,
+   1.74
+  ],
+  "bbox": [
+   -10.545,
+   3.207,
+   0.0,
+   -9.286,
+   3.922,
+   1.74
+  ],
+  "size_local": [
+   1.258,
+   0.715,
+   1.74
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRack"
+ },
+ {
+  "id": 105,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_07",
+  "pose": {
+   "x": 10.294,
+   "y": -10.577,
+   "z": -0.0,
+   "yaw": 3.1339
+  },
+  "size": [
+   1.283,
+   0.766,
+   1.756
+  ],
+  "bbox": [
+   9.649,
+   -10.955,
+   0.0,
+   10.932,
+   -10.189,
+   1.756
+  ],
+  "size_local": [
+   1.283,
+   0.766,
+   1.756
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:StorageRackCovered"
+ },
+ {
+  "id": 106,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_28",
+  "pose": {
+   "x": 7.85,
+   "y": 6.598,
+   "z": 0.0,
+   "yaw": -1.5621
+  },
+  "size": [
+   0.649,
+   0.347,
+   1.231
+  ],
+  "bbox": [
+   7.342,
+   6.422,
+   0.001,
+   7.991,
+   6.77,
+   1.232
+  ],
+  "size_local": [
+   0.649,
+   0.347,
+   1.231
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:FemaleVisitorSit"
+ },
+ {
+  "id": 107,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_12",
+  "pose": {
+   "x": -1.835,
+   "y": -17.588,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.606,
+   0.52,
+   1.381
+  ],
+  "bbox": [
+   -2.138,
+   -17.864,
+   0.0,
+   -1.533,
+   -17.345,
+   1.381
+  ],
+  "size_local": [
+   0.606,
+   0.52,
+   1.381
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:InstrumentCart1"
+ },
+ {
+  "id": 108,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_13",
+  "pose": {
+   "x": 7.711,
+   "y": -25.133,
+   "z": -0.0,
+   "yaw": -1.5954
+  },
+  "size": [
+   1.241,
+   0.917,
+   0.868
+  ],
+  "bbox": [
+   7.091,
+   -25.59,
+   0.0,
+   8.332,
+   -24.673,
+   0.868
+  ],
+  "size_local": [
+   1.241,
+   0.917,
+   0.868
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ParkingTrolleyMax"
+ },
+ {
+  "id": 109,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_12",
+  "pose": {
+   "x": -11.247,
+   "y": -3.581,
+   "z": 0.002,
+   "yaw": -0.0542
+  },
+  "size": [
+   2.162,
+   1.194,
+   1.096
+  ],
+  "bbox": [
+   -12.248,
+   -4.183,
+   0.0,
+   -10.085,
+   -2.988,
+   1.096
+  ],
+  "size_local": [
+   2.162,
+   1.194,
+   1.096
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:ElderMalePatient"
+ },
+ {
+  "id": 110,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_29",
+  "pose": {
+   "x": -1.376,
+   "y": -0.796,
+   "z": 0.0,
+   "yaw": -1.55
+  },
+  "size": [
+   0.588,
+   0.514,
+   0.817
+  ],
+  "bbox": [
+   -1.671,
+   -1.011,
+   0.0,
+   -1.083,
+   -0.497,
+   0.817
+  ],
+  "size_local": [
+   0.588,
+   0.514,
+   0.817
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Chair"
+ },
+ {
+  "id": 111,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_11",
+  "pose": {
+   "x": 1.794,
+   "y": -21.333,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.321,
+   1.096,
+   1.791
+  ],
+  "bbox": [
+   0.63,
+   -21.573,
+   0.0,
+   2.951,
+   -20.478,
+   1.791
+  ],
+  "size_local": [
+   2.321,
+   1.096,
+   1.791
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:XRayMachine"
+ },
+ {
+  "id": 112,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_14",
+  "pose": {
+   "x": -11.097,
+   "y": -16.496,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.438,
+   0.446,
+   1.413
+  ],
+  "bbox": [
+   -11.316,
+   -16.721,
+   -0.001,
+   -10.877,
+   -16.275,
+   1.412
+  ],
+  "size_local": [
+   0.438,
+   0.446,
+   1.413
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:IVStand"
+ },
+ {
+  "id": 113,
+  "label": "medical_device",
+  "label_id": 61,
+  "instance": "medical_device_12",
+  "pose": {
+   "x": -9.963,
+   "y": -11.936,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.572,
+   0.544,
+   1.478
+  ],
+  "bbox": [
+   -10.249,
+   -12.227,
+   0.0,
+   -9.677,
+   -11.683,
+   1.478
+  ],
+  "size_local": [
+   0.572,
+   0.544,
+   1.478
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BloodPressureMonitor"
+ },
+ {
+  "id": 114,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_15",
+  "pose": {
+   "x": -2.306,
+   "y": -20.245,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.438,
+   0.446,
+   1.413
+  ],
+  "bbox": [
+   -2.525,
+   -20.469,
+   -0.001,
+   -2.087,
+   -20.023,
+   1.412
+  ],
+  "size_local": [
+   0.438,
+   0.446,
+   1.413
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:IVStand"
+ },
+ {
+  "id": 115,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_16",
+  "pose": {
+   "x": -10.931,
+   "y": -1.948,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.639,
+   0.77,
+   1.43
+  ],
+  "bbox": [
+   -11.173,
+   -2.447,
+   -0.002,
+   -10.534,
+   -1.677,
+   1.428
+  ],
+  "size_local": [
+   0.639,
+   0.77,
+   1.43
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BMWCart"
+ },
+ {
+  "id": 116,
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_13",
+  "pose": {
+   "x": -9.759,
+   "y": -2.676,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.323,
+   0.564,
+   1.621
+  ],
+  "bbox": [
+   -9.887,
+   -2.938,
+   0.0,
+   -9.564,
+   -2.374,
+   1.621
+  ],
+  "size_local": [
+   0.323,
+   0.564,
+   1.621
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Scrubs"
+ },
+ {
+  "id": 117,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_17",
+  "pose": {
+   "x": -10.179,
+   "y": 11.173,
+   "z": 0.003,
+   "yaw": 0.0031
+  },
+  "size": [
+   0.593,
+   0.687,
+   1.607
+  ],
+  "bbox": [
+   -10.475,
+   10.898,
+   -0.0,
+   -9.883,
+   11.585,
+   1.607
+  ],
+  "size_local": [
+   0.593,
+   0.687,
+   1.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BPCart"
+ },
+ {
+  "id": 118,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_18",
+  "pose": {
+   "x": 12.007,
+   "y": 4.648,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.591,
+   0.685,
+   1.607
+  ],
+  "bbox": [
+   11.712,
+   4.374,
+   -0.003,
+   12.303,
+   5.058,
+   1.604
+  ],
+  "size_local": [
+   0.591,
+   0.685,
+   1.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BPCart"
+ },
+ {
+  "id": 119,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_19",
+  "pose": {
+   "x": -11.724,
+   "y": 11.429,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.591,
+   0.685,
+   1.607
+  ],
+  "bbox": [
+   -12.019,
+   11.156,
+   -0.003,
+   -11.428,
+   11.84,
+   1.604
+  ],
+  "size_local": [
+   0.591,
+   0.685,
+   1.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BPCart"
+ },
+ {
+  "id": 120,
+  "label": "cart",
+  "label_id": 50,
+  "instance": "cart_20",
+  "pose": {
+   "x": -11.47,
+   "y": 5.06,
+   "z": 0.003,
+   "yaw": 0.0031
+  },
+  "size": [
+   0.593,
+   0.687,
+   1.607
+  ],
+  "bbox": [
+   -11.767,
+   4.785,
+   -0.0,
+   -11.174,
+   5.472,
+   1.607
+  ],
+  "size_local": [
+   0.593,
+   0.687,
+   1.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:BPCart"
+ },
+ {
+  "id": 121,
+  "label": "vending_machine",
+  "label_id": 60,
+  "instance": "vending_machine_01",
+  "pose": {
+   "x": -8.457,
+   "y": 9.631,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.614,
+   0.914,
+   1.83
+  ],
+  "bbox": [
+   -8.757,
+   9.174,
+   0.0,
+   -8.143,
+   10.087,
+   1.83
+  ],
+  "size_local": [
+   0.614,
+   0.914,
+   1.83
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:VendingMachine"
+ },
+ {
+  "id": 122,
+  "label": "vending_machine",
+  "label_id": 60,
+  "instance": "vending_machine_02",
+  "pose": {
+   "x": 8.354,
+   "y": 9.649,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.614,
+   0.914,
+   1.83
+  ],
+  "bbox": [
+   8.054,
+   9.192,
+   0.0,
+   8.667,
+   10.105,
+   1.83
+  ],
+  "size_local": [
+   0.614,
+   0.914,
+   1.83
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:VendingMachine"
+ },
+ {
+  "id": 123,
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_30",
+  "pose": {
+   "x": 1.31,
+   "y": -0.727,
+   "z": 0.0,
+   "yaw": -1.5345
+  },
+  "size": [
+   0.595,
+   0.516,
+   0.817
+  ],
+  "bbox": [
+   1.011,
+   -0.942,
+   0.0,
+   1.606,
+   -0.426,
+   0.817
+  ],
+  "size_local": [
+   0.595,
+   0.516,
+   0.817
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:Chair"
+ }
+]

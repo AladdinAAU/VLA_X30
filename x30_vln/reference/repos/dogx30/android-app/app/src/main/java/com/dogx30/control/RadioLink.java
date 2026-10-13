@@ -1,0 +1,1914 @@
+package com.dogx30.control;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.LinkAddress;
+import android.net.LinkProperties;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.system.Os;
+import android.system.OsConstants;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.skydroid.rcsdk.KeyManager;
+import com.skydroid.rcsdk.PipelineManager;
+import com.skydroid.rcsdk.comm.CommListener;
+import com.skydroid.rcsdk.common.callback.CompletionCallback;
+import com.skydroid.rcsdk.common.error.SkyException;
+import com.skydroid.rcsdk.common.pipeline.Pipeline;
+import com.skydroid.rcsdk.key.AirLinkKey;
+
+import org.json.JSONObject;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.Socket;
+import java.io.DataInputStream;
+import java.io.OutputStream;
+import java.io.FileDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.NetworkInterface;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+
+/**
+ * 厂家拓扑：手柄 --2.4G--> 接收机 --交换机--> 运动主机 192.168.1.103:43893。
+ * G20 射频起来后是虚口 ar_net0，系统 ConnectivityManager 看不见。
+ * Java UDP 必须 SO_BINDTODEVICE，否则全是 Network unreachable。
+ */
+final class RadioLink {
+
+    private static final String TAG = "RadioLink";
+    private static final String ROBOT_IP = "192.168.1.103";
+    private static final int ROBOT_PORT = 43893;
+    private static final String PERCEPTION_IP = "192.168.1.105";
+    private static final int PERCEPTION_PORT = 43899;
+    /** 官方本体监控协议服务（智能控制器），Type=1002。 */
+    private static final String BODY_IP = "192.168.1.106";
+    private static final int BODY_PORT = 30000;
+    // Type=1002 在真机上会偶发超过一秒才返回。保持期过短会让姿态在本体状态和
+    // 本地交接状态之间反复跳变，页面按钮与摇杆就会周期闪烁。
+    private static final long BODY_FRESH_MS = 5000;
+    private static final int LOCAL_PORT = 43897;
+    private static final int TICK_MS = 20;
+    private static final int HB_EVERY = 10;
+    /** 卸力到起立之间的间隔。太短运动主机还在切状态，会把起立丢掉。 */
+    private static final int STAND_AFTER_UNLOAD_MS = 400;
+    private static final int AXIS_MAX = 32767;
+    private static final int AXIS_DZ = 655;
+
+    // 运动主机的遥测。0x1009 那一包头后第一个字节就是 basic_state，第二个是 gait_state
+    // （见 rk3588/include/x30/protocol.hpp 的 CommandHead + MotionStateData）。
+    // 这是狗**自己报的**姿态，比本地猜靠得住：以前这里只数包不看内容，
+    // 一切档本地那份猜测就和实际脱节，界面便一直显示站立。
+    private static final int TELEM_RUNNING = 0x1008;
+    private static final int TELEM_MOTION = 0x1009;
+    /** 身高档位是单独一条简单报文，档位就放在头里的 paramters_size，按有符号读。 */
+    private static final int TELEM_HEIGHT = 0x11050F08;
+    /** RcsData.is_nav_mode / emergency_source：头 12 字节之后偏移 72/73。 */
+    private static final int RCS_NAV_OFF = 72;
+    private static final int RCS_EMERG_OFF = 73;
+    private static final int RCS_LEN = 88;
+    private static final int HEAD_LEN = 12;
+    /** 遥测 200 Hz，半秒没有就当它不可信，退回本地记的那份。 */
+    private static final long TELEM_FRESH_MS = 500;
+
+    // basic_state 取值，与 protocol.hpp 的 BasicState 一致。
+    private static final int ST_SITTING = 0;
+    private static final int ST_SIT_TO_STAND = 1;
+    private static final int ST_INITIAL_STANDING = 2;
+    private static final int ST_TORQUE_STANDING = 3;
+    private static final int ST_STEPPING = 4;
+    private static final int ST_STAND_TO_SIT = 5;
+    private static final int ST_EMERGENCY = 6;
+    private static final int ST_RL = 16;
+
+    /** 会改变姿态的那几条。发过它们，本机记的「站没站」才有依据。 */
+    private static final java.util.Set<String> POSE_CMDS = new java.util.HashSet<>(
+            java.util.Arrays.asList("stand", "stand_up", "sit", "sit_down",
+                                    "unload", "estop"));
+
+    /** 起立刚发出去的这一小段不发轴，免得把柔和的起身掐硬。 */
+    private static final long AXIS_AFTER_STAND_MS = 400;
+    /** 屏幕摇杆多久没更新就当松手。掉帧或页面卡住时不能让狗一直走。 */
+    private static final long SCREEN_AXIS_HOLD_MS = 400;
+
+    private static final int HEARTBEAT = 0x21040001;
+    private static final int CONNECT = 0x21020001;
+    // 官方 UDP V1.0.6：根据当前状态用同一条指令起立或趴下。
+    private static final int STAND = 0x21010202;
+    private static final int SIT = 0x21010202;
+    private static final int UNLOAD = 0x21010202;
+    private static final int TORQUE = 0x2101020A;
+    private static final int STEP = 0x21010201;
+    private static final int ESTOP = 0x21010C0E;
+    private static final int MODE_MANUAL = 0x21010C02;
+    private static final int MODE_AUTO = 0x21010C03;
+    private static final int HEIGHT = 0x21010406;
+    private static final int HEIGHT_MAP_MODE = 0x3101EE01;
+    private static final int VEL_SOURCE = 0x3101EE03;
+    private static final int STEP_Z_MAX = 0x3100EE04;
+    private static final int AXIS_LY = 0x21010130;
+    private static final int AXIS_LX = 0x21010131;
+    private static final int AXIS_RX = 0x21010135;
+    private static final int AXIS_RY = 0x21010102;
+    private static final long STEP_AFTER_TORQUE_MS = 500;
+
+    private static final RadioLink INST = new RadioLink();
+
+    static RadioLink get() {
+        return INST;
+    }
+
+    @Nullable private HandlerThread worker;
+    @Nullable private Handler handler;
+    @Nullable private HandlerThread monitorWorker;
+    @Nullable private Handler monitorHandler;
+    private boolean enabled;
+    private boolean running;
+    private boolean confirmed;
+    private boolean standing;
+    private int telemState = -1;
+    private int telemGait = -1;
+    private int telemEmergSrc;
+    private int telemNavMode;
+    private int bodyMotion = -1;
+    private int bodyGait = -1;
+    private int bodyMotor = -1;
+    private int bodyCharge = -1;
+    private int bodyControlMode = -1;
+    private int bodyLocation = -1;
+    private int bodyOnDock = -1;
+    private long bodyAt;
+    private String bodyErr = "";
+    private int bodyRequestId;
+    private String lastGaitSent = "";
+    private String pendingGait = "";
+    private boolean telemRunSeen;
+    /** 身高档位：-1 匍匐、0 正常。狗只在变化时报，所以不设新鲜期，收到过就一直算。 */
+    private int telemHeight;
+    private boolean telemHeightSeen;
+    private long telemAt;
+    private long lastStandAt;
+    private long modeCmdAt;
+    private int lastAxisLy;
+    private int lastAxisLx;
+    private int lastAxisRx;
+    private int lastAxisRy;
+    private float scrFwd;
+    private float scrLat;
+    private float scrTurn;
+    private float scrTilt;
+    private long scrAt;
+    /** 这一档里确实发出去过起立/趴下，或者 MESH 那侧交接过来 —— 否则姿态就是瞎猜。 */
+    private boolean poseKnown;
+    private boolean torqued;
+    private boolean stepping;
+    /** 停步与力控在主机上都可能落到状态3；控制层保留二者的操作语义。 */
+    private boolean stopped;
+    private boolean stepPending;
+    private boolean stepSent;
+    @Nullable private Integer pendingHeight;
+    private int pendingStairStyle = 3;
+    private boolean gaitApplying;
+    private int gaitExpected = -1;
+    /** effAxes 的返回缓冲。每 tick 都要算一次，没必要每次新建。 */
+    private final float[] axBuf = new float[4];
+    private boolean emergency;
+    private boolean prevStand;
+    private boolean prevSit;
+    private boolean prevEstop;
+    private boolean buttonsPrimed;
+    private int tick;
+    private int sentOk;
+    private int sentFail;
+    private int rxOk;
+    private String lastCmd = "";
+    private boolean pipeOk;
+    private boolean rfOn;
+    private String status = "off";
+    private String lastErr = "";
+    private String ifaceName = "";
+    private int ifacePrefix;
+    @Nullable private Context appCtx;
+    @Nullable private DatagramSocket udp;
+    @Nullable private InetAddress robotAddr;
+    @Nullable private InetAddress perceptionAddr;
+    @Nullable private InetAddress boundLocal;
+    @Nullable private Network airNet;
+    @Nullable private Pipeline udpPipe;
+    @Nullable private ConnectivityManager.NetworkCallback netCb;
+    /** UDP 那个 socket 真绑上了图传网卡（bindSocket 或 SO_BINDTODEVICE 成功）。 */
+    private boolean udpBound;
+
+    private final Runnable loop = this::onTick;
+    private final Runnable monitorLoop = this::pollBodyMonitor;
+    private final Runnable standTask = this::standNow;
+    private final Runnable stepTask = this::firePendingStep;
+
+    synchronized void attach(Context ctx) {
+        if (ctx != null) appCtx = ctx.getApplicationContext();
+        ensureWorker();
+    }
+
+    // 下面三个是给 NativeVideo 用的：2.4G 下机身相机的 RTSP 也得走这张网卡，
+    // 和这里的 UDP 面临同一个「安卓按默认网络路由」的坑，所以把绑定所需的三样
+    // 东西一并露出去，而不是让它自己再找一遍网卡。
+
+    /** 系统能看见这条链路时的 Network，看不见则为 null（ar_net0 常见如此）。 */
+    @Nullable
+    synchronized Network airNetwork() {
+        return airNet;
+    }
+
+    /** 2.4G 那张网卡上的本机地址，未就绪时为 null。 */
+    @Nullable
+    synchronized InetAddress localAddress() {
+        return boundLocal;
+    }
+
+    /** 2.4G 那张网卡的名字（如 ar_net0），未就绪时为空串。 */
+    synchronized String ifaceName() {
+        return ifaceName == null ? "" : ifaceName;
+    }
+
+    private void ensureWorker() {
+        if (handler != null) return;
+        worker = new HandlerThread("radio-udp");
+        worker.start();
+        handler = new Handler(worker.getLooper());
+    }
+
+    private void onRadio(Runnable r) {
+        ensureWorker();
+        if (Looper.myLooper() == handler.getLooper()) r.run();
+        else handler.post(r);
+    }
+
+    void setEnabled(boolean on) {
+        onRadio(() -> {
+            if (enabled == on) return;
+            enabled = on;
+            if (on) start();
+            else stop();
+        });
+    }
+
+    /** CSDK 连上遥控器后 USB 网才稳定，再开 socket / 管道。 */
+    void onRcReady() {
+        onRadio(() -> {
+            if (!enabled) return;
+            if (udp == null && !pipeOk) status = "rc-up";
+            openUdp();
+        });
+    }
+
+    private boolean telemFresh() {
+        return telemAt != 0 && System.currentTimeMillis() - telemAt < TELEM_FRESH_MS;
+    }
+
+    private boolean bodyFresh() {
+        return bodyAt != 0 && System.currentTimeMillis() - bodyAt < BODY_FRESH_MS;
+    }
+
+    /** 坐下且来源不是急停：左下角给出起立，摔倒(7)也不要锁成卸力。 */
+    private boolean sittingReady() {
+        return telemFresh() && telemState == ST_SITTING
+                && (telemEmergSrc == 0 || telemEmergSrc == 2 || telemEmergSrc == 3);
+    }
+
+    /** 关节自锁。急停后主机常回报坐下，原厂看 0x1008 的来源字节。 */
+    private boolean telemLocked() {
+        if (sittingReady()) return false;
+        // Type=1002 软急停=6 才锁。摔倒=7 不当卸力：2.4G 常只有 1002，
+        // 坐下会被报成 7，左下角就出不了起立。起立时若仍是 7 会先卸力。
+        if (bodyFresh() && bodyMotion == 6) return true;
+        if (telemFresh() && (telemState == ST_EMERGENCY
+                || telemEmergSrc == 1
+                || (telemEmergSrc >= 4 && telemEmergSrc <= 6))) {
+            return true;
+        }
+        return emergency;
+    }
+
+    private boolean telemUpright() {
+        // 与 protocol.hpp TelemUpright 一致：初始站立 / 力控站立 / 踏步。
+        return telemState == ST_INITIAL_STANDING || telemState == ST_TORQUE_STANDING
+                || telemState == ST_STEPPING || telemState == ST_RL;
+    }
+
+    /**
+     * 狗是不是站着。有遥测就信遥测 —— 这是 MESH 那侧用的同一个字段，
+     * 两条链路读同一份真相，切档时状态才不会走散。
+     */
+    synchronized boolean isStanding() {
+        if (telemLocked()) return false;
+        if (bodyFresh() && bodyMotion == 16) return true;
+        if (telemFresh()) {
+            if (telemUpright()) return true;
+            // 起立中 / 坐下中按意图算，否则按钮会在过渡期来回跳。
+            if (telemState == ST_SIT_TO_STAND || telemState == ST_STAND_TO_SIT) {
+                return standing;
+            }
+            // RL 起立后运动主机仍报坐下（见 protocol.hpp），这种只能按我们记的算。
+            if (telemState == ST_SITTING) return standing;
+            return false;
+        }
+        if (bodyFresh()) {
+            if (bodyMotion == 2 || bodyMotion == 3
+                    || bodyMotion == 4 || bodyMotion == 16) return true;
+            // 2.4G 常只有 Type=1002，坐下会被报成摔倒(7)。有本机姿态依据时信本地，
+            // 否则左下角出不了起立，起步后 axisMode 也一直是 none。
+            if (bodyMotion == 7 && poseKnown) return standing;
+            return false;
+        }
+        return standing;
+    }
+
+    synchronized boolean isLinkReady() {
+        return enabled && sentOk > 0;
+    }
+
+    @Nullable
+    Network meshNetwork() {
+        return findMeshNet();
+    }
+
+    synchronized String meshDiag() {
+        return "nets=" + allV4() + " ifaces=" + osIfaces();
+    }
+
+    synchronized String statusJson() {
+        try {
+            JSONObject o = new JSONObject();
+            o.put("enabled", enabled);
+            o.put("ready", isLinkReady());
+            o.put("status", status);
+            o.put("udp", udp != null);
+            o.put("pipe", pipeOk);
+            o.put("rf", rfOn);
+            o.put("air", airNet != null);
+            o.put("bound", udpBound);
+            o.put("local", boundLocal != null ? boundLocal.getHostAddress() : airLocalIp());
+            o.put("iface", ifaceName);
+            o.put("prefix", ifacePrefix);
+            o.put("nets", allV4());
+            o.put("ifaces", osIfaces());
+            o.put("err", lastErr);
+            o.put("sentOk", sentOk);
+            o.put("sentFail", sentFail);
+            o.put("rx", rxOk);
+            o.put("cmd", lastCmd);
+            o.put("standing", isStanding());
+            o.put("stateSource", "radio");
+            o.put("stateValid", bodyFresh() || telemFresh() || poseKnown);
+            o.put("stateTruth", telemFresh() ? "motion_udp"
+                    : (bodyFresh() ? "body_monitor" : "unavailable"));
+            o.put("posture", postureState());
+            o.put("motion", motionState());
+            o.put("axisMode", axisMode());
+            // 狗自己报的姿态与步态。没有遥测时给 -1，网页那侧就不会拿它盖掉
+            // 网关的读数（两条链路共用 app.basicState）。
+            o.put("basic", telemFresh() && telemState >= 0 ? telemState : -1);
+            o.put("gait", telemFresh() && telemState >= 0 ? telemGait : -1);
+            if (telemHeightSeen) o.put("height", telemHeight);
+            o.put("emergency", telemLocked());
+            o.put("emergSrc", telemEmergSrc);
+            o.put("bodyAlive", bodyFresh());
+            o.put("bodyMotion", bodyFresh() ? bodyMotion : -1);
+            o.put("bodyGait", bodyFresh() ? bodyGait : -1);
+            o.put("bodyMotor", bodyFresh() ? bodyMotor : -1);
+            o.put("bodyCharge", bodyFresh() ? bodyCharge : -1);
+            o.put("bodyControlMode", bodyFresh() ? bodyControlMode : -1);
+            o.put("bodyLocation", bodyFresh() ? bodyLocation : -1);
+            o.put("bodyOnDock", bodyFresh() ? bodyOnDock : -1);
+            o.put("bodyErr", bodyErr);
+            o.put("axes", axesApply());
+            o.put("axisLy", lastAxisLy);
+            o.put("axisLx", lastAxisLx);
+            o.put("axisRx", lastAxisRx);
+            o.put("axisRy", lastAxisRy);
+            o.put("poseKnown", poseIsKnown());
+            return o.toString();
+        } catch (Exception e) {
+            return "{}";
+        }
+    }
+
+    /**
+     * 采纳网页告知的姿态。切档时由 MESH 那侧交接过来：网关知道狗站着，而本机刚被
+     * 打开、什么都不知道。不发任何指令，只对上记忆 —— 否则从 MESH 切到 2.4G 后
+     * 按钮显示「起立」，而且 axesApply 认为狗趴着，推杆没反应。
+     */
+    void adoptPosture(boolean up) {
+        adoptMotion(up, "");
+    }
+
+    /**
+     * 切档时把站姿和力控/踏步一起接过来。只接站姿会 clearWalk，MESH 在走
+     * 切到 2.4G 后按钮退回起立、摇杆也不发轴。
+     */
+    void adoptMotion(boolean up, String walk) {
+        // 必须排在开/关这一档的后面执行：setEnabled 是投到这个线程上的，
+        // 而切档就在同一瞬间发生。直接在调用线程上写，快速来回切档时那次
+        // stop() 会后到，把刚交接过来的姿态清掉 —— 又变成「切档姿态丢了」。
+        final String mode = walk == null ? "" : walk;
+        onRadio(() -> adoptOnRadio(up, mode));
+    }
+
+    private synchronized void adoptOnRadio(boolean up, String walk) {
+        standing = up;
+        poseKnown = true;
+        // 姿态是别人告知的，不是我们刚发的起立，所以不必再等身子稳住。
+        lastStandAt = 0;
+        if (!up) {
+            clearWalk();
+            return;
+        }
+        if ("step".equals(walk)) {
+            torqued = true;
+            stepping = true;
+            stopped = false;
+            stepSent = true;
+        } else if ("torque".equals(walk)) {
+            adoptWalkMode("torque");
+        } else if ("stopped".equals(walk)) {
+            adoptWalkMode("stopped");
+        } else {
+            clearWalk();
+            torqued = true;
+            stopped = true;
+        }
+    }
+
+    /** 姿态到底是知道的还是猜的。猜的就别去改网关那份记忆。 */
+    private boolean poseIsKnown() {
+        return bodyFresh() || telemFresh() || poseKnown;
+    }
+
+    /**
+     * 屏幕摇杆推到哪。通道约定与网关的速度接口一致（前为正、左为正、逆时针为正），
+     * 到协议轴的取反在 sendAxes 里做，和实体摇杆走同一条出口。
+     */
+    synchronized void setScreenAxes(float fwd, float lat, float turn) {
+        setScreenAxes(fwd, lat, turn, 0f);
+    }
+
+    synchronized void setScreenAxes(float fwd, float lat, float turn, float tilt) {
+        scrFwd = fwd;
+        scrLat = lat;
+        scrTurn = turn;
+        scrTilt = tilt;
+        scrAt = System.currentTimeMillis();
+    }
+
+    /**
+     * 网页记的力控/起步。B1/B2 和屏幕按钮都先写 walkMode，本机指令若被
+     * 遥测冲掉，这里再对上，否则实体摇杆已经推了轴却发不出去。
+     */
+    synchronized void adoptWalkMode(String mode) {
+        if ("step".equals(mode)) {
+            torqued = true;
+            stepping = true;
+            stopped = false;
+        } else if ("torque".equals(mode)) {
+            torqued = true;
+            stepping = false;
+            stopped = false;
+        } else if ("stopped".equals(mode)) {
+            torqued = true;
+            stepping = false;
+            stopped = true;
+        }
+    }
+
+    private void clearWalk() {
+        torqued = false;
+        stepping = false;
+        stopped = false;
+        pendingGait = "";
+        pendingHeight = null;
+        gaitApplying = false;
+        gaitExpected = -1;
+        cancelPendingStep();
+    }
+
+    private String postureState() {
+        if (telemLocked()) return "locked";
+        // 起立过渡：本机已发起立且过了起身窗，别再卡在 rising。
+        // 否则 Type=1002 仍报 1 时，趴下/力控/起步全被 commandOnRadio 静默丢掉。
+        if (!telemFresh() && bodyFresh() && bodyMotion == 1) {
+            if (standing && lastStandAt != 0
+                    && System.currentTimeMillis() - lastStandAt > 1500) {
+                return "standing";
+            }
+            return "rising";
+        }
+        if (!telemFresh() && bodyFresh() && bodyMotion == 5) return "falling";
+        if (telemFresh() && telemState == ST_SIT_TO_STAND) {
+            if (standing && lastStandAt != 0
+                    && System.currentTimeMillis() - lastStandAt > 1500) {
+                return "standing";
+            }
+            return "rising";
+        }
+        if (telemFresh() && telemState == ST_STAND_TO_SIT) return "falling";
+        return isStanding() ? "standing" : "prone";
+    }
+
+    private String motionState() {
+        String posture = postureState();
+        // rising 但本机已站着：允许力控/起步，否则 L1 永远走不到。
+        if (!"standing".equals(posture)
+                && !("rising".equals(posture) && standing)) {
+            return "unavailable";
+        }
+        if (stepPending) return "starting";
+        // 本控制层发过的明确模式指令优先。Type=1002/运动 UDP 在真机上低频、
+        // 间歇或长期错报，拿它持续覆盖本地意图会让力控/起步按钮反复闪烁。
+        if (stepping && stepSent) return "walking";
+        if (torqued) return stopped ? "stopped" : "torque";
+        // 刚切到 2.4G、这侧还没发过模式指令时，才用狗主机状态初始化显示。
+        if ((!telemFresh() && bodyFresh() && bodyMotion == 4)
+                || (telemFresh() && telemState == ST_STEPPING)) return "walking";
+        if ((!telemFresh() && bodyFresh() && bodyMotion == 3)
+                || (telemFresh() && telemState == ST_TORQUE_STANDING)) return "torque";
+        return "stopped";
+    }
+
+    private String axisMode() {
+        if (!poseIsKnown() || telemLocked()) return "none";
+        if (telemFresh() &&
+                (telemState == ST_SIT_TO_STAND || telemState == ST_STAND_TO_SIT)) {
+            return "none";
+        }
+        String motion = motionState();
+        if ("walking".equals(motion)) return "vel";
+        return "none";
+    }
+
+    private void cancelPendingStep() {
+        stepPending = false;
+        stepSent = false;
+        if (handler != null) handler.removeCallbacks(stepTask);
+    }
+
+    private synchronized void firePendingStep() {
+        if (!enabled || !stepPending) return;
+        // 与网关对齐：本体 3 或运动遥测力控站立都算确认。
+        // 本机已发出力控后，2/4/16 也放行，避免 Type=1002 卡在 2 时起步时灵时不灵。
+        boolean torqueConfirmed =
+                (bodyFresh() && (bodyMotion == 3 || bodyMotion == 2
+                        || bodyMotion == 4 || bodyMotion == 16))
+                || (telemFresh() && (telemState == ST_TORQUE_STANDING
+                        || telemState == ST_STEPPING
+                        || telemState == ST_INITIAL_STANDING));
+        if (bodyFresh() && !torqueConfirmed) {
+            if (System.currentTimeMillis() - modeCmdAt < 2500) {
+                onRadioDelayed(stepTask, 100);
+                return;
+            }
+            // 超时仍未确认：若本机确实发过力控，仍发踏步，比取消后摇杆全死更可控。
+            if (!torqued) {
+                stepPending = false;
+                stepping = false;
+                torqued = false;
+                stopped = true;
+                bodyErr = "起步取消：本体未确认力控状态3";
+                return;
+            }
+            bodyErr = "起步：本体未报力控3，已按本机力控继续踏步";
+        }
+        stepPending = false;
+        stepSent = true;
+        sendSimple(STEP);
+        // 起步指令已经发出即满足“起步后执行设置”。真机 basic_state 常不报踏步，
+        // 若等遥测确认，预选的步态和身高会永远留在队列里。
+        flushPendingGait();
+        flushPendingHeight();
+    }
+
+    private void startStepping() {
+        if (emergency) return;
+        String motion = motionState();
+        if (!"stopped".equals(motion) && !"torque".equals(motion)) return;
+        if (stepping && (stepSent || stepPending)) return;
+        // 已在力控：只发踏步切换，不要再灌一条力控（有的主机上会把踏步切回去）。
+        if (torqued && "torque".equals(motion)) {
+            stepping = true;
+            stepSent = true;
+            stepPending = false;
+            stopped = false;
+            modeCmdAt = System.currentTimeMillis();
+            standing = true;
+            sendSimple(STEP);
+            flushPendingGait();
+            flushPendingHeight();
+            return;
+        }
+        sendSimple(TORQUE);
+        torqued = true;
+        stepping = true;
+        stopped = false;
+        modeCmdAt = System.currentTimeMillis();
+        standing = true;
+        stepSent = false;
+        stepPending = true;
+        onRadioDelayed(stepTask, STEP_AFTER_TORQUE_MS);
+    }
+
+    private void stopStepping() {
+        if (emergency) return;
+        boolean cancelOnly = stepPending && !stepSent;
+        // 只相信本机已发出的踏步。滞后的 body=4 不能当成「还在走」再发切换码，
+        // 否则刚停步后点停步会把狗又切回踏步。
+        boolean sent = stepSent;
+        cancelPendingStep();
+        stepping = false;
+        torqued = true;
+        stopped = true;
+        modeCmdAt = System.currentTimeMillis();
+        standing = true;
+        lastStandAt = System.currentTimeMillis();
+        sendAxes(new float[]{0f, 0f, 0f, 0f});
+        if (!cancelOnly && sent) sendSimple(STEP);
+    }
+
+    /**
+     * 轴能不能发。规则与网关那侧的 protocol.hpp AxisCommandsApply 保持一致。
+     *
+     * 力控才发姿态轴，起步才发速度轴。起立本身不发，否则没踏步也在喂速度。
+     *
+     * 起立中 / 坐下中 / 急停一律不发，免得把柔和起身掐硬。
+     */
+    private boolean axesApply() {
+        if (telemLocked()) return false;
+        if (lastStandAt != 0
+                && System.currentTimeMillis() - lastStandAt < AXIS_AFTER_STAND_MS) {
+            return false;
+        }
+        if (telemFresh()) {
+            if (telemState == ST_SIT_TO_STAND
+                    || telemState == ST_STAND_TO_SIT) {
+                return false;
+            }
+            // RL 起立后主机可能一直谎报坐下。模式以本控制层已经实际发出的
+            // 力控/起步指令为准；遥测只做失联、急停与起趴过渡安全门。
+            if (stepping && stepSent) return isStanding();
+            return false;
+        }
+        // 2.4G 接收机地址通常没登记在运动主机 network.toml，收不到 UDP 遥测。
+        // 切档时由仍在线的 MESH 状态交接姿态；只有姿态已知且本层确实发过模式
+        // 指令时才放轴，绝不能因为没遥测让整条 2.4G 永久失效。
+        if (!poseKnown || !standing) return false;
+        return stepping && stepSent;
+    }
+
+    /**
+     * 只有关节锁着才先卸力。站着再卸力，狗会先软下去，看起来像「起立变成趴下」。
+     */
+    private void standUp() {
+        if (telemLocked() || emergency || (bodyFresh() && bodyMotion == 7)) {
+            sendSimple(UNLOAD);
+            emergency = false;
+            standing = false;
+            clearWalk();
+            onRadioDelayed(standTask, STAND_AFTER_UNLOAD_MS);
+            return;
+        }
+        if (!"prone".equals(postureState())) return;
+        standNow();
+    }
+
+    /** 卸力后那一发起立还没到，用户又按了趴下/急停，就别再站起来了。 */
+    private void cancelPendingStand() {
+        if (handler != null) handler.removeCallbacks(standTask);
+    }
+
+    private synchronized void standNow() {
+        if (!enabled) return;
+        sendSimple(STAND);
+        standing = true;
+        lastStandAt = System.currentTimeMillis();
+        clearWalk();
+        stopped = true;
+    }
+
+    private void onRadioDelayed(Runnable r, long delayMs) {
+        ensureWorker();
+        handler.postDelayed(r, delayMs);
+    }
+
+    void command(String name) {
+        if (name == null) return;
+        onRadio(() -> commandOnRadio(name));
+    }
+
+    private synchronized void commandOnRadio(String name) {
+        lastCmd = name;
+        // 链路只能由已完成的 MESH↔2.4G 交接开启。按钮不得偷偷拉起第二套心跳。
+        if (!enabled) return;
+        // 发过起立/趴下这一类，本机记的姿态才算有依据；否则切回 MESH 时不该拿它去
+        // 改网关的记忆（那边可能记着别人刚把狗扶起来）。
+        if (POSE_CMDS.contains(name)) poseKnown = true;
+        if (udp == null) openUdp();
+        switch (name) {
+            case "stand_up":
+                standUp();
+                break;
+            case "sit":
+            case "sit_down":
+                // 信本机 standing：过渡态 rising 时 postureState 还不是 standing，
+                // 硬卡 standing 会让 L2/屏幕「趴下」按了没反应。
+                if (!standing && !"standing".equals(postureState())
+                        && !"rising".equals(postureState())) break;
+                cancelPendingStand();
+                pendingGait = "";
+                if (telemNavMode == 1) sendSimple(MODE_MANUAL);
+                // 本地可能已被滞后本体状态清掉 stepping，但狗还在踏步。
+                // 不先停步就发趴下，运动会把起趴丢掉——力控/起步后再趴下失灵。
+                boolean sitAfterStep = (stepping && stepSent)
+                        || (bodyFresh() && bodyMotion == 4)
+                        || (telemFresh() && telemState == ST_STEPPING);
+                if (sitAfterStep) sendSimple(STEP);
+                cancelPendingStep();
+                standing = false;
+                clearWalk();
+                stopped = true;
+                lastStandAt = System.currentTimeMillis();
+                if (sitAfterStep) {
+                    onRadioDelayed(() -> sendSimple(SIT), 300);
+                } else {
+                    sendSimple(SIT);
+                }
+                break;
+            case "stand":
+                standUp();
+                break;
+            case "unload":
+                if (!"locked".equals(postureState())) break;
+                cancelPendingStand();
+                sendSimple(UNLOAD);
+                emergency = false;
+                standing = false;
+                clearWalk();
+                break;
+            case "torque":
+                if (!standing && !"standing".equals(postureState())
+                        && !"rising".equals(postureState())) break;
+                boolean leaveStep = stepping && stepSent;
+                if (leaveStep) sendSimple(STEP);
+                cancelPendingStep();
+                // STEP 会把状态 4 直接切回力控状态 3，不能在过渡中再跟 TORQUE。
+                if (!leaveStep) sendSimple(TORQUE);
+                torqued = true;
+                stepping = false;
+                stopped = leaveStep;
+                modeCmdAt = System.currentTimeMillis();
+                lastStandAt = System.currentTimeMillis();
+                break;
+            case "step_on":
+                startStepping();
+                break;
+            case "step_off":
+                stopStepping();
+                break;
+            case "estop":
+                cancelPendingStand();
+                sendSimple(ESTOP);
+                emergency = true;
+                standing = false;
+                clearWalk();
+                break;
+            case "manual":
+            case "mode":
+                sendSimple(MODE_MANUAL);
+                break;
+            case "auto":
+                sendSimple(MODE_AUTO);
+                break;
+            case "height_low":
+                setOrQueueHeight(0);
+                break;
+            case "height_normal":
+                setOrQueueHeight(2);
+                break;
+            case "surface_solid":
+                pendingStairStyle = 3;
+                break;
+            case "surface_grating":
+                pendingStairStyle = 4;
+                break;
+            case "surface_noriser":
+                pendingStairStyle = 5;
+                break;
+            default:
+                if (name.startsWith("gait_")) {
+                    sendGait(name.substring(5));
+                } else if (gaitCode(name) != 0) {
+                    sendGait(name);
+                }
+                break;
+        }
+    }
+
+    private void sendGait(String gait) {
+        int code = gaitCode(gait);
+        if (code == 0) return;
+        boolean leavingStair = isStairGait(lastGaitSent)
+                || telemGait == 6 || telemGait == 7 || telemGait == 8;
+        if (!isStairGait(gait) && leavingStair) {
+            sendSimple(MODE_MANUAL);
+            telemNavMode = 0;
+        }
+        // 没在人按的起步里就只记下。不要等遥测报踏步：RL 起立后常年报 0，
+        // 等它等于静音、低姿永远发不出去。
+        if (!"walking".equals(motionState())) {
+            pendingGait = gait;
+            lastGaitSent = gait;
+            return;
+        }
+        applyGait(gait, code);
+        pendingGait = "";
+        lastGaitSent = gait;
+    }
+
+    private void flushPendingGait() {
+        if (pendingGait.isEmpty() || !"walking".equals(motionState())) return;
+        String gait = pendingGait;
+        int code = gaitCode(pendingGait);
+        pendingGait = "";
+        if (code != 0) {
+            if (pendingHeight != null && pendingHeight.intValue() == 2) {
+                pendingHeight = null;
+                sendSimple(HEIGHT, 2);
+                telemHeight = 0;
+                telemHeightSeen = true;
+            }
+            applyGait(gait, code);
+        }
+    }
+
+    private void applyGait(String gait, int code) {
+        gaitApplying = true;
+        gaitExpected = gaitValue(gait);
+        if (!isStairGait(gait)) {
+            sendSimple(code, 0);
+            // 非楼梯步态不需要等待地形图或不可靠的步态遥测确认。
+            gaitApplying = false;
+            gaitExpected = -1;
+            return;
+        }
+        sendSimple(MODE_AUTO);
+        sendTerrain(VEL_SOURCE, 1);
+        sendTerrain(STEP_Z_MAX, 2);
+        if ("stair".equals(gait) || "lstair".equals(gait)) {
+            sendTerrain(HEIGHT_MAP_MODE,
+                    "lstair".equals(gait) ? 3 : pendingStairStyle);
+            onRadioDelayed(() -> sendSimple(code, 0), 200);
+            return;
+        }
+        sendTerrain(HEIGHT_MAP_MODE, 18);
+        onRadioDelayed(() -> {
+            sendTerrain(HEIGHT_MAP_MODE, 20);
+            onRadioDelayed(() -> sendSimple(code, 0), 200);
+        }, 300);
+    }
+
+    private void setOrQueueHeight(int value) {
+        String motion = motionState();
+        if ("unavailable".equals(motion)) return;
+        if (!"walking".equals(motion)) {
+            pendingHeight = Integer.valueOf(value);
+            return;
+        }
+        sendSimple(HEIGHT, value);
+        telemHeight = value == 0 ? -1 : 0;
+        telemHeightSeen = true;
+    }
+
+    private void flushPendingHeight() {
+        if (pendingHeight == null || gaitApplying ||
+                !"walking".equals(motionState())) return;
+        int value = pendingHeight.intValue();
+        pendingHeight = null;
+        sendSimple(HEIGHT, value);
+        telemHeight = value == 0 ? -1 : 0;
+        telemHeightSeen = true;
+    }
+
+    private static boolean isStairGait(String gait) {
+        return "stair".equals(gait) || "stairmulti".equals(gait)
+                || "stair45".equals(gait) || "lstair".equals(gait);
+    }
+
+    private int gaitCode(String gait) {
+        switch (gait) {
+            case "walk": return 0x21010300;
+            case "slope": return 0x21010402;
+            case "offroad": return 0x21010401;
+            case "stair": return 0x21010405;
+            case "stairmulti": return 0x2101040A;
+            case "stair45": return 0x2101040B;
+            case "lwalk": return 0x21010420;
+            case "mountain": return 0x21010421;
+            case "silent": return 0x21010422;
+            case "lstair": return 0x21010424;
+            default: return 0;
+        }
+    }
+
+    private int gaitValue(String gait) {
+        switch (gait) {
+            case "walk": return 0;
+            case "slope": return 1;
+            case "offroad": return 2;
+            case "run": return 3;
+            case "slow": return 4;
+            case "sand": return 5;
+            case "stair": return 6;
+            case "stairmulti": return 7;
+            case "stair45": return 8;
+            case "lstair": return 36;
+            default: return -1;
+        }
+    }
+
+    private synchronized void startBodyMonitor() {
+        if (monitorWorker != null) return;
+        monitorWorker = new HandlerThread("x30-body-monitor");
+        monitorWorker.start();
+        monitorHandler = new Handler(monitorWorker.getLooper());
+        monitorHandler.post(monitorLoop);
+    }
+
+    private synchronized void stopBodyMonitor() {
+        if (monitorHandler != null) monitorHandler.removeCallbacks(monitorLoop);
+        if (monitorWorker != null) monitorWorker.quitSafely();
+        monitorHandler = null;
+        monitorWorker = null;
+        bodyAt = 0;
+    }
+
+    private void pollBodyMonitor() {
+        synchronized (this) {
+            if (!enabled || !running) return;
+        }
+        Socket socket = null;
+        try {
+            socket = new Socket();
+            Network net;
+            String device;
+            synchronized (this) {
+                net = airNet;
+                device = ifaceName;
+            }
+            if (net != null) net.bindSocket(socket);
+            else if (!device.isEmpty()) bindToDevice(socket, device);
+            socket.connect(new InetSocketAddress(BODY_IP, BODY_PORT), 500);
+            socket.setSoTimeout(700);
+
+            byte[] xml = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                    + "<PatrolDevice><Type>1002</Type><Command>1</Command>"
+                    + "<Time>0000-00-00 00:00:00</Time><Items/></PatrolDevice>")
+                    .getBytes(StandardCharsets.UTF_8);
+            byte[] head = new byte[16];
+            head[0] = (byte) 0xeb;
+            head[1] = (byte) 0x91;
+            head[2] = (byte) 0xeb;
+            head[3] = (byte) 0x90;
+            ByteBuffer.wrap(head).order(ByteOrder.LITTLE_ENDIAN)
+                    .putShort(4, (short) xml.length)
+                    .putShort(6, (short) bodyRequestId++);
+            OutputStream out = socket.getOutputStream();
+            out.write(head);
+            out.write(xml);
+            out.flush();
+
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            byte[] reply = new byte[16];
+            in.readFully(reply);
+            int size = (reply[4] & 0xff) | ((reply[5] & 0xff) << 8);
+            if ((reply[0] & 0xff) != 0xeb || (reply[1] & 0xff) != 0x91
+                    || (reply[2] & 0xff) != 0xeb || (reply[3] & 0xff) != 0x90
+                    || size <= 0) {
+                throw new java.io.IOException("bad Type=1002 frame");
+            }
+            byte[] payload = new byte[size];
+            in.readFully(payload);
+            String text = new String(payload, StandardCharsets.UTF_8);
+            final int motion = tagInt(text, "MotionState", -1);
+            if (motion < 0) throw new java.io.IOException("missing MotionState");
+            final int gait = tagInt(text, "GaitState", -1);
+            final int motor = tagInt(text, "MotorState", -1);
+            final int charge = tagInt(text, "ChargeState", -1);
+            final int control = tagInt(text, "ControlMode", -1);
+            final int location = tagInt(text, "Location", -1);
+            final int dock = tagInt(text, "OnDockState", -1);
+            final int electricity = tagInt(text, "Electricity", -1);
+            if (motion == 0 && gait == 0 && motor == 0 && charge == 0
+                    && control == 0 && location == 0 && dock == 0
+                    && electricity == 0) {
+                throw new java.io.IOException("Type=1002 all-zero failure");
+            }
+            onRadio(() -> applyBodyMonitor(motion, gait, motor, charge,
+                    control, location, dock));
+        } catch (Exception e) {
+            final String err = brief(e);
+            onRadio(() -> bodyErr = err);
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (Exception ignored) {
+                }
+            }
+            synchronized (this) {
+                if (enabled && running && monitorHandler != null) {
+                    monitorHandler.postDelayed(monitorLoop, 200);
+                }
+            }
+        }
+    }
+
+    private synchronized void applyBodyMonitor(int motion, int gait, int motor,
+                                                int charge, int control,
+                                                int location, int dock) {
+        if (!enabled) return;
+        bodyMotion = motion;
+        bodyGait = gait;
+        bodyMotor = motor;
+        bodyCharge = charge;
+        bodyControlMode = control;
+        bodyLocation = location;
+        bodyOnDock = dock;
+        bodyAt = System.currentTimeMillis();
+        bodyErr = "";
+        if (motion == 6) {
+            emergency = true;
+            standing = false;
+            clearWalk();
+        } else if (System.currentTimeMillis() - modeCmdAt >= 800 && !stepPending) {
+            // 保护期后让本体真实状态纠正本地记忆。
+            // 但必须尊重本机刚发的停步/起步：Type=1002 滞后的 4 会把刚停步
+            // 又拉回 walking，下一拍「停步」变成再切一次踏步——表现为起步/停步反了。
+            if (motion == 4) {
+                if (stopped && !stepping) {
+                    // 本机刚停步，丢掉滞后的踏步回报。
+                } else {
+                    standing = true;
+                    torqued = true;
+                    stepping = true;
+                    stepSent = true;
+                    stopped = false;
+                }
+            } else if (motion == 3) {
+                // 状态3无法区分“主动力控”和“行走后停步”，保留命令侧 stopped。
+                // 已确认起步且未主动停步时不要清：踏步中 Type=1002 常仍报 3。
+                standing = true;
+                torqued = true;
+                if (stepping && stepSent && !stopped) {
+                    /* keep walking */
+                } else {
+                    stepping = false;
+                    stepSent = false;
+                }
+            }
+        }
+        if (gaitApplying && gait == gaitExpected) {
+            gaitApplying = false;
+            gaitExpected = -1;
+        }
+    }
+
+    private static int tagInt(String xml, String tag, int fallback) {
+        String open = "<" + tag + ">";
+        String close = "</" + tag + ">";
+        int begin = xml.indexOf(open);
+        if (begin < 0) return fallback;
+        begin += open.length();
+        int end = xml.indexOf(close, begin);
+        if (end < 0) return fallback;
+        try {
+            return Integer.parseInt(xml.substring(begin, end).trim());
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
+    }
+
+    private synchronized void start() {
+        confirmed = false;
+        buttonsPrimed = false;
+        tick = 0;
+        sentOk = 0;
+        sentFail = 0;
+        rxOk = 0;
+        lastCmd = "";
+        lastErr = "";
+        status = "starting";
+        enableRf(true);
+        watchEthernet();
+        openUdp();
+        if (!running) {
+            running = true;
+            handler.post(loop);
+        }
+        startBodyMonitor();
+    }
+
+    private synchronized void openUdp() {
+        openSocket();
+    }
+
+    private synchronized void openSocket() {
+        try {
+            AirIf air = findAirIf();
+            Network net = findAirlink();
+            if (air == null && net == null) {
+                if (udp == null) status = "no-usb-net";
+                Log.w(TAG, "no-usb-net ifaces=" + osIfaces());
+                return;
+            }
+            InetAddress local = air != null ? air.addr : null;
+            String name = air != null ? air.name : "";
+            if (udp != null && boundLocal != null && boundLocal.equals(local)
+                    && name.equals(ifaceName)
+                    && (net == null || net.equals(airNet))) {
+                return;
+            }
+            closeSocketOnly();
+            airNet = net;
+            boundLocal = local;
+            ifaceName = name;
+            ifacePrefix = air != null ? air.prefix : 0;
+            robotAddr = net != null ? resolve(net, ROBOT_IP) : InetAddress.getByName(ROBOT_IP);
+            perceptionAddr = net != null
+                    ? resolve(net, PERCEPTION_IP) : InetAddress.getByName(PERCEPTION_IP);
+            udp = new DatagramSocket((java.net.SocketAddress) null);
+            udp.setReuseAddress(true);
+            // 运动主机 network.toml 登记的是 43897；随机端口发出去也不回遥测。
+            InetSocketAddress bindAddr = local != null
+                    ? new InetSocketAddress(local, LOCAL_PORT)
+                    : new InetSocketAddress(LOCAL_PORT);
+            udp.bind(bindAddr);
+            udp.setSoTimeout(1);
+            if (net != null) {
+                try {
+                    net.bindSocket(udp);
+                    udpBound = true;
+                } catch (Exception e) {
+                    Log.w(TAG, "bindSocket", e);
+                }
+            }
+            // bindSocket 失败也退回按网卡名绑：这个 socket 绑没绑上，决定了后面
+            // 敢不敢把进程钉到 WiFi 上，能多一种绑法就多一种。
+            if (!udpBound && !name.isEmpty()) {
+                try {
+                    bindToDevice(udp, name);
+                    udpBound = true;
+                } catch (Exception e) {
+                    lastErr = "bind:" + brief(e);
+                    Log.w(TAG, "bindToDevice", e);
+                }
+            }
+            status = "udp-" + ROBOT_IP;
+            lastErr = "";
+            Log.i(TAG, status + " " + name + "=" + (local != null ? local.getHostAddress() : "-")
+                    + "/" + ifacePrefix);
+        } catch (Exception e) {
+            status = "udp-fail";
+            lastErr = brief(e);
+            Log.w(TAG, "udp", e);
+            closeSocketOnly();
+        }
+    }
+
+    @Nullable
+    private static InetAddress resolve(Network net, String ip) {
+        try {
+            return net.getByName(ip);
+        } catch (Exception e) {
+            try {
+                return InetAddress.getByName(ip);
+            } catch (Exception e2) {
+                return null;
+            }
+        }
+    }
+
+    private synchronized void openSdkUdp() {
+        if (pipeOk && udpPipe != null) return;
+        if (udpPipe != null) {
+            closeSdkUdp();
+        }
+        udpPipe = openPipe(LOCAL_PORT, ROBOT_IP, "udp103");
+    }
+
+    @Nullable
+    private Pipeline openPipe(int localPort, String ip, String tag) {
+        try {
+            Pipeline p = PipelineManager.INSTANCE.createUDPPipeline(
+                    localPort, ip, ROBOT_PORT);
+            if (p == null) return null;
+            p.setOnCommListener(pipeListener(tag, true));
+            PipelineManager.INSTANCE.connectPipeline(p);
+            return p;
+        } catch (Throwable t) {
+            Log.w(TAG, tag, t);
+            return null;
+        }
+    }
+
+    private CommListener pipeListener(final String tag, final boolean udpKind) {
+        return new CommListener() {
+            @Override
+            public void onConnectSuccess() {
+                if (udpKind) {
+                    pipeOk = true;
+                    status = "pipe-" + ROBOT_IP;
+                }
+                Log.i(TAG, tag + " up");
+            }
+
+            @Override
+            public void onConnectFail(@Nullable SkyException e) {
+                if (udpKind) pipeOk = false;
+                if (e != null) lastErr = "pipe " + e;
+                Log.w(TAG, tag + " fail " + e);
+            }
+
+            @Override
+            public void onDisconnect() {
+                if (udpKind) pipeOk = false;
+            }
+
+            @Override
+            public void onReadData(@Nullable byte[] data) {
+            }
+        };
+    }
+
+    private void closeSdkUdp() {
+        pipeOk = false;
+        if (udpPipe != null) {
+            try {
+                PipelineManager.INSTANCE.disconnectPipeline(udpPipe);
+            } catch (Throwable ignored) {
+            }
+            udpPipe = null;
+        }
+    }
+
+    private void enableRf(boolean on) {
+        try {
+            KeyManager.INSTANCE.set(
+                    AirLinkKey.INSTANCE.getKeyRCRFEnable(),
+                    Boolean.valueOf(on),
+                    new CompletionCallback() {
+                        @Override
+                        public void onResult(@Nullable SkyException e) {
+                            rfOn = on && e == null;
+                            Log.i(TAG, "RF " + on + " " + e);
+                        }
+                    });
+        } catch (Throwable t) {
+            Log.w(TAG, "RF", t);
+        }
+    }
+
+    /** 盯着 2.4G 网卡，上线时重开 UDP。 */
+    private void watchEthernet() {
+        ConnectivityManager cm = connectivity();
+        if (cm == null || netCb != null) return;
+        netCb = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                onRadio(RadioLink.this::openUdp);
+            }
+        };
+        try {
+            NetworkRequest.Builder b = new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET);
+            if (Build.VERSION.SDK_INT >= 31) {
+                b.addTransportType(NetworkCapabilities.TRANSPORT_USB);
+            }
+            cm.registerNetworkCallback(b.build(), netCb);
+        } catch (Exception e) {
+            Log.w(TAG, "watchEthernet", e);
+        }
+    }
+
+    /** 找 WiFi / MESH 那张网卡，跳过 2.4G 的 ar_net0。 */
+    @Nullable
+    private Network findMeshNet() {
+        ConnectivityManager cm = connectivity();
+        if (cm == null) return null;
+        try {
+            Network[] all = cm.getAllNetworks();
+            if (all == null) return null;
+            Network wlan = null;
+            Network fallback = null;
+            for (Network n : all) {
+                NetworkCapabilities c = cm.getNetworkCapabilities(n);
+                LinkProperties lp = cm.getLinkProperties(n);
+                if (c == null || lp == null) continue;
+                String ip = firstV4(lp);
+                if (ip.isEmpty()) continue;
+                String iface = lp.getInterfaceName();
+                if (iface != null && (iface.startsWith("ar_") || iface.startsWith("dummy"))) {
+                    continue;
+                }
+                if (c.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                        && iface != null
+                        && (iface.startsWith("wlan") || iface.startsWith("wifi"))) {
+                    if (wlan == null) wlan = n;
+                } else if (fallback == null
+                        && (c.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                                || c.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))) {
+                    fallback = n;
+                }
+            }
+            return wlan != null ? wlan : fallback;
+        } catch (Exception e) {
+            Log.w(TAG, "findMeshNet", e);
+        }
+        return null;
+    }
+
+    private static final class AirIf {
+        final String name;
+        final InetAddress addr;
+        final int prefix;
+        AirIf(String name, InetAddress addr, int prefix) {
+            this.name = name;
+            this.addr = addr;
+            this.prefix = prefix;
+        }
+    }
+
+    @Nullable
+    private AirIf findAirIf() {
+        AirIf n144 = null;
+        AirIf wired1 = null;
+        try {
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+            if (en == null) return null;
+            while (en.hasMoreElements()) {
+                NetworkInterface ni = en.nextElement();
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                if (isWifiName(ni.getName())) continue;
+                for (InterfaceAddress ia : ni.getInterfaceAddresses()) {
+                    InetAddress a = ia.getAddress();
+                    if (!(a instanceof Inet4Address)) continue;
+                    byte[] v = a.getAddress();
+                    int a0 = v[0] & 0xff;
+                    int a1 = v[1] & 0xff;
+                    int a2 = v[2] & 0xff;
+                    AirIf cur = new AirIf(ni.getName(), a, ia.getNetworkPrefixLength());
+                    if (a0 == 192 && a1 == 168 && a2 == 144) n144 = cur;
+                    else if (a0 == 192 && a1 == 168 && a2 == 1) wired1 = cur;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return n144 != null ? n144 : wired1;
+    }
+
+    private static boolean isWifiName(@Nullable String name) {
+        if (name == null) return false;
+        String n = name.toLowerCase();
+        return n.startsWith("wlan") || n.startsWith("wifi") || n.startsWith("ap")
+                || n.startsWith("p2p");
+    }
+
+    private static String osIfaces() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+            if (en == null) return "";
+            while (en.hasMoreElements()) {
+                NetworkInterface ni = en.nextElement();
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                for (InterfaceAddress ia : ni.getInterfaceAddresses()) {
+                    InetAddress a = ia.getAddress();
+                    if (!(a instanceof Inet4Address)) continue;
+                    if (sb.length() > 0) sb.append(',');
+                    sb.append(ni.getName()).append('=').append(a.getHostAddress())
+                            .append('/').append(ia.getNetworkPrefixLength());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return sb.toString();
+    }
+
+    @Nullable
+    private Network findAirlink() {
+        ConnectivityManager cm = connectivity();
+        if (cm == null) return null;
+        Network n144 = null;
+        Network wired = null;
+        Network lan1 = null;
+        for (Network n : cm.getAllNetworks()) {
+            LinkProperties lp = cm.getLinkProperties(n);
+            if (lp == null) continue;
+            NetworkCapabilities caps = cm.getNetworkCapabilities(n);
+            if (hasOctets(lp, 192, 168, 144)) n144 = n;
+            if (isWired(caps) && hasLanV4(lp)) wired = n;
+            if (hasOctets(lp, 192, 168, 1) && isWired(caps)) lan1 = n;
+        }
+        // G20 USB 通常是 192.168.144.x；有的桥接会直接出现 192.168.1.x。
+        if (n144 != null) return n144;
+        if (lan1 != null) return lan1;
+        return wired;
+    }
+
+    private String airLocalIp() {
+        ConnectivityManager cm = connectivity();
+        if (cm == null || airNet == null) return "";
+        return firstV4(cm.getLinkProperties(airNet));
+    }
+
+    private String allV4() {
+        ConnectivityManager cm = connectivity();
+        if (cm == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Network n : cm.getAllNetworks()) {
+            String ip = firstV4(cm.getLinkProperties(n));
+            if (ip.isEmpty()) continue;
+            if (sb.length() > 0) sb.append(',');
+            sb.append(ip);
+        }
+        return sb.toString();
+    }
+
+    private static String firstV4(@Nullable LinkProperties lp) {
+        if (lp == null) return "";
+        for (LinkAddress la : lp.getLinkAddresses()) {
+            InetAddress a = la.getAddress();
+            if (a instanceof Inet4Address && !a.isLoopbackAddress()) {
+                return a.getHostAddress();
+            }
+        }
+        return "";
+    }
+
+    @Nullable
+    private ConnectivityManager connectivity() {
+        if (appCtx == null) return null;
+        return (ConnectivityManager) appCtx.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    private static boolean isWired(@Nullable NetworkCapabilities caps) {
+        if (caps == null) return false;
+        if (caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return true;
+        if (Build.VERSION.SDK_INT >= 31
+                && caps.hasTransport(NetworkCapabilities.TRANSPORT_USB)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean hasOctets(LinkProperties lp, int a, int b, int c) {
+        for (LinkAddress la : lp.getLinkAddresses()) {
+            InetAddress addr = la.getAddress();
+            if (!(addr instanceof Inet4Address) || addr.isLoopbackAddress()) continue;
+            byte[] v = addr.getAddress();
+            if ((v[0] & 0xff) == a && (v[1] & 0xff) == b && (v[2] & 0xff) == c) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasLanV4(LinkProperties lp) {
+        for (LinkAddress la : lp.getLinkAddresses()) {
+            InetAddress a = la.getAddress();
+            if (!(a instanceof Inet4Address) || a.isLoopbackAddress()) continue;
+            byte[] b = a.getAddress();
+            int a0 = b[0] & 0xff;
+            int a1 = b[1] & 0xff;
+            if (a0 == 192 && a1 == 168) return true;
+            if (a0 == 10) return true;
+            if (a0 == 172 && a1 >= 16 && a1 <= 31) return true;
+        }
+        return false;
+    }
+
+    private void closeSocketOnly() {
+        airNet = null;
+        boundLocal = null;
+        robotAddr = null;
+        perceptionAddr = null;
+        ifaceName = "";
+        ifacePrefix = 0;
+        udpBound = false;
+        if (udp != null) {
+            udp.close();
+            udp = null;
+        }
+    }
+
+    private synchronized void stop() {
+        running = false;
+        if (handler != null) handler.removeCallbacks(loop);
+        stopBodyMonitor();
+        cancelPendingStand();
+        standing = false;
+        // 关掉这一档之后，本机记的姿态就只是历史了：狗可能被 MESH 那侧或原厂手柄
+        // 动过。下次进 2.4G 由切档那一刻交接过来（adoptPosture），或者等遥测。
+        poseKnown = false;
+        telemHeightSeen = false;
+        clearWalk();
+        confirmed = false;
+        buttonsPrimed = false;
+        status = "off";
+        closeSdkUdp();
+        closeSocketOnly();
+        ConnectivityManager cm = connectivity();
+        if (cm != null && netCb != null) {
+            try {
+                cm.unregisterNetworkCallback(netCb);
+            } catch (Exception ignored) {
+            }
+            netCb = null;
+        }
+    }
+
+    private synchronized void onTick() {
+        if (!running || !enabled) return;
+        handler.postDelayed(loop, TICK_MS);
+        if (tick % 50 == 0 && udp == null) openUdp();
+        G20Rc.Snapshot snap = G20Rc.get().snapshot();
+        if (tick % HB_EVERY == 0) {
+            sendSimple(HEARTBEAT);
+            if (!confirmed || tick % 250 == 0) {
+                sendSimple(CONNECT);
+                confirmed = true;
+            }
+        }
+        drainRx();
+        tick++;
+        if (snap.ch != null && snap.ch.length > 0) {
+            handleButtons(snap.ch);
+        }
+        float[] ax = effAxes(snap.ch);
+        if (axesApply()) sendAxes(ax);
+    }
+
+    /**
+     * 起立 / 趴下 / 急停这三颗在这里读。它们发的指令重复一次也无害（都是幂等的），
+     * 所以本机和网页那层各读一遍不要紧 —— 网页那层还要负责出声和刷界面。
+     *
+     * B1/B2（力控、起步）**不在这里**：踏步是切换指令，本机和网页各发一条就等于
+     * 一按一停，狗刚起步又停下。那两颗统一由 web/gamepad.js 的 G20_BTN 派发，
+     * 2.4G 下它转头调回本机的 command()，MESH 下走网关，两条链路都只发一次。
+     */
+    private void handleButtons(int[] ch) {
+        if (ch.length <= 12 || !rcLive(ch)) return;
+        boolean stand = pressed(ch, 10, 1050);
+        boolean sit = pressed(ch, 6, 1050);
+        boolean estop = pressed(ch, 12, 1050);
+        // 首帧只记档。上电通道常是 0，会被当成急停按下，狗会动一下并锁关节。
+        if (!buttonsPrimed) {
+            prevStand = stand;
+            prevSit = sit;
+            prevEstop = estop;
+            buttonsPrimed = true;
+            return;
+        }
+        // G30 按键由网页派发。这里不再按 G20 的 CH7/CH11/CH13 发指令，
+        // 否则 L1（现在是 CH7）会被当成趴下。
+        prevStand = stand;
+        prevSit = sit;
+        prevEstop = estop;
+    }
+
+    private static boolean rcLive(int[] ch) {
+        int ok = 0;
+        int n = Math.min(ch.length, 8);
+        for (int i = 0; i < n; i++) {
+            if (ch[i] >= 900 && ch[i] <= 2100) ok++;
+        }
+        return ok >= 4;
+    }
+
+    /**
+     * 和 gamepad.js 的 pwmPressed 同一套判定：按下值在中位以下就按「低有效」看，
+     * 在中位以上按「高有效」。L1/L2/急停按下是 1050，B1/B2 按下是 1950。
+     */
+    private static boolean pressed(int[] ch, int index, int press) {
+        if (index < 0 || index >= ch.length) return false;
+        int v = ch[index];
+        if (v < 900 || v > 2100) return false;
+        int mid = (press + 1500) / 2;
+        return press < 1500 ? v <= mid : v >= mid;
+    }
+
+    /**
+     * 一帧轴。实体摇杆优先，它回中时用屏幕摇杆那份 —— 平板上那两个虚拟摇杆以前
+     * 推了没反应：桥接方法在，但 setScreenAxes 是个空壳。
+     *
+     * 屏幕那份超过 SCREEN_AXIS_HOLD_MS 没更新就按松手算（发 0）。页面卡住或切后台
+     * 时不能让狗照着最后一帧一直走。
+     */
+    /**
+     * 摇杆现在指哪，把实体手柄和屏幕两个来源合成一份，方向已经是协议轴的方向。
+     * 实体优先：手上那根杆比屏幕上的可信，也更快。
+     */
+    private float[] effAxes(@Nullable int[] ch) {
+        float ly = 0f;
+        float lx = 0f;
+        float rx = 0f;
+        float ry = 0f;
+        // 通道要先确认是活的。上电时通道常是全 0，按 axis() 的换算 (0-1500)/500
+        // 会被读成满量程后退。力控/起步之后才发轴，这一脚会直接踹出去。
+        if (ch != null && ch.length > 0 && rcLive(ch)) {
+            ly = axis(ch, 2, false);
+            lx = -axis(ch, 3, true);
+            rx = -axis(ch, 0, true);
+            ry = axis(ch, 1, false);
+        }
+        if (ly == 0f && lx == 0f && rx == 0f && ry == 0f
+                && System.currentTimeMillis() - scrAt < SCREEN_AXIS_HOLD_MS) {
+            ly = scrFwd;
+            lx = -scrLat;
+            rx = -scrTurn;
+            ry = scrTilt;
+        }
+        axBuf[0] = ly;
+        axBuf[1] = lx;
+        axBuf[2] = rx;
+        axBuf[3] = stepping ? 0f : ry;
+        return axBuf;
+    }
+
+    private void sendAxes(float[] a) {
+        lastAxisLy = bits(a[0]);
+        lastAxisLx = bits(a[1]);
+        lastAxisRx = bits(a[2]);
+        lastAxisRy = !stepping ? bits(a.length > 3 ? a[3] : 0f) : 0;
+        sendSimple(AXIS_LY, lastAxisLy);
+        sendSimple(AXIS_LX, lastAxisLx);
+        sendSimple(AXIS_RX, lastAxisRx);
+        if (!stepping) sendSimple(AXIS_RY, lastAxisRy);
+    }
+
+    private static float axis(int[] ch, int index, boolean invert) {
+        if (index < 0 || index >= ch.length) return 0f;
+        float n = (ch[index] - 1500f) / 500f;
+        if (n > 1f) n = 1f;
+        if (n < -1f) n = -1f;
+        if (Math.abs(n) < 0.12f) n = 0f;
+        return invert ? -n : n;
+    }
+
+    private static int bits(float v) {
+        if (v > 1f) v = 1f;
+        if (v < -1f) v = -1f;
+        int raw = (int) (v * AXIS_MAX);
+        if (Math.abs(raw) < AXIS_DZ) raw = 0;
+        if (raw > AXIS_MAX) raw = AXIS_MAX;
+        if (raw < -AXIS_MAX) raw = -AXIS_MAX;
+        return raw;
+    }
+
+    private void sendSimple(int code) {
+        sendSimple(code, 0);
+    }
+
+    private synchronized void sendSimple(int code, int value) {
+        if (code == 0) return;
+        ByteBuffer buf = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+        buf.putInt(code);
+        buf.putInt(value);
+        buf.putInt(0);
+        byte[] pkt = buf.array();
+        // 只走一条成功路径。起步/力控是切换指令，多路齐发会互相抵消。
+        if (udp != null && sendUdp(pkt, robotAddr, ROBOT_PORT)) {
+            sentOk++;
+            return;
+        }
+        sentFail++;
+    }
+
+    private synchronized void sendTerrain(int code, int value) {
+        ByteBuffer buf = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+        buf.putInt(code);
+        buf.putInt(value);
+        buf.putInt(0);
+        sendUdp(buf.array(), perceptionAddr, PERCEPTION_PORT);
+    }
+
+    private static boolean writePipe(Pipeline pipe, byte[] pkt) {
+        try {
+            pipe.writeData(pkt);
+            return true;
+        } catch (Throwable t) {
+            Log.w(TAG, "pipe send", t);
+            return false;
+        }
+    }
+
+    private void drainRx() {
+        if (udp == null) return;
+        byte[] buf = new byte[256];
+        try {
+            while (true) {
+                DatagramPacket p = new DatagramPacket(buf, buf.length);
+                udp.receive(p);
+                rxOk++;
+                readTelem(buf, p.getLength());
+            }
+        } catch (java.net.SocketTimeoutException ignored) {
+        } catch (Exception e) {
+            if (rxOk == 0 && lastErr.isEmpty()) lastErr = "rx:" + brief(e);
+        }
+    }
+
+    /**
+     * 读运动主机的遥测。只取姿态那一包（0x1009）：头 12 字节之后第一个字节是
+     * basic_state，第二个是 gait_state，与 rk3588 那侧解的是同一份结构。
+     *
+     * 这几个字段一到手，本地那些猜测（站没站、力控没力控）就能自己纠回来 ——
+     * 以前 2.4G 只靠「我发过什么」记状态，别的遥控器动过狗、或者刚从 MESH 切回来，
+     * 记的和实际就是两回事。
+     */
+    private void readTelem(byte[] b, int len) {
+        if (len < HEAD_LEN) return;
+        int code = (b[0] & 0xff) | ((b[1] & 0xff) << 8)
+                | ((b[2] & 0xff) << 16) | ((b[3] & 0xff) << 24);
+        // 身高档位这条是简单报文，只有 12 字节的头，档位就在头里，不带 data。
+        if (code == TELEM_HEIGHT) {
+            telemHeight = ByteBuffer.wrap(b, 4, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+            telemHeightSeen = true;
+            return;
+        }
+        if (code == TELEM_RUNNING && len >= HEAD_LEN + RCS_LEN) {
+            telemNavMode = b[HEAD_LEN + RCS_NAV_OFF] & 0xff;
+            telemEmergSrc = b[HEAD_LEN + RCS_EMERG_OFF] & 0xff;
+            telemRunSeen = true;
+            telemAt = System.currentTimeMillis();
+            applyTelemLock();
+            return;
+        }
+        if (code != TELEM_MOTION || len < HEAD_LEN + 2) return;
+        telemState = b[HEAD_LEN] & 0xff;
+        telemGait = b[HEAD_LEN + 1] & 0xff;
+        if (gaitApplying && telemGait == gaitExpected) {
+            gaitApplying = false;
+            gaitExpected = -1;
+        }
+        telemAt = System.currentTimeMillis();
+        if (telemUpright() && telemEmergSrc == 0) {
+            standing = true;
+            emergency = false;
+            // 力控站立 / 踏步是主机说的，比本地这两个标志准。但初始站立不要
+            // 把刚点的力控/起步清掉：RL 起立后常停在 2，清了再按起步等于停步。
+            if (telemState == ST_STEPPING) {
+                torqued = true;
+                // 配置只在狗主机确认踏步后执行。
+                if (stepping && stepSent) {
+                    flushPendingGait();
+                    flushPendingHeight();
+                }
+            } else if (telemState == ST_TORQUE_STANDING && !stepping) {
+                torqued = true;
+            }
+        } else if (telemState == ST_EMERGENCY || telemEmergSrc == 1
+                || (telemEmergSrc >= 4 && telemEmergSrc <= 6)) {
+            applyTelemLock();
+        } else if (telemState == ST_SITTING) {
+            // RL 起立后主机仍报坐下。分不清真趴着还是那种谎报，不动 standing。
+            // 来源 0/2/3 不是锁：坐下就清本地急停，左下角才能回到起立。
+            if (telemEmergSrc == 0 || telemEmergSrc == 2 || telemEmergSrc == 3) {
+                emergency = false;
+            }
+        } else if (telemState == ST_STAND_TO_SIT) {
+            clearWalk();
+        }
+    }
+
+    private void applyTelemLock() {
+        if (telemState != ST_EMERGENCY
+                && !(telemEmergSrc >= 4 && telemEmergSrc <= 6)) {
+            return;
+        }
+        emergency = true;
+        standing = false;
+        clearWalk();
+    }
+
+    private boolean sendUdp(byte[] pkt, @Nullable InetAddress dest, int port) {
+        if (dest == null || udp == null) {
+            if (dest == null) lastErr = "no-dest";
+            return false;
+        }
+        try {
+            udp.send(new DatagramPacket(pkt, pkt.length, dest, port));
+            if (!lastErr.isEmpty()) lastErr = "";
+            return true;
+        } catch (Exception e) {
+            lastErr = brief(e);
+            Log.w(TAG, "udp send " + dest, e);
+            return false;
+        }
+    }
+
+    private static String brief(Throwable e) {
+        String m = e.getMessage();
+        if (m == null || m.isEmpty()) return e.getClass().getSimpleName();
+        return e.getClass().getSimpleName() + ":" + m;
+    }
+
+    private static void bindToDevice(DatagramSocket sock, String ifname) throws Exception {
+        bindFd(fdOf(sock), ifname);
+    }
+
+    /** TCP 版。2.4G 下机身相机的 RTSP 走这条，见 NativeVideo。 */
+    static void bindToDevice(Socket sock, String ifname) throws Exception {
+        bindFd(fdOf(sock), ifname);
+    }
+
+    private static void bindFd(FileDescriptor fd, String ifname) throws Exception {
+        int opt = 25;
+        try {
+            Field f = OsConstants.class.getField("SO_BINDTODEVICE");
+            opt = f.getInt(null);
+        } catch (Throwable ignored) {
+        }
+        // setsockoptIfreq 是 @hide，公开 SDK 没有这个符号，只能反射。
+        try {
+            Method m = Os.class.getMethod(
+                    "setsockoptIfreq", FileDescriptor.class, int.class, int.class, String.class);
+            m.invoke(null, fd, OsConstants.SOL_SOCKET, opt, ifname);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            Throwable c = e.getCause();
+            if (c instanceof Exception) throw (Exception) c;
+            if (c instanceof Error) throw (Error) c;
+            throw e;
+        }
+        Log.i(TAG, "bind " + ifname);
+    }
+
+    private static FileDescriptor fdOf(DatagramSocket sock) throws Exception {
+        try {
+            Method m = DatagramSocket.class.getDeclaredMethod("getFileDescriptor$");
+            m.setAccessible(true);
+            FileDescriptor fd = (FileDescriptor) m.invoke(sock);
+            if (fd != null) return fd;
+        } catch (Throwable ignored) {
+        }
+        Field implF = DatagramSocket.class.getDeclaredField("impl");
+        implF.setAccessible(true);
+        Object impl = implF.get(sock);
+        FileDescriptor fd = (FileDescriptor) invokeUp(impl, "getFileDescriptor");
+        if (fd == null) throw new IllegalStateException("no-fd");
+        return fd;
+    }
+
+    private static FileDescriptor fdOf(Socket sock) throws Exception {
+        try {
+            Method m = Socket.class.getDeclaredMethod("getFileDescriptor$");
+            m.setAccessible(true);
+            FileDescriptor fd = (FileDescriptor) m.invoke(sock);
+            // 没 bind 也没 connect 过的 socket 还没有 fd，这里会拿到个无效的。
+            if (fd != null && fd.valid()) return fd;
+        } catch (Throwable ignored) {
+        }
+        Field implF = Socket.class.getDeclaredField("impl");
+        implF.setAccessible(true);
+        Object impl = implF.get(sock);
+        if (impl == null) throw new IllegalStateException("no-impl");
+        FileDescriptor fd = (FileDescriptor) invokeUp(impl, "getFileDescriptor");
+        if (fd == null) throw new IllegalStateException("no-fd");
+        return fd;
+    }
+
+    /** getFileDescriptor 声明在 SocketImpl 上，实际对象往往是它的子类，得往上找。 */
+    private static Object invokeUp(Object target, String name) throws Exception {
+        for (Class<?> c = target.getClass(); c != null; c = c.getSuperclass()) {
+            try {
+                Method m = c.getDeclaredMethod(name);
+                m.setAccessible(true);
+                return m.invoke(target);
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        throw new NoSuchMethodException(name);
+    }
+}

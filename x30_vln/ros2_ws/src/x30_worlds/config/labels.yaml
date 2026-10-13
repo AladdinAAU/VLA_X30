@@ -1,0 +1,209 @@
+# Semantic label table shared by worlds, datasets and the simulator.
+#
+# id        integer written into the Gazebo Label system plugin of every model of that class
+#           (segmentation camera / ground-truth publisher). 0 = background / unlabelled.
+# kind      structure | furniture | appliance | small | person | logistics | decor
+# synonyms  words used by the episode language generator and by dataset importers
+#           (HM3D / MP3D category names are mapped onto these canonical labels).
+# nav_target  true if object_nav episodes may use this class as a goal
+classes:
+  wall:            {id: 1,  kind: structure, synonyms: [wall]}
+  floor:           {id: 2,  kind: structure, synonyms: [floor]}
+  door:            {id: 3,  kind: structure, synonyms: [door, doorway], nav_target: true}
+  window:          {id: 4,  kind: structure, synonyms: [window], nav_target: true}
+  ceiling:         {id: 5,  kind: structure, synonyms: [ceiling]}
+  chair:           {id: 10, kind: furniture, synonyms: [chair, seat], nav_target: true}
+  table:           {id: 11, kind: furniture, synonyms: [table, dining table], nav_target: true}
+  desk:            {id: 12, kind: furniture, synonyms: [desk, work desk], nav_target: true}
+  sofa:            {id: 13, kind: furniture, synonyms: [sofa, couch], nav_target: true}
+  armchair:        {id: 14, kind: furniture, synonyms: [armchair, easy chair], nav_target: true}
+  bed:             {id: 15, kind: furniture, synonyms: [bed], nav_target: true}
+  nightstand:      {id: 16, kind: furniture, synonyms: [nightstand, bedside table], nav_target: true}
+  wardrobe:        {id: 17, kind: furniture, synonyms: [wardrobe, closet], nav_target: true}
+  bookshelf:       {id: 18, kind: furniture, synonyms: [bookshelf, bookcase], nav_target: true}
+  shelf:           {id: 19, kind: furniture, synonyms: [shelf, shelving unit, rack], nav_target: true}
+  cabinet:         {id: 20, kind: furniture, synonyms: [cabinet, cupboard], nav_target: true}
+  tv:              {id: 21, kind: appliance, synonyms: [tv, television], nav_target: true}
+  monitor:         {id: 22, kind: appliance, synonyms: [monitor, computer screen], nav_target: false}
+  laptop:          {id: 23, kind: appliance, synonyms: [laptop], nav_target: false}
+  refrigerator:    {id: 24, kind: appliance, synonyms: [refrigerator, fridge], nav_target: true}
+  kitchen_counter: {id: 25, kind: furniture, synonyms: [kitchen counter, counter], nav_target: true}
+  sink:            {id: 26, kind: appliance, synonyms: [sink, washbasin], nav_target: true}
+  stove:           {id: 27, kind: appliance, synonyms: [stove, cooker], nav_target: true}
+  microwave:       {id: 28, kind: appliance, synonyms: [microwave], nav_target: false}
+  toilet:          {id: 29, kind: appliance, synonyms: [toilet], nav_target: true}
+  bathtub:         {id: 30, kind: appliance, synonyms: [bathtub, bath], nav_target: true}
+  coffee_table:    {id: 31, kind: furniture, synonyms: [coffee table], nav_target: true}
+  tv_stand:        {id: 32, kind: furniture, synonyms: [tv stand, tv cabinet], nav_target: false}
+  plant:           {id: 33, kind: decor, synonyms: [plant, potted plant], nav_target: true}
+  lamp:            {id: 34, kind: decor, synonyms: [lamp, floor lamp], nav_target: true}
+  trash_can:       {id: 35, kind: small, synonyms: [trash can, bin, garbage bin], nav_target: true}
+  radiator:        {id: 36, kind: appliance, synonyms: [radiator, heater], nav_target: true}
+  person:          {id: 37, kind: person, synonyms: [person, human], nav_target: true}
+  fire_extinguisher: {id: 38, kind: small, synonyms: [fire extinguisher], nav_target: true}
+  water_cooler:    {id: 39, kind: appliance, synonyms: [water cooler, water dispenser], nav_target: true}
+  printer:         {id: 40, kind: appliance, synonyms: [printer, copier], nav_target: true}
+  server_rack:     {id: 41, kind: appliance, synonyms: [server rack, server cabinet], nav_target: true}
+  workbench:       {id: 42, kind: furniture, synonyms: [workbench, lab bench], nav_target: true}
+  whiteboard:      {id: 43, kind: decor, synonyms: [whiteboard], nav_target: true}
+  filing_cabinet:  {id: 44, kind: furniture, synonyms: [filing cabinet], nav_target: true}
+  box:             {id: 45, kind: logistics, synonyms: [box, carton, crate], nav_target: true}
+  pallet:          {id: 46, kind: logistics, synonyms: [pallet], nav_target: true}
+  barrel:          {id: 47, kind: logistics, synonyms: [barrel, drum], nav_target: true}
+  rug:             {id: 48, kind: decor, synonyms: [rug, carpet], nav_target: false}
+  book:            {id: 49, kind: small, synonyms: [book], nav_target: false}
+  cart:            {id: 50, kind: logistics, synonyms: [cart, trolley], nav_target: true}
+  washing_machine: {id: 51, kind: appliance, synonyms: [washing machine], nav_target: true}
+  mirror:          {id: 52, kind: decor, synonyms: [mirror], nav_target: false}
+  picture:         {id: 53, kind: decor, synonyms: [picture, painting], nav_target: false}
+  counter:         {id: 54, kind: furniture, synonyms: [counter, reception desk], nav_target: true}
+  clutter:         {id: 55, kind: logistics, synonyms: [clutter, boxes], nav_target: false}
+  ball:            {id: 56, kind: small, synonyms: [ball], nav_target: false}
+  bicycle:         {id: 57, kind: small, synonyms: [bicycle, bike], nav_target: true}
+  curtain:         {id: 58, kind: decor, synonyms: [curtain], nav_target: false}
+  stairs:          {id: 59, kind: structure, synonyms: [stairs, staircase], nav_target: true}
+  vending_machine: {id: 60, kind: appliance, synonyms: [vending machine], nav_target: true}
+  medical_device:  {id: 61, kind: appliance, synonyms: [medical device, medical equipment], nav_target: true}
+  air_conditioner: {id: 62, kind: appliance, synonyms: [air conditioner], nav_target: false}
+  bucket:          {id: 63, kind: small, synonyms: [bucket], nav_target: false}
+  pallet_jack:     {id: 64, kind: logistics, synonyms: [pallet jack], nav_target: true}
+  # added for the real-scan worlds (Replica, ReplicaCAD, Habitat test scenes); ids 65+
+  cushion:         {id: 65, kind: small, synonyms: [cushion, pillow], nav_target: false}
+  basket:          {id: 66, kind: small, synonyms: [basket], nav_target: false}
+  bowl:            {id: 67, kind: small, synonyms: [bowl], nav_target: false}
+  cup:             {id: 68, kind: small, synonyms: [cup, mug], nav_target: false}
+  plate:           {id: 69, kind: small, synonyms: [plate], nav_target: false}
+  bottle:          {id: 70, kind: small, synonyms: [bottle], nav_target: false}
+  vase:            {id: 71, kind: decor, synonyms: [vase], nav_target: false}
+  clock:           {id: 72, kind: decor, synonyms: [clock], nav_target: false}
+  bag:             {id: 73, kind: small, synonyms: [bag, handbag, backpack], nav_target: false}
+  shoe:            {id: 74, kind: small, synonyms: [shoe], nav_target: false}
+  stool:           {id: 75, kind: furniture, synonyms: [stool], nav_target: true}
+  bench:           {id: 76, kind: furniture, synonyms: [bench], nav_target: true}
+  beanbag:         {id: 77, kind: furniture, synonyms: [beanbag, bean bag], nav_target: true}
+  pan:             {id: 78, kind: small, synonyms: [pan, pot], nav_target: false}
+  kitchen_utensil: {id: 79, kind: small, synonyms: [kitchen utensil, utensil], nav_target: false}
+  towel:           {id: 80, kind: small, synonyms: [towel], nav_target: false}
+  umbrella:        {id: 81, kind: small, synonyms: [umbrella], nav_target: false}
+  remote_control:  {id: 82, kind: small, synonyms: [remote control, remote], nav_target: false}
+  small_appliance: {id: 83, kind: appliance, synonyms: [small appliance, toaster, kettle], nav_target: false}
+  camera:          {id: 84, kind: small, synonyms: [camera], nav_target: false}
+  keyboard:        {id: 85, kind: small, synonyms: [keyboard], nav_target: false}
+  pillow:          {id: 86, kind: small, synonyms: [pillow], nav_target: false}
+  blanket:         {id: 87, kind: decor, synonyms: [blanket, comforter], nav_target: false}
+  stairs_rail:     {id: 88, kind: structure, synonyms: [handrail], nav_target: false}
+  speaker:         {id: 89, kind: small, synonyms: [speaker], nav_target: false}
+  fan:             {id: 90, kind: appliance, synonyms: [fan], nav_target: false}
+  clothes:         {id: 91, kind: small, synonyms: [clothes, clothing], nav_target: false}
+  other:           {id: 99, kind: furniture, synonyms: [object], nav_target: false}
+
+# Mapping from external dataset category names (lower case) to canonical labels.
+# Used by the Habitat / MP3D / HM3D importers; unknown names fall back to "other".
+external_aliases:
+  # real-scan datasets (Replica semantic classes, ReplicaCAD lexicon, HM3D/MP3D extras)
+  indoor plant: plant
+  indoor-plant: plant
+  tv-screen: tv
+  tv screen: tv
+  tv stand: tv_stand
+  tv-stand: tv_stand
+  wall-cabinet: cabinet
+  wall cabinet: cabinet
+  base cabinet: cabinet
+  base-cabinet: cabinet
+  rack: shelf
+  bike: bicycle
+  mat: rug
+  handbag: bag
+  backpack: bag
+  refrigerator: refrigerator
+  knife block: kitchen_utensil
+  chopping board: kitchen_utensil
+  chopping-board: kitchen_utensil
+  utensil: kitchen_utensil
+  cloth: clothes
+  clothing: clothes
+  comforter: blanket
+  pillow: cushion
+  desktop computer: monitor
+  computer keyboard: keyboard
+  remote control: remote_control
+  remote-control: remote_control
+  small appliance: small_appliance
+  blinds: curtain
+  shower curtain: curtain
+  nightstand: nightstand
+  cooktop: stove
+  oven: stove
+  countertop: counter
+  lamp: lamp
+  clutter: clutter
+  couch: sofa
+  settee: sofa
+  tv monitor: tv
+  television: tv
+  dining table: table
+  fridge: refrigerator
+  potted plant: plant
+  plant pot: plant
+  toilet seat: toilet
+  bathroom cabinet: cabinet
+  cupboard: cabinet
+  closet: wardrobe
+  bookcase: bookshelf
+  shelving: shelf
+  rack: shelf
+  seat: chair
+  stool: chair
+  armchair: armchair
+  bedside table: nightstand
+  night stand: nightstand
+  trash bin: trash_can
+  garbage bin: trash_can
+  bin: trash_can
+  trash can: trash_can
+  sink: sink
+  bathtub: bathtub
+  bath: bathtub
+  oven: stove
+  stove: stove
+  heater: radiator
+  kitchen counter: kitchen_counter
+  kitchen cabinet: kitchen_counter
+  counter: counter
+  lamp: lamp
+  picture: picture
+  painting: picture
+  mirror: mirror
+  window: window
+  door: door
+  doorway: door
+  stairs: stairs
+  staircase: stairs
+  bed: bed
+  desk: desk
+  table: table
+  chair: chair
+  sofa: sofa
+  cabinet: cabinet
+  shelf: shelf
+  tv: tv
+  box: box
+  person: person
+  washing machine: washing_machine
+  laptop: laptop
+  monitor: monitor
+  computer: monitor
+  curtain: curtain
+  rug: rug
+  carpet: rug
+  rug_or_carpet: rug
+  bicycle: bicycle
+  bike: bicycle
+  plant: plant
+  ball: ball
+  book: book
+  cart: cart
+  wall: wall
+  floor: floor
+  ceiling: ceiling

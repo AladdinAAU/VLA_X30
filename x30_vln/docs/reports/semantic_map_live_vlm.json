@@ -1,0 +1,572 @@
+{
+ "url": "http://localhost:8000/v1",
+ "model": "qwen3-vl",
+ "n_crops": 15,
+ "caption": {
+  "answered": "15/15",
+  "label_confirmed_when_true": 1.0,
+  "label_rejected_when_wrong": 0.5333333333333333,
+  "caption_keyword_hit": 1.0,
+  "colour_plausible": 0.8181818181818182,
+  "colour_cases": 11,
+  "colour_from_pixels_agrees_with_vlm": 0.13333333333333333
+ },
+ "caption_latency_s": {
+  "n": 30,
+  "mean": 3.0,
+  "median": 2.96,
+  "max": 3.68
+ },
+ "caption_rows": [
+  {
+   "crop": "stool_a",
+   "label": "stool",
+   "wrong_label": "refrigerator",
+   "true_latency_s": 2.91,
+   "true": {
+    "caption": "White cushioned stool with black legs on wooden floor",
+    "label_matches": true,
+    "label": "stool",
+    "colour": "white",
+    "material": "wood",
+    "state": "empty"
+   },
+   "wrong_latency_s": 2.72,
+   "wrong": {
+    "caption": "Stool with white seat and black legs on wooden floor",
+    "label_matches": false,
+    "label": "stool",
+    "colour": "white",
+    "material": "wood",
+    "state": "on"
+   }
+  },
+  {
+   "crop": "stool_b",
+   "label": "stool",
+   "wrong_label": "person",
+   "true_latency_s": 3.12,
+   "true": {
+    "caption": "White circular stool with black legs on tiled floor",
+    "label_matches": true,
+    "label": "stool",
+    "colour": "white",
+    "material": "wood",
+    "state": "empty"
+   },
+   "wrong_latency_s": 2.78,
+   "wrong": {
+    "caption": "white round stool with black legs",
+    "label_matches": false,
+    "label": "stool",
+    "colour": "white",
+    "material": "wood",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "stool_c",
+   "label": "stool",
+   "wrong_label": "couch",
+   "true_latency_s": 3.47,
+   "true": {
+    "caption": "Round white seat on black legs, stool with four legs.",
+    "label_matches": true,
+    "label": "stool",
+    "colour": "white",
+    "material": "wood",
+    "state": "empty"
+   },
+   "wrong_latency_s": 3.16,
+   "wrong": {
+    "caption": "Round white seat on black legs, like a stool.",
+    "label_matches": false,
+    "label": "stool",
+    "colour": "white",
+    "material": "fabric",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "bookshelf",
+   "label": "bookshelf",
+   "wrong_label": "toilet",
+   "true_latency_s": 2.76,
+   "true": {
+    "caption": "Medium-sized bookshelf filled with colorful books.",
+    "label_matches": true,
+    "label": "bookshelf",
+    "colour": "white",
+    "material": "wood",
+    "state": "full"
+   },
+   "wrong_latency_s": 3.68,
+   "wrong": {
+    "caption": "A bookshelf filled with colorful books.",
+    "label_matches": false,
+    "label": "bookshelf",
+    "colour": "white",
+    "material": "wood",
+    "state": "full"
+   }
+  },
+  {
+   "crop": "wall_clock",
+   "label": "clock",
+   "wrong_label": "bottle",
+   "true_latency_s": 3.09,
+   "true": {
+    "caption": "Round wall clock with yellow face and black hands.",
+    "label_matches": true,
+    "label": "wall clock",
+    "colour": "yellow",
+    "material": "plastic",
+    "state": "on"
+   },
+   "wrong_latency_s": 2.84,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "unclear",
+    "colour": "yellow",
+    "material": "",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "monitor_desk",
+   "label": "monitor",
+   "wrong_label": "plant",
+   "true_latency_s": 2.67,
+   "true": {
+    "caption": "Silver monitor with stand, screen facing viewer",
+    "label_matches": true,
+    "label": "monitor",
+    "colour": "silver",
+    "material": "metal",
+    "state": "off"
+   },
+   "wrong_latency_s": 3.46,
+   "wrong": {
+    "caption": "Metallic stand holding a flat object",
+    "label_matches": false,
+    "label": "stand",
+    "colour": "silver",
+    "material": "metal",
+    "state": "on"
+   }
+  },
+  {
+   "crop": "person_nurse",
+   "label": "person",
+   "wrong_label": "chair",
+   "true_latency_s": 2.66,
+   "true": {
+    "caption": "Person wearing blue outfit standing indoors.",
+    "label_matches": true,
+    "label": "person",
+    "colour": "blue",
+    "material": "",
+    "state": "standing"
+   },
+   "wrong_latency_s": 2.78,
+   "wrong": {
+    "caption": "Person sitting on a chair with back to camera.",
+    "label_matches": false,
+    "label": "person",
+    "colour": "blue",
+    "material": "",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "person_purple",
+   "label": "person",
+   "wrong_label": "table",
+   "true_latency_s": 2.94,
+   "true": {
+    "caption": "Person wearing purple shirt and brown shorts.",
+    "label_matches": true,
+    "label": "person",
+    "colour": "purple",
+    "material": "cloth",
+    "state": "standing"
+   },
+   "wrong_latency_s": 3.39,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "unclear",
+    "colour": "unclear",
+    "material": "",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "wheelchair",
+   "label": "wheelchair",
+   "wrong_label": "tv",
+   "true_latency_s": 3.08,
+   "true": {
+    "caption": "Person in wheelchair with large wheels and metal frame.",
+    "label_matches": true,
+    "label": "wheelchair",
+    "colour": "blue",
+    "material": "metal",
+    "state": "on"
+   },
+   "wrong_latency_s": 2.76,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "tv",
+    "colour": "black",
+    "material": "",
+    "state": "off"
+   }
+  },
+  {
+   "crop": "vending",
+   "label": "vending machine",
+   "wrong_label": "bed",
+   "true_latency_s": 2.97,
+   "true": {
+    "caption": "Vending machine with colorful drink bottles and cans.",
+    "label_matches": true,
+    "label": "vending machine",
+    "colour": "white",
+    "material": "metal",
+    "state": "full"
+   },
+   "wrong_latency_s": 2.93,
+   "wrong": {
+    "caption": "Unclear view of a bed-like structure with colorful items.",
+    "label_matches": true,
+    "label": "bed",
+    "colour": "white",
+    "material": "metal",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "elevator",
+   "label": "elevator",
+   "wrong_label": "sofa",
+   "true_latency_s": 2.7,
+   "true": {
+    "caption": "Elevator door open showing interior with black screen",
+    "label_matches": true,
+    "label": "elevator",
+    "colour": "white",
+    "material": "metal",
+    "state": "open"
+   },
+   "wrong_latency_s": 2.76,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "unclear",
+    "colour": "white",
+    "material": "",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "fridge",
+   "label": "refrigerator",
+   "wrong_label": "bed",
+   "true_latency_s": 2.97,
+   "true": {
+    "caption": "Tall silver refrigerator with water dispenser on left door.",
+    "label_matches": true,
+    "label": "refrigerator",
+    "colour": "silver",
+    "material": "metal",
+    "state": "closed"
+   },
+   "wrong_latency_s": 3.44,
+   "wrong": {
+    "caption": "Tall grey refrigerator with water dispenser on left door",
+    "label_matches": false,
+    "label": "refrigerator",
+    "colour": "grey",
+    "material": "metal",
+    "state": "closed"
+   }
+  },
+  {
+   "crop": "armchair",
+   "label": "armchair",
+   "wrong_label": "refrigerator",
+   "true_latency_s": 2.77,
+   "true": {
+    "caption": "Gray upholstered armchair with clean lines and modern design.",
+    "label_matches": true,
+    "label": "armchair",
+    "colour": "gray",
+    "material": "fabric",
+    "state": "empty"
+   },
+   "wrong_latency_s": 3.19,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "unclear",
+    "colour": "grey",
+    "material": "",
+    "state": "empty"
+   }
+  },
+  {
+   "crop": "hospital_bed",
+   "label": "bed",
+   "wrong_label": "plant",
+   "true_latency_s": 3.09,
+   "true": {
+    "caption": "Hospital bed with red mattress and metal frame.",
+    "label_matches": true,
+    "label": "hospital bed",
+    "colour": "red",
+    "material": "metal",
+    "state": "empty"
+   },
+   "wrong_latency_s": 3.03,
+   "wrong": {
+    "caption": "Red bed with person lying on it",
+    "label_matches": false,
+    "label": "bed",
+    "colour": "red",
+    "material": "metal",
+    "state": "occupied"
+   }
+  },
+  {
+   "crop": "picture",
+   "label": "picture",
+   "wrong_label": "chair",
+   "true_latency_s": 2.66,
+   "true": {
+    "caption": "Framed picture showing sunset over water.",
+    "label_matches": true,
+    "label": "framed artwork",
+    "colour": "black",
+    "material": "wood",
+    "state": "on"
+   },
+   "wrong_latency_s": 3.21,
+   "wrong": {
+    "caption": "unclear",
+    "label_matches": true,
+    "label": "unclear",
+    "colour": "black",
+    "material": "",
+    "state": "empty"
+   }
+  }
+ ],
+ "rooms": {
+  "accuracy": "6/6",
+  "rows": [
+   {
+    "truth": "kitchen",
+    "objects": "refrigerator, sink, microwave, table, 4 chair",
+    "answer": {
+     "room_type": "kitchen",
+     "confidence": 0.95,
+     "reason": "Contains refrigerator, sink, microwave, table, and chairs."
+    },
+    "ok": true,
+    "latency_s": 2.64
+   },
+   {
+    "truth": "bathroom",
+    "objects": "toilet, sink, shower",
+    "answer": {
+     "room_type": "bathroom",
+     "confidence": 0.98,
+     "reason": "Contains toilet, sink, and shower \u2014 typical bathroom fixtures."
+    },
+    "ok": true,
+    "latency_s": 3.2
+   },
+   {
+    "truth": "office",
+    "objects": "4 desk, 4 monitor, 4 office chair, printer",
+    "answer": {
+     "room_type": "office",
+     "confidence": 0.95,
+     "reason": "Multiple desks, monitors, and chairs indicate office workspace."
+    },
+    "ok": true,
+    "latency_s": 2.72
+   },
+   {
+    "truth": "bedroom",
+    "objects": "2 bed, 2 nightstand, wardrobe",
+    "answer": {
+     "room_type": "bedroom",
+     "confidence": 0.95,
+     "reason": "Contains beds and nightstands, typical bedroom furniture."
+    },
+    "ok": true,
+    "latency_s": 3.15
+   },
+   {
+    "truth": "living room",
+    "objects": "couch, tv, coffee table, 2 armchair",
+    "answer": {
+     "room_type": "living room",
+     "confidence": 0.95,
+     "reason": "Contains couch, tv, coffee table, and armchairs typical of living room."
+    },
+    "ok": true,
+    "latency_s": 2.66
+   },
+   {
+    "truth": "lobby/hall (reception area)",
+    "objects": "person x4, vending machine, monitor (montage)",
+    "answer": {
+     "room_type": "office",
+     "confidence": 0.95,
+     "reason": "Contains monitor, vending machine, and people in work-like setting."
+    },
+    "ok": true
+   }
+  ]
+ },
+ "annotation_pass": {
+  "objects": 15,
+  "captioned": 15,
+  "calls": 15,
+  "seconds": 39.0
+ },
+ "find": {
+  "top1_vlm": "6/6",
+  "top1_heuristic_only": "3/6",
+  "rows": [
+   {
+    "request": "the vending machine",
+    "method": "vlm",
+    "top3": [
+     "vending",
+     "fridge"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [
+     "vending",
+     "fridge"
+    ],
+    "heuristic_top1_ok": true,
+    "vlm_calls": 2,
+    "latency_s": 4.91
+   },
+   {
+    "request": "the person in the purple shirt",
+    "method": "vlm",
+    "top3": [
+     "person_purple",
+     "person_nurse",
+     "wheelchair"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [
+     "person_nurse",
+     "person_purple",
+     "wheelchair"
+    ],
+    "heuristic_top1_ok": false,
+    "vlm_calls": 2,
+    "latency_s": 5.02
+   },
+   {
+    "request": "something to sit on",
+    "method": "vlm",
+    "top3": [
+     "stool_a",
+     "stool_b",
+     "stool_c"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [],
+    "heuristic_top1_ok": false,
+    "vlm_calls": 3,
+    "latency_s": 7.65
+   },
+   {
+    "request": "the wall clock",
+    "method": "vlm",
+    "top3": [
+     "wall_clock",
+     "elevator"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [
+     "wall_clock",
+     "elevator"
+    ],
+    "heuristic_top1_ok": true,
+    "vlm_calls": 2,
+    "latency_s": 4.82
+   },
+   {
+    "request": "where can I get a cold drink",
+    "method": "vlm",
+    "top3": [
+     "vending"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [],
+    "heuristic_top1_ok": false,
+    "vlm_calls": 2,
+    "latency_s": 5.14
+   },
+   {
+    "request": "the elevator",
+    "method": "vlm",
+    "top3": [
+     "elevator"
+    ],
+    "top1_ok": true,
+    "heuristic_top3": [
+     "elevator"
+    ],
+    "heuristic_top1_ok": true,
+    "vlm_calls": 2,
+    "latency_s": 4.84
+   }
+  ]
+ },
+ "call_log": {
+  "caption_pass": {
+   "calls": 36,
+   "ok": 36,
+   "failed": 0,
+   "cache_hits": 0,
+   "by_task": {
+    "caption": 30,
+    "room": 6
+   },
+   "latency_ms_mean": 2967.9444444444443,
+   "latency_ms_p50": 2935.0,
+   "latency_ms_p95": 3468.0,
+   "prompt_tokens": 8455,
+   "completion_tokens": 1525
+  },
+  "map_pass": {
+   "calls": 28,
+   "ok": 28,
+   "failed": 0,
+   "cache_hits": 0,
+   "by_task": {
+    "caption": 15,
+    "find": 6,
+    "verify": 7
+   },
+   "latency_ms_mean": 2547.6785714285716,
+   "latency_ms_p50": 2577.0,
+   "latency_ms_p95": 2679.0,
+   "prompt_tokens": 7509,
+   "completion_tokens": 1024
+  }
+ }
+}

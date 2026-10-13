@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.dogx30.control'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.dogx30.control"
+        minSdk 24
+        targetSdk 34
+        versionCode 151
+        versionName "0.5.36"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// 编包最常见的坑是忘了把仓库 web/ 拷进 assets，页面就是旧的，改了像没改。
+// 能找到源目录就每次自动拷一遍。
+def webSrc = [file("../../web"), file("../web")].find { it.isDirectory() }
+if (webSrc != null) {
+    tasks.register("copyWebAssets", Copy) {
+        from webSrc
+        into "src/main/assets/web"
+    }
+    tasks.named("preBuild").configure { dependsOn("copyWebAssets") }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    // 云卓 RCSDK 是 Kotlin 编译的，缺 stdlib 会在 initSDK 时 NoClassDefFoundError: Intrinsics。
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24'
+    implementation files('libs/rcsdk-v1.9.2.aar')
+    // 2.4G 下机身相机只有 RTSP，WebView 放不了，得原生解。
+    // 版本锁在 1.4.1：1.5 起要求 compileSdk 35，这里是 34。
+    implementation 'androidx.media3:media3-exoplayer:1.4.1'
+    implementation 'androidx.media3:media3-exoplayer-rtsp:1.4.1'
+    implementation 'androidx.media3:media3-ui:1.4.1'
+    // NativeVideo 用 @OptIn 显式接受 media3 的 UnstableApi。这个注解来自
+    // annotation-experimental，虽然多半已被上面几个传递带进来，但它是否出现在
+    // **编译**类路径上取决于别人怎么声明依赖，写明了才不会哪天忽然编不过。
+    implementation 'androidx.annotation:annotation-experimental:1.4.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    // 球机网页对讲走 SRS 数据通道。App 用同一套 WebRTC，编码跟网页：默认 AAC。
+    implementation 'io.github.webrtc-sdk:android:125.6422.05'
+}

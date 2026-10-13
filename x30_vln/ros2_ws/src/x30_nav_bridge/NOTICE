@@ -1,0 +1,8 @@
+x30_nav_bridge is a patched fork of nav_bridge (https://github.com/ggbond-control/nav_bridge), a ROS 2 UDP bridge for
+the DEEP Robotics Jueying X30. The upstream package declares "Apache License 2.0" in its package.xml (maintainer
+"Chen"); the upstream repository snapshot used here ships no separate LICENSE file. The licence text is in LICENSE.
+
+Original work: Copyright (c) the nav_bridge authors, licensed under the Apache License, Version 2.0.
+Modifications for the X30 VLN framework are licensed under the same terms. Every modification is listed in
+CHANGES.md; unmodified upstream files keep their original content (action_executor.*, udp_transport.*,
+robot_state_store.hpp apart from the logging changes listed there).

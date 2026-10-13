@@ -1,0 +1,398 @@
+# Skill registry for the X30 VLN framework (owner: x30_modes).
+#
+# One entry per skill served at the action /x30/skill/<name> (x30_msgs/action/Skill; goal.args_json is a JSON dict
+# that must satisfy `args_schema`). The reasoner's tool-calling schema is generated from this file (x30_agent),
+# the skill server (x30_modes) validates against it, so the file is the single source of truth.
+#
+# Conventions the descriptions rely on
+#   - Poses (x, y) are metres in the global `map` frame, +x/+y as shown in the semantic map; yaw_deg is degrees,
+#     0 = map +x axis, positive = counter-clockwise (left).
+#   - Relative motion uses the robot's own frame: forward / backward / left / right, centimetres and degrees
+#     (NaVILA-style primitives). Positive turn = left.
+#   - Object ids are the integer ids of the semantic map (`SemanticObject.id`).
+#   - Every skill returns success (bool), a short human readable `message` (the reasoner's feedback: it says what
+#     happened and what to try next), and `data` (JSON dict, fields listed under `result.data`).
+#
+# Fields per skill
+#   name, summary (one line, for UIs), description (written for the LLM), args_schema (JSON schema, draft 2020-12
+#   subset: type/properties/required/enum/minimum/maximum/default/items), args_require_one_of (lists of argument
+#   names of which at least one must be present; not expressible in the simple schema subset), result
+#   {description, data}, typical_duration_s [min, max], default_timeout_s, preconditions, category
+#   (motion | perception | query | control), exclusive (true: cannot run together with other motion skills),
+#   failure_hints (what the message tends to say; the reasoner should read the message, not this list).
+#
+# Stability: names and argument names are frozen; additions are fine. Renames need a note in
+# docs/requests/modes-to-agent.md.
+
+version: 1
+
+bearing_words:   # accepted by turn_to(bearing=...) and explore(bias=...); degrees, positive = left (counter-clockwise)
+  ahead: 0
+  front: 0
+  front-left: 45
+  left: 90
+  back-left: 135
+  behind: 180
+  back: 180
+  around: 180
+  back-right: -135
+  right: -90
+  front-right: -45
+
+external_services:   # services the skills call; the owner agent must provide them (see docs/requests/)
+  - name: /nav/next_frontier            # x30_navigation, x30_msgs/srv/Json
+    request: '{"strategy": "nearest|largest|informative|bias", "bias": [x, y] | null, "exclude": [[x, y], ...]}'
+    response: '{"found": bool, "goal": {"x": m, "y": m, "yaw": rad}, "size": cells, "distance_m": m, "remaining": n, "reason": "..."}'
+    note: x,y in the map frame. exclude lists frontier goals that already failed. Assumption made by x30_modes.
+  - name: /semantic_map/query           # x30_semantic_map, INTERFACES section 4
+    request: '{"label": "chair", "near": [x, y], "radius": 5, "limit": 10}  (optional "id": 12 for one object)'
+    response: '{"objects": [{"id", "label", "confidence", "position": [x, y, z], "size": [sx, sy, sz], "bearing_only", "caption", "attributes", "room", "last_seen"}]}'
+    note: if the service is absent the skill server falls back to the /semantic_map/objects topic.
+  - name: navigate_to_pose              # Nav2 NavigateToPose action
+  - name: /x30/skill/*                  # this registry
+
+skills:
+
+  - name: goto_pose
+    category: motion
+    exclusive: true
+    summary: Plan and drive to a map position with Nav2 (obstacle avoiding).
+    description: >
+      Drive the robot to the point (x, y) of the global map using the Nav2 planner; the path avoids obstacles and
+      the safety layer slows or stops the robot near anything in its way. Use it when you know where to go in map
+      metres (from the map summary, from a previous result, or from an object's position). Optionally give the
+      final heading yaw_deg; without it the robot keeps the heading it arrives with. The call blocks until the
+      robot arrived (within tolerance_m), failed, or the timeout ran out, so one call can take up to a minute or
+      more for far goals. If it fails the message says why (no path, blocked by an obstacle, timeout) and what to
+      try: another point nearby, explore to reveal more map, or move_relative backward then retry.
+    args_schema:
+      type: object
+      properties:
+        x: {type: number, description: "Target x in the map frame, metres."}
+        y: {type: number, description: "Target y in the map frame, metres."}
+        yaw_deg:
+          type: number
+          description: "Optional final heading, degrees in the map frame (0 = +x, positive = left). Omit to keep the arrival heading."
+        tolerance_m:
+          type: number
+          minimum: 0.1
+          maximum: 3.0
+          default: 0.5
+          description: "Success if the robot ends within this distance of the target."
+      required: [x, y]
+      additionalProperties: false
+    result:
+      description: "Arrived or not, with the remaining distance and the stop reason."
+      data: {final_x: m, final_y: m, final_yaw_deg: deg, remaining_m: m, path_length_m: m, nav2_status: str}
+    typical_duration_s: [5, 90]
+    default_timeout_s: 180
+    preconditions:
+      - "Nav2 is active and a map->base_link transform exists."
+      - "The target is inside the known free map. Unknown space is usually rejected by the planner."
+    failure_hints:
+      - "no path: pick another point / explore"
+      - "blocked by obstacle X m ahead: move_relative backward or turn, then retry or choose another route"
+      - "timeout: target too far, try an intermediate point"
+
+  - name: goto_object
+    category: motion
+    exclusive: true
+    summary: Drive next to a mapped object, stopping at a standoff distance and facing it.
+    description: >
+      Navigate to a free spot a standoff distance away from an object in the semantic map and turn to face it.
+      Identify the object either by object_id (preferred, from search or from the map summary) or by label
+      (the nearest matching instance that is not in rejected_ids is chosen). standoff_m is the distance between
+      the robot's nose and the object's nearest surface when it stops (default 1.0 m). This is the normal way to get
+      close to a candidate before calling verify. For a precise last-metre alignment afterwards use approach.
+      If the object is only known by its bearing (position unreliable) the call refuses and tells you to explore or
+      search again. The standoff spot is chosen in free map space; if none exists the message says so.
+    args_schema:
+      type: object
+      properties:
+        object_id: {type: integer, minimum: 0, description: "Semantic map id of the object."}
+        label: {type: string, description: "Object class, e.g. 'chair'. Used when object_id is not given."}
+        standoff_m:
+          type: number
+          minimum: 0.5
+          maximum: 5.0
+          default: 1.0
+          description: "Distance in metres between the robot's front and the object's surface when stopped."
+        rejected_ids:
+          type: array
+          items: {type: integer}
+          description: "Object ids already checked and rejected; ignored when choosing by label."
+      additionalProperties: false
+    args_require_one_of: [[object_id], [label]]
+    result:
+      description: "Which object was chosen and how close the robot is."
+      data: {object_id: int, label: str, distance_m: m, bearing_deg: deg, robot_x: m, robot_y: m, robot_yaw_deg: deg}
+    typical_duration_s: [5, 90]
+    default_timeout_s: 180
+    preconditions:
+      - "Same as goto_pose."
+      - "The object exists in the semantic map (use search first if unsure)."
+    failure_hints:
+      - "unknown object id: call search, or read the map summary"
+      - "no free standoff pose: try a smaller standoff_m or goto_pose to a nearby point"
+
+  - name: approach
+    category: motion
+    exclusive: true
+    summary: Close-range, lidar-guided final approach to an object, ending at a standoff and facing it.
+    description: >
+      Fine alignment close to an object: turns to face it and creeps forward on live lidar until the nose-to-surface
+      distance equals standoff_m (default 0.8 m). Use it after goto_object, when you are within a few metres and
+      want to be right in front of the target, for example before verify or before finishing. If the object is
+      farther than about 4 m it first drives there with the planner. The safety layer forbids getting closer than
+      about 0.5 m, so smaller standoff values are raised to that minimum (the message tells you). Identify the object
+      by object_id or label. It never touches the object.
+    args_schema:
+      type: object
+      properties:
+        object_id: {type: integer, minimum: 0, description: "Semantic map id of the object."}
+        label: {type: string, description: "Object class; used when object_id is not given."}
+        standoff_m:
+          type: number
+          minimum: 0.3
+          maximum: 3.0
+          default: 0.8
+          description: "Final distance between the robot's front and the object's surface, metres (minimum enforced by the safety layer)."
+      additionalProperties: false
+    args_require_one_of: [[object_id], [label]]
+    result:
+      description: "Final range and facing error."
+      data: {object_id: int, range_m: m, standoff_m: m, bearing_error_deg: deg, used_lidar: bool}
+    typical_duration_s: [5, 40]
+    default_timeout_s: 90
+    preconditions:
+      - "A lidar obstacle source (/costmap_cloud or /scan) is publishing."
+      - "The object is in the semantic map."
+    failure_hints:
+      - "object not visible to the lidar: goto_object first, or turn_to the object"
+      - "blocked: something is between you and the object, use goto_object to go around"
+
+  - name: explore
+    category: motion
+    exclusive: true
+    summary: Drive to the next unexplored frontier (and look around there) to reveal more of the map.
+    description: >
+      Pick the next exploration frontier (the border between known free space and unknown space), drive there with
+      Nav2 and rotate in place to look around, so the semantic map can see new objects. One call moves to
+      `steps` frontiers (default 1). strategy 'nearest' is quick, 'largest' reveals the most unknown space,
+      'informative' balances both, 'bias' prefers frontiers in the direction given by bias ('left', 'ahead', ...
+      relative to the robot, or an [x, y] map point to move toward). until_label stops early as soon as the semantic
+      map contains a confident instance of that class. The message lists what new objects were seen. When no
+      frontier is left the call reports success=false with exhausted=true: the reachable space is fully explored,
+      so the target is not there, or it was missed (use scan, verify) or is behind a closed door.
+    args_schema:
+      type: object
+      properties:
+        strategy:
+          type: string
+          enum: [nearest, largest, informative, bias]
+          default: informative
+        bias:
+          description: "Direction word relative to the robot (ahead, left, right, behind, front-left, ...) or a [x, y] map point. Only used with strategy 'bias'."
+          anyOf:
+            - {type: string}
+            - {type: array, items: {type: number}}
+        steps: {type: integer, minimum: 1, maximum: 5, default: 1, description: "Number of frontiers to visit in this call."}
+        until_label: {type: string, description: "Stop when an instance of this class is confidently in the map."}
+        scan: {type: boolean, default: true, description: "Rotate in place at each frontier to look around."}
+      additionalProperties: false
+    result:
+      description: "Frontiers visited, new objects seen, whether anything is left."
+      data: {visited: "[[x, y], ...]", new_objects: "[{id, label}]", remaining_frontiers: int, exhausted: bool, found: "object dict or null"}
+    typical_duration_s: [10, 120]
+    default_timeout_s: 240
+    preconditions:
+      - "Nav2 active; the navigation agent's frontier service /nav/next_frontier is available."
+    failure_hints:
+      - "exhausted: nothing left to explore; try search with other labels or finish with failure"
+      - "frontier unreachable: the skill tries another one, repeated failures are reported"
+
+  - name: search
+    category: motion
+    exclusive: true
+    summary: "Find instances of an object class: check the semantic map, otherwise explore and scan until one is confirmed."
+    description: >
+      Look for an object class (label). First it queries the semantic map: if confident instances exist (excluding
+      rejected_ids) it returns at once with their ids, positions and distances, best candidate first. Otherwise it
+      explores frontiers, looking around at each, and re-checks the map after every look, until a confident instance
+      shows up or the budget runs out. Use rejected_ids to list objects you already verified to be wrong, so they
+      are not returned again. After success the normal sequence is goto_object (or approach) then verify. The
+      budget is wall-clock seconds of exploration; a failed search says whether the map was exhausted (nothing
+      left to explore) or the budget ended (try a larger budget_s or another label/synonym).
+    args_schema:
+      type: object
+      properties:
+        label: {type: string, description: "Object class to find, e.g. 'fire extinguisher'."}
+        rejected_ids:
+          type: array
+          items: {type: integer}
+          description: "Ids of instances already checked and rejected."
+        budget_s: {type: number, minimum: 10, maximum: 600, default: 120, description: "Maximum time spent exploring."}
+        min_confidence: {type: number, minimum: 0.0, maximum: 1.0, default: 0.3, description: "Ignore detections below this confidence."}
+        attributes:
+          type: array
+          items: {type: string}
+          description: "Optional attributes the instance should have, e.g. ['red'] or ['warm']; used to rank candidates."
+      required: [label]
+      additionalProperties: false
+    result:
+      description: "Candidates sorted best first."
+      data: {candidates: "[{id, label, confidence, x, y, distance_m, bearing_deg, room, caption}]", explored: bool, exhausted: bool}
+    typical_duration_s: [1, 300]
+    default_timeout_s: 360
+    preconditions:
+      - "Semantic map running (topic /semantic_map/objects or service /semantic_map/query)."
+      - "For exploration: same as explore."
+    failure_hints:
+      - "map exhausted: try a synonym label, scan, or finish with failure"
+      - "budget ended: increase budget_s"
+
+  - name: turn_to
+    category: motion
+    exclusive: true
+    summary: Rotate in place to a heading given as left/right degrees, a direction word, an object, or a map heading.
+    description: >
+      Rotate on the spot (no translation) until facing the requested direction, closed loop on odometry. Give
+      exactly one of: degrees (signed relative turn, positive = left/counter-clockwise, e.g. -90 turns right),
+      bearing (a word: ahead, left, right, behind, around, front-left, front-right, back-left, back-right; or a
+      number of degrees as above), object_id (face that semantic-map object), or heading_deg (absolute heading in the
+      map frame). The accuracy is a few degrees. Use before verify to look at something, or to line up before
+      move_relative. The call cannot fail for lack of space: it only rotates.
+    args_schema:
+      type: object
+      properties:
+        degrees: {type: number, minimum: -360, maximum: 360, description: "Relative turn in degrees; positive = left."}
+        bearing:
+          description: "Direction word or relative degrees."
+          anyOf:
+            - {type: string}
+            - {type: number}
+        object_id: {type: integer, minimum: 0, description: "Face this semantic map object."}
+        heading_deg: {type: number, description: "Absolute heading in the map frame, degrees (0 = +x, positive = left)."}
+      additionalProperties: false
+    args_require_one_of: [[degrees], [bearing], [object_id], [heading_deg]]
+    result:
+      description: "Achieved rotation and the heading error."
+      data: {requested_deg: deg, achieved_deg: deg, error_deg: deg, heading_map_deg: deg}
+    typical_duration_s: [1, 15]
+    default_timeout_s: 30
+    preconditions:
+      - "Odometry (TF odom->base_link) available."
+    failure_hints:
+      - "blocked: rare, the safety layer stopped the rotation (obstacle very close); move_relative away first"
+
+  - name: move_relative
+    category: motion
+    exclusive: true
+    summary: Move a short distance forward, backward or sideways, in centimetres, closed loop on odometry.
+    description: >
+      A low-level primitive: translate the robot by distance_cm in its own frame (direction forward, backward, left or
+      right) at a gentle speed without planning around obstacles. The motion stops early and reports how far it got if
+      the safety layer sees an obstacle in the way, so the message tells you the distance actually travelled and what
+      blocked you. Use it for the instruction-following style commands ("go forward 75 cm"), for small corrections, or
+      to back away from an obstacle. For anything longer than about 3 m or around obstacles use goto_pose.
+      Turning is a separate skill (turn_to).
+    args_schema:
+      type: object
+      properties:
+        direction:
+          type: string
+          enum: [forward, backward, left, right]
+          default: forward
+          description: "left and right are sideways steps (strafe), not turns."
+        distance_cm: {type: number, minimum: 5, maximum: 500, description: "Distance in centimetres."}
+      required: [distance_cm]
+      additionalProperties: false
+    result:
+      description: "Requested vs achieved distance."
+      data: {requested_cm: cm, achieved_cm: cm, error_cm: cm, blocked: bool, obstacle_distance_cm: "cm or null"}
+    typical_duration_s: [1, 25]
+    default_timeout_s: 40
+    preconditions:
+      - "Odometry available; the safety guard is running."
+    failure_hints:
+      - "blocked after N cm: obstacle ahead, turn_to, strafe, or goto_pose around it"
+
+  - name: scan
+    category: perception
+    exclusive: true
+    summary: Rotate in place in steps with pauses so the cameras can see all around, then report what is nearby.
+    description: >
+      Turn on the spot through sweep_deg (default a full 360) in steps of step_deg, pausing dwell_s at each step so
+      the perception can detect and map objects, then summarise the new objects that appeared in the semantic map.
+      Use it when you arrive somewhere new, when a search found nothing, or to double check that an object is not
+      right behind you. A full scan takes about 20-30 seconds. The reported objects are those the map knows after
+      the scan, with distance and bearing from where you stand.
+    args_schema:
+      type: object
+      properties:
+        sweep_deg: {type: number, minimum: 30, maximum: 360, default: 360, description: "Total angle to sweep (left/counter-clockwise)."}
+        step_deg: {type: number, minimum: 15, maximum: 180, default: 60, description: "Angle per pause."}
+        dwell_s: {type: number, minimum: 0.2, maximum: 5, default: 1.0, description: "Pause at each step."}
+      additionalProperties: false
+    result:
+      description: "Objects newly mapped and the nearest known objects."
+      data: {new_objects: "[{id, label, distance_m, bearing_deg}]", nearby: "[{id, label, distance_m, bearing_deg}]", stops: int}
+    typical_duration_s: [10, 40]
+    default_timeout_s: 90
+    preconditions:
+      - "Odometry available."
+    failure_hints:
+      - "no objects: the semantic map may be empty or perception down; check the health topic"
+
+  - name: verify
+    category: perception
+    exclusive: false
+    summary: Ask the vision-language model a yes/no question about what the camera sees now.
+    description: >
+      Grab the current forward camera image and ask the vision model whether it shows what you expect. Give either a
+      question (free text, answerable with yes/no, e.g. "Is there a fire extinguisher within two metres?") or label
+      (the class you want to confirm, optionally with object_id; then the question is built for you). If object_id is
+      given and the robot is not looking at the object, it turns to face it first (face_object true). The answer is
+      yes, no or unsure with a one-sentence reason. 'no' means positive evidence that it is something else;
+      'unsure' means poor view: move closer (approach), change the angle, or ask a more specific question. A single
+      bad angle can mislead, so when 'no' contradicts other evidence look again from another side before rejecting.
+      The call does not move the robot beyond the optional turn.
+    args_schema:
+      type: object
+      properties:
+        question: {type: string, description: "Yes/no question about the current camera view."}
+        label: {type: string, description: "Object class to confirm; builds the question automatically."}
+        object_id: {type: integer, minimum: 0, description: "Semantic map id being checked (turns to face it, attaches its best crop)."}
+        face_object: {type: boolean, default: true, description: "With object_id: turn to face the object before looking."}
+      additionalProperties: false
+    args_require_one_of: [[question], [label]]
+    result:
+      description: "Answer, reason, plausibility and (with object_id) the distance to the object."
+      data: {answer: "yes|no|unsure", plausibility: "0-100", reason: str, object_id: "int or null", distance_m: "m or null"}
+    typical_duration_s: [1, 8]
+    default_timeout_s: 30
+    preconditions:
+      - "Camera topic /camera/color/image_raw publishing; reasoner VLM server reachable (configs/models.yaml)."
+    failure_hints:
+      - "no camera image: check the camera"
+      - "VLM unreachable: retry once, then continue without verification"
+
+  - name: stop
+    category: control
+    exclusive: false
+    summary: Stop immediately (zero velocity, cancel the running skill and Nav2 goal).
+    description: >
+      Brings the robot to a halt: cancels any running skill and navigation goal and commands zero velocity. Safe to
+      call at any time, also while another skill is running. It does not end the task by itself; to end the task use
+      the finish tool.
+    args_schema:
+      type: object
+      properties: {}
+      additionalProperties: false
+    result:
+      description: "What was cancelled."
+      data: {cancelled_skill: "name or null"}
+    typical_duration_s: [0, 2]
+    default_timeout_s: 10
+    preconditions: []
+    failure_hints: []

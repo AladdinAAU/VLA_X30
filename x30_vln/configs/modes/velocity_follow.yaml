@@ -1,0 +1,11 @@
+# Mode velocity_follow: delegated to the agent action /x30/agent/follow (x30_agent). The agent thinks for seconds between
+# primitives, so the progress window is long; every agent turn or skill change also counts as progress.
+odom_source: leg            # short primitives: smooth leg odometry is enough
+timeout_s: 600.0
+no_progress_window_s: 90.0
+progress_min_distance_m: 0.15
+safety_abort_s: 60.0
+teleop_cancels_task: true
+real:
+  timeout_s: 900.0
+  no_progress_window_s: 120.0

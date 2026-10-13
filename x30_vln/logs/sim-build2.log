@@ -1,0 +1,82 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 6.26kB 0.0s done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#2 DONE 0.9s
+
+#3 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#3 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e 0.0s done
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/ros:jazzy-ros-base-noble
+#4 DONE 0.6s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B 0.0s done
+#5 DONE 0.0s
+
+#6 [stage-0  1/14] FROM docker.io/library/ros:jazzy-ros-base-noble@sha256:066420e07f60aa18262f2479981def87ebcfcec42eefb0c0c57c4a46098348ca
+#6 resolve docker.io/library/ros:jazzy-ros-base-noble@sha256:066420e07f60aa18262f2479981def87ebcfcec42eefb0c0c57c4a46098348ca 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 2.74kB 0.0s done
+#7 DONE 0.0s
+
+#8 [stage-0  4/14] RUN --mount=type=cache,target=/root/.cache/pip     pip3 install --break-system-packages rosbags
+#8 CACHED
+
+#9 [stage-0  5/14] RUN (userdel -r ubuntu 2>/dev/null || true)     && groupadd -g 1000 x30     && useradd -m -u 1000 -g 1000 -s /bin/bash x30     && usermod -aG video,dialout x30     && echo "x30 ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/x30 && chmod 0440 /etc/sudoers.d/x30     && mkdir -p /ws/src /ws/build /ws/install /ws/log /x30 /etc/x30 /opt/x30_ext     && chown -R x30:x30 /ws /opt/x30_ext
+#9 CACHED
+
+#10 [stage-0  8/14] RUN mkdir -p src && cd src     && git clone https://github.com/legubiao/quadruped_ros2_control.git     && git -C quadruped_ros2_control checkout -q 5434c5810d1a7fe223bcfd04550e9d3bfdd4b458     && git clone https://github.com/mil-as/quadruped_navigation_ros2.git     && git -C quadruped_navigation_ros2 checkout -q 3c12fabf51614695ea763f8015e51b3b3d75c822     && git -C quadruped_ros2_control apply /opt/x30_ext/patches/unitree_guide_x30.patch     && sed -i '/<joint name="imu_joint"/,/<\/joint>/ s#xyz="0 0 0"#xyz="0.13045 -0.001 0.0149"#'         quadruped_ros2_control/descriptions/deep_robotics/x30_description/xacro/imu_link.xacro     && test "$(grep -c '0.13045' quadruped_ros2_control/descriptions/deep_robotics/x30_description/xacro/imu_link.xacro)" = 1
+#10 CACHED
+
+#11 [stage-0  2/14] RUN rm -f /etc/apt/apt.conf.d/docker-clean     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+#11 CACHED
+
+#12 [stage-0  3/14] RUN --mount=type=cache,target=/var/cache/apt,sharing=locked     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked     apt-get update && apt-get install -y --no-install-recommends         build-essential cmake git curl ca-certificates sudo nano less tmux procps psmisc iputils-ping net-tools iproute2         python3-pip python3-dev python3-colcon-common-extensions python3-rosdep python3-vcstool         python3-numpy python3-scipy python3-yaml python3-opencv python3-pil python3-matplotlib python3-pytest python3-requests         libeigen3-dev         libgl1 libegl1 libglx-mesa0 libgl1-mesa-dri libegl-mesa0 libgbm1 mesa-utils mesa-utils-extra xvfb x11-utils         ros-jazzy-rmw-cyclonedds-cpp         ros-jazzy-ros-gz ros-jazzy-gz-ros2-control         ros-jazzy-ros2-control ros-jazzy-ros2-controllers ros-jazzy-controller-manager         ros-jazzy-imu-sensor-broadcaster ros-jazzy-joint-state-broadcaster ros-jazzy-joint-state-publisher         ros-jazzy-hardware-interface ros-jazzy-controller-interface ros-jazzy-backward-ros         ros-jazzy-kdl-parser ros-jazzy-pluginlib ros-jazzy-realtime-tools         ros-jazzy-xacro ros-jazzy-robot-state-publisher ros-jazzy-diagnostic-msgs         ros-jazzy-tf2-ros ros-jazzy-tf2-ros-py ros-jazzy-tf2-tools ros-jazzy-tf2-geometry-msgs         ros-jazzy-cv-bridge ros-jazzy-sensor-msgs-py ros-jazzy-image-transport         ros-jazzy-ros2bag ros-jazzy-rosbag2-storage-default-plugins         ros-jazzy-launch-testing ros-jazzy-launch-testing-ament-cmake ros-jazzy-ament-lint-auto         ros-jazzy-teleop-twist-keyboard
+#12 CACHED
+
+#13 [stage-0  6/14] WORKDIR /opt/x30_ext
+#13 CACHED
+
+#14 [stage-0  7/14] COPY --chown=x30:x30 patches/ /opt/x30_ext/patches/
+#14 CACHED
+
+#15 [stage-0  9/14] RUN source /opt/ros/jazzy/setup.bash     && cd /opt/x30_ext     && colcon --log-base /tmp/x30_ext_log build --merge-install --install-base /opt/x30_ext/install --build-base /tmp/x30_ext_build         --parallel-workers 4 --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF         --base-paths src/quadruped_ros2_control         --packages-up-to control_input_msgs controller_common leg_pd_controller unitree_guide_controller x30_description     && rm -rf /tmp/x30_ext_build /tmp/x30_ext_log
+#15 CACHED
+
+#16 [stage-0 10/14] COPY x30-env /usr/local/bin/x30-env
+#16 DONE 0.0s
+
+#17 [stage-0 11/14] COPY entrypoint.sh /usr/local/bin/x30-entrypoint
+#17 DONE 0.0s
+
+#18 [stage-0 12/14] COPY x30-build x30-test /usr/local/bin/
+#18 DONE 0.0s
+
+#19 [stage-0 13/14] RUN chmod +x /usr/local/bin/x30-*     && cp /usr/local/bin/x30-env /etc/profile.d/x30.sh     && echo '. /usr/local/bin/x30-env' >> /home/x30/.bashrc     && chown x30:x30 /home/x30/.bashrc
+#19 DONE 0.2s
+
+#20 [stage-0 14/14] WORKDIR /ws
+#20 DONE 0.1s
+
+#21 exporting to image
+#21 exporting layers
+#21 exporting layers 0.2s done
+#21 exporting manifest sha256:08f277b99c016a785078ada27f7b917c11e964946406ede3e4e66f287255179d done
+#21 exporting config sha256:b02bbcc95a837bb60c6bdcd803839730434f32d2b3b0e5f9660df8f571c97d47 done
+#21 exporting attestation manifest sha256:333f304121417b907392fe9d9aeadc93ea651f1e87999da75d493fbe42150396 0.1s done
+#21 exporting manifest list sha256:8a3d6b2ce4e6191e5c8a1eaffe1702bec5be68a9a9b4c344bf71babdf1c7603e
+#21 exporting manifest list sha256:8a3d6b2ce4e6191e5c8a1eaffe1702bec5be68a9a9b4c344bf71babdf1c7603e 0.1s done
+#21 naming to docker.io/library/x30-sim:latest
+#21 naming to docker.io/library/x30-sim:latest done
+#21 unpacking to docker.io/library/x30-sim:latest
+#21 unpacking to docker.io/library/x30-sim:latest 0.3s done
+#21 DONE 0.8s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/mjwtu6l0weitxu41sy4qxpt5d

@@ -1,0 +1,25 @@
+#!/bin/bash
+# colcon build of /ws (src bind-mounted, build/install/log in named volumes).
+#   x30-build                 build everything except $X30_SKIP_PKGS (default: x30_sim, the Jazzy-only package)
+#   x30-build x30_msgs ...    build only the named packages (and what they need: --packages-up-to)
+# Extra colcon arguments after "--".
+set -eo pipefail
+. /usr/local/bin/x30-env
+cd /ws
+SKIP="${X30_SKIP_PKGS:-x30_sim}"
+JOBS="${X30_BUILD_JOBS:-4}"
+PKGS=()
+EXTRA=()
+while [ $# -gt 0 ]; do
+    if [ "$1" = "--" ]; then shift; EXTRA=("$@"); break; fi
+    PKGS+=("$1"); shift
+done
+ARGS=(--symlink-install --parallel-workers "$JOBS" --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON)
+if [ ${#PKGS[@]} -gt 0 ]; then
+    ARGS+=(--packages-up-to "${PKGS[@]}")
+else
+    # shellcheck disable=SC2086
+    [ -n "$SKIP" ] && ARGS+=(--packages-skip $SKIP)
+fi
+echo "[x30-build] colcon build ${ARGS[*]} ${EXTRA[*]:-}"
+exec colcon build "${ARGS[@]}" "${EXTRA[@]}"

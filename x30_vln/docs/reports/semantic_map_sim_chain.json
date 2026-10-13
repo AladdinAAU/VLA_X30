@@ -1,0 +1,107 @@
+{
+ "sim_seconds": 247.6,
+ "control_steps": 399,
+ "obstacle_turns": 319,
+ "path_length_m": 13.2,
+ "detection_msgs": 621,
+ "detections": 699,
+ "gt_objects": 113,
+ "gt_in_reach": 26,
+ "gt_in_reach_with_map_label": 6,
+ "map_objects": 5,
+ "map_bearing_only": 0,
+ "recall_in_reach": 0.077,
+ "precision_same_label_within_match": 0.4,
+ "position_error_m": {
+  "n": 2,
+  "mean": 0.359,
+  "median": 0.359,
+  "p90": 0.555
+ },
+ "per_label_matched_total": {
+  "cabinet": [
+   0,
+   1
+  ],
+  "chair": [
+   0,
+   3
+  ],
+  "door": [
+   0,
+   3
+  ],
+  "fire extinguisher": [
+   0,
+   1
+  ],
+  "laptop": [
+   0,
+   2
+  ],
+  "person": [
+   0,
+   1
+  ],
+  "radiator": [
+   0,
+   1
+  ],
+  "server rack": [
+   0,
+   1
+  ],
+  "table": [
+   1,
+   3
+  ],
+  "trash can": [
+   1,
+   3
+  ],
+  "tv": [
+   0,
+   4
+  ],
+  "whiteboard": [
+   0,
+   1
+  ],
+  "window": [
+   0,
+   2
+  ]
+ },
+ "map_labels": [
+  "bed",
+  "elevator",
+  "lamp",
+  "table",
+  "trash can"
+ ],
+ "gt_labels_not_in_vocab_text": [
+  "box",
+  "cabinet",
+  "chair",
+  "door",
+  "filing cabinet",
+  "fire extinguisher",
+  "laptop",
+  "person",
+  "picture",
+  "potted plant",
+  "printer",
+  "radiator",
+  "server rack",
+  "shelf",
+  "tv",
+  "water cooler",
+  "whiteboard",
+  "window"
+ ],
+ "summary_text": "Robot at x=0.0, y=0.0, heading 0 deg (map frame; bearings are relative to the heading, + = left).\nMap: 5 object(s): 1 lamp, 1 table, 1 trash can, 1 bed, 1 elevator\nObjects nearest first (id label [attributes] | distance, direction, room):\n#16 lamp [large, gray] | 0.4 m, ahead-right (-55 deg)\n#11 table [huge, gray] | 1.4 m, behind-right (-151 deg)\n#1 trash can [small, brown] | 2.0 m, ahead (+4 deg)\n#36 bed [medium, beige] | 2.8 m, behind (-161 deg)\n#54 elevator [huge, gray] | 3.4 m, behind-left (+115 deg)",
+ "params": {
+  "reach_m": 4.0,
+  "match_m": 1.5
+ }
+}

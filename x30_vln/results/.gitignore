@@ -1,0 +1,3 @@
+# Run outputs are large and machine specific. Keep only this file.
+*
+!.gitignore

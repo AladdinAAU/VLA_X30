@@ -1,0 +1,8 @@
+# Overrides for bag replay. The recorded bag (datasets/real/lab_2026-10-06) holds only /lidar_points: no IMU, no leg odometry.
+odom_selector:
+  ros__parameters:
+    odom_source: lidar
+
+cloud_leveler:
+  ros__parameters:
+    tilt_source: ground      # no IMU in the bag

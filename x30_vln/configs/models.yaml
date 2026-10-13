@@ -1,0 +1,40 @@
+# Model endpoints for the X30 VLN framework. Read by x30_common.config.load_models_config().
+#
+# Every value can be overridden by an environment variable X30_<ROLE>_<FIELD>, ROLE in PERCEPTION | MAPPER | REASONER:
+#   X30_REASONER_URL=http://localhost:8000/v1   X30_REASONER_MODEL=qwen3-vl   X30_REASONER_MAX_TOKENS=300
+#   X30_MAPPER_URL=...   X30_PERCEPTION_URL=http://localhost:8100
+# X30_MODELS_CONFIG=<path> selects another file; X30_CONFIG_DIR=<dir> selects another configs/ folder.
+# Hosted endpoints: set api_key_env to the NAME of an environment variable that holds the key (never put keys in this file).
+#
+# Both VLM roles may point at the same llama.cpp server (the default). Host names are the compose service names;
+# from the Windows host use http://127.0.0.1:8000/v1 and http://127.0.0.1:8100 (NOT localhost: it costs about 2 s per request on this host, IPv6 fallback).
+
+perception:
+  url: http://perception:8100        # POST /segment, GET /health (INTERFACES.md section 4)
+  timeout_s: 10.0
+
+mapper_vlm:                           # object captions, attributes, room labels for the semantic map
+  base_url: http://vlm:8000/v1
+  model: qwen3-vl                     # the --alias of the llama.cpp server
+  api_key: none
+  api_key_env: ""
+  max_tokens: 512
+  temperature: 0.2
+  timeout_s: 60.0
+  max_retries: 3
+  backoff_s: 1.0
+  context_tokens: 16384               # the server's -c (compose VLM_CTX); the agent budgets its prompts against this
+  extra_body: {}                      # merged into every request body, e.g. {"cache_prompt": true}
+
+reasoner_vlm:                         # task-level reasoning and tool calling (x30_agent)
+  base_url: http://vlm:8000/v1
+  model: qwen3-vl
+  api_key: none
+  api_key_env: ""
+  max_tokens: 400
+  temperature: 0.2
+  timeout_s: 120.0
+  max_retries: 3
+  backoff_s: 1.0
+  context_tokens: 16384               # the server's -c (compose VLM_CTX); prompts are budgeted against this
+  extra_body: {}

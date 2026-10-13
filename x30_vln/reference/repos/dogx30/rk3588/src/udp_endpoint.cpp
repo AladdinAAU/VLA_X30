@@ -1,0 +1,188 @@
+#include "x30/udp_endpoint.hpp"
+
+#include <cerrno>
+#include <cstring>
+
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+using socket_t = SOCKET;
+inline constexpr socket_t kInvalidSocket = INVALID_SOCKET;
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <unistd.h>
+using socket_t = int;
+inline constexpr socket_t kInvalidSocket = -1;
+#endif
+
+namespace x30 {
+namespace {
+
+std::string LastSocketError() {
+#if defined(_WIN32)
+  return "WSA error " + std::to_string(WSAGetLastError());
+#else
+  return std::strerror(errno);
+#endif
+}
+
+#if defined(_WIN32)
+// Winsock 需要进程级初始化。用静态对象保证只做一次。
+struct WsaGuard {
+  WsaGuard() {
+    WSADATA data;
+    WSAStartup(MAKEWORD(2, 2), &data);
+  }
+  ~WsaGuard() { WSACleanup(); }
+};
+void EnsureWsa() { static WsaGuard guard; }
+#else
+void EnsureWsa() {}
+#endif
+
+}  // namespace
+
+struct UdpEndpoint::Impl {
+  socket_t fd = kInvalidSocket;
+  sockaddr_in peer{};
+  bool has_peer = false;
+};
+
+UdpEndpoint::UdpEndpoint() : impl_(new Impl) { EnsureWsa(); }
+
+UdpEndpoint::~UdpEndpoint() {
+  Close();
+  delete impl_;
+}
+
+bool UdpEndpoint::Open(uint16_t local_port, std::string* error) {
+  return Open(local_port, std::string(), error);
+}
+
+bool UdpEndpoint::Open(uint16_t local_port, const std::string& local_ip,
+                       std::string* error) {
+  impl_->fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+  if (impl_->fd == kInvalidSocket) {
+    if (error) *error = "创建套接字失败: " + LastSocketError();
+    return false;
+  }
+
+  int reuse = 1;
+  ::setsockopt(impl_->fd, SOL_SOCKET, SO_REUSEADDR,
+               reinterpret_cast<const char*>(&reuse), sizeof(reuse));
+  int bcast = 1;
+  ::setsockopt(impl_->fd, SOL_SOCKET, SO_BROADCAST,
+               reinterpret_cast<const char*>(&bcast), sizeof(bcast));
+
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(local_port);
+  if (local_ip.empty()) {
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  } else if (::inet_pton(AF_INET, local_ip.c_str(), &addr.sin_addr) != 1) {
+    if (error) *error = "非法的本地地址: " + local_ip;
+    Close();
+    return false;
+  }
+  if (::bind(impl_->fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
+    if (error) {
+      *error = "绑定本地端口 " + std::to_string(local_port) +
+               " 失败: " + LastSocketError();
+    }
+    Close();
+    return false;
+  }
+  return true;
+}
+
+bool UdpEndpoint::SetPeer(const std::string& ip, uint16_t port,
+                          std::string* error) {
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(port);
+  if (::inet_pton(AF_INET, ip.c_str(), &addr.sin_addr) != 1) {
+    if (error) *error = "非法的 IP 地址: " + ip;
+    return false;
+  }
+  impl_->peer = addr;
+  impl_->has_peer = true;
+  return true;
+}
+
+bool UdpEndpoint::Send(const void* data, size_t len) {
+  if (impl_->fd == kInvalidSocket || !impl_->has_peer) return false;
+  const auto sent =
+      ::sendto(impl_->fd, static_cast<const char*>(data), static_cast<int>(len),
+               0, reinterpret_cast<const sockaddr*>(&impl_->peer),
+               sizeof(impl_->peer));
+  return sent >= 0 && static_cast<size_t>(sent) == len;
+}
+
+bool UdpEndpoint::SendTo(const std::string& ip, uint16_t port, const void* data,
+                         size_t len) {
+  if (impl_->fd == kInvalidSocket) return false;
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(port);
+  if (::inet_pton(AF_INET, ip.c_str(), &addr.sin_addr) != 1) return false;
+  const auto sent =
+      ::sendto(impl_->fd, static_cast<const char*>(data), static_cast<int>(len),
+               0, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr));
+  return sent >= 0 && static_cast<size_t>(sent) == len;
+}
+
+int UdpEndpoint::Recv(void* buffer, size_t capacity, int timeout_ms) {
+  return RecvFrom(buffer, capacity, timeout_ms, nullptr, nullptr);
+}
+
+int UdpEndpoint::RecvFrom(void* buffer, size_t capacity, int timeout_ms,
+                          std::string* src_ip, uint16_t* src_port) {
+  if (impl_->fd == kInvalidSocket) return -1;
+
+  fd_set read_set;
+  FD_ZERO(&read_set);
+  FD_SET(impl_->fd, &read_set);
+
+  timeval tv{};
+  tv.tv_sec = timeout_ms / 1000;
+  tv.tv_usec = (timeout_ms % 1000) * 1000;
+
+  const int ready =
+      ::select(static_cast<int>(impl_->fd) + 1, &read_set, nullptr, nullptr, &tv);
+  if (ready < 0) return -1;
+  if (ready == 0) return 0;
+
+  sockaddr_in from{};
+#if defined(_WIN32)
+  int from_len = sizeof(from);
+#else
+  socklen_t from_len = sizeof(from);
+#endif
+  const auto received =
+      ::recvfrom(impl_->fd, static_cast<char*>(buffer),
+                 static_cast<int>(capacity), 0,
+                 reinterpret_cast<sockaddr*>(&from), &from_len);
+  if (received > 0) {
+    if (src_port) *src_port = ntohs(from.sin_port);
+    if (src_ip) {
+      char ip[INET_ADDRSTRLEN] = {};
+      if (::inet_ntop(AF_INET, &from.sin_addr, ip, sizeof(ip))) *src_ip = ip;
+    }
+  }
+  return static_cast<int>(received);
+}
+
+void UdpEndpoint::Close() {
+  if (impl_->fd == kInvalidSocket) return;
+#if defined(_WIN32)
+  ::closesocket(impl_->fd);
+#else
+  ::close(impl_->fd);
+#endif
+  impl_->fd = kInvalidSocket;
+}
+
+}  // namespace x30

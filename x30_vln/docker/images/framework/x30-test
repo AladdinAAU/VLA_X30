@@ -1,0 +1,17 @@
+#!/bin/bash
+# colcon test of /ws plus plain pytest of the ROS-free unit tests.
+#   x30-test                 colcon test (all packages except $X30_SKIP_PKGS) and show results
+#   x30-test <pkg> ...       only these packages
+set -o pipefail
+. /usr/local/bin/x30-env
+cd /ws
+SKIP="${X30_SKIP_PKGS:-x30_sim}"
+ARGS=()
+if [ $# -gt 0 ]; then ARGS+=(--packages-select "$@"); else
+    # shellcheck disable=SC2086
+    [ -n "$SKIP" ] && ARGS+=(--packages-skip $SKIP)
+fi
+echo "[x30-test] colcon test ${ARGS[*]}"
+colcon test "${ARGS[@]}" --event-handlers console_direct+ ; RC=$?
+colcon test-result --verbose | tail -n 40
+exit $RC

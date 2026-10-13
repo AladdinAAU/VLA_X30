@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "x30_vln/episode.schema.json",
+  "title": "X30 VLN episode (INTERFACES.md section 6, with optional extensions)",
+  "type": "object",
+  "required": ["id", "scene", "mode", "instruction", "start", "goal", "time_limit_s", "split"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "scene": {"type": "string", "minLength": 1, "description": "world id in datasets/registry.yaml"},
+    "mode": {"enum": ["object_nav", "velocity_follow", "goal_pose"]},
+    "instruction": {"type": "string", "minLength": 1},
+    "instruction_variants": {"type": "array", "items": {"type": "string"}, "description": "paraphrases; instruction is one of them"},
+    "start": {"$ref": "#/$defs/start"},
+    "goal": {"oneOf": [{"$ref": "#/$defs/goal_object"}, {"$ref": "#/$defs/goal_pose"}]},
+    "time_limit_s": {"type": "number", "exclusiveMinimum": 0},
+    "split": {"enum": ["dev", "heldout"]},
+    "reference_path": {"type": "array", "items": {"$ref": "#/$defs/waypoint"}, "description": "world-frame waypoints from start to goal (used for nDTW)"},
+    "reference_actions": {"type": "array", "items": {"$ref": "#/$defs/action"}, "description": "velocity_follow: ground-truth primitive sequence"},
+    "difficulty": {"$ref": "#/$defs/difficulty"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "seed": {"type": "integer"},
+    "source": {"type": "object", "description": "provenance for imported episodes (dataset, original id, scene id)"}
+  },
+  "$defs": {
+    "number": {"type": "number"},
+    "waypoint": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "z": {"type": "number"}}
+    },
+    "start": {
+      "type": "object",
+      "required": ["x", "y", "yaw"],
+      "additionalProperties": false,
+      "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "z": {"type": "number"}, "yaw": {"type": "number"}}
+    },
+    "goal_pose": {
+      "type": "object",
+      "required": ["type", "x", "y", "radius"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {"const": "pose"},
+        "x": {"type": "number"}, "y": {"type": "number"}, "yaw": {"type": "number"},
+        "radius": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "goal_object": {
+      "type": "object",
+      "required": ["type", "label", "radius"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {"const": "object"},
+        "label": {"type": "string"},
+        "instance": {"type": "string", "description": "target instance name (objects_file 'instance'); empty/absent for category-only goals"},
+        "radius": {"type": "number", "exclusiveMinimum": 0, "description": "success radius in metres, measured to the object's bounding box (distance_to=bbox) or centre"},
+        "distance_to": {"enum": ["bbox", "center"], "default": "bbox"},
+        "any_instance": {"type": "boolean", "description": "true: reaching any instance of the label counts; false: only 'instance' counts"},
+        "instances": {"type": "array", "items": {"type": "string"}, "description": "all instances that count as success"},
+        "other_instances": {"type": "array", "items": {"type": "string"}, "description": "same-label instances that do NOT count (distractors) when any_instance is false"},
+        "x": {"type": "number"}, "y": {"type": "number"},
+        "description": {"type": "string", "description": "how the instruction singles out the instance (relation, room, colour)"}
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["action"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"enum": ["forward", "backward", "turn_left", "turn_right", "stop"]},
+        "distance_m": {"type": "number", "minimum": 0},
+        "degrees": {"type": "number", "minimum": 0}
+      }
+    },
+    "difficulty": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "tier": {"enum": ["easy", "medium", "hard"]},
+        "geodesic_m": {"type": "number", "minimum": 0},
+        "euclidean_m": {"type": "number", "minimum": 0},
+        "turns": {"type": "integer", "minimum": 0},
+        "rooms_crossed": {"type": "integer", "minimum": 0},
+        "distractors": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

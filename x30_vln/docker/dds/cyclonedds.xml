@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Shared CycloneDDS configuration for every ROS 2 container of the X30 stack (framework, sim, tools, replay, ros1_bridge).
+  Mounted read-only at /etc/x30/cyclonedds.xml; CYCLONEDDS_URI=file:///etc/x30/cyclonedds.xml, RMW_IMPLEMENTATION=rmw_cyclonedds_cpp.
+  Variant for containers on the user-defined bridge network "x30_net" (Docker Desktop / WSL2 or Linux): multicast discovery,
+  which works inside one Docker bridge. For the Linux host-network variant use cyclonedds-host.xml; for a unicast
+  fallback use cyclonedds-peers.xml. Verified against Foxy 0.7 (ros1_bridge image), Humble 0.10 and Jazzy 0.10 (docs/reports/infra.md).
+-->
+<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.rnc">
+  <Domain id="any">
+    <General>
+      <AllowMulticast>spdp</AllowMulticast>
+      <MaxMessageSize>65500B</MaxMessageSize>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+    </Discovery>
+    <Internal>
+      <SocketReceiveBufferSize min="2MB"/>
+      <Watermarks>
+        <WhcHigh>8MB</WhcHigh>
+      </Watermarks>
+    </Internal>
+  </Domain>
+</CycloneDDS>

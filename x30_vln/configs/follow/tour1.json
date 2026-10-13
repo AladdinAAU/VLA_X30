@@ -1,0 +1,7 @@
+{
+  "world": "aws_hospital",
+  "_comment": "Guided tour: the nurse (target) walks into Room C (says 'This is Marcus'), then Room E ('This is Alexander'), then stands in the east corridor ('Here we deliver stuff'). No other people.",
+  "people": [
+    {"name": "target", "model": "person_07", "path": "tour1/target.json", "target": true, "outfit": "navy scrubs"}
+  ]
+}

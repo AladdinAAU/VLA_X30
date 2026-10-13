@@ -1,0 +1,1505 @@
+# World and episode registry (see x30_datasets/registry.py for the format).
+# World paths are relative to the x30_worlds package share dir; episode paths relative to datasets/.
+worlds:
+  apt_01:
+    sdf: worlds/apt_01/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -5.85
+    - 11.75
+    - 6.65
+    objects_file: worlds/apt_01/objects.json
+    rooms_file: worlds/apt_01/rooms.json
+    map_file: worlds/apt_01/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'apt_01' seed 11
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: apartment
+      rooms: 6
+      objects: 62
+      reachable_area_m2: 30.9
+      models: 64
+      objects_by_label:
+        armchair: 1
+        bathtub: 1
+        bed: 2
+        bookshelf: 1
+        chair: 3
+        coffee_table: 1
+        desk: 1
+        door: 6
+        fire_extinguisher: 1
+        kitchen_counter: 1
+        lamp: 1
+        laptop: 3
+        microwave: 1
+        mirror: 1
+        nightstand: 3
+        person: 2
+        picture: 7
+        plant: 2
+        radiator: 3
+        refrigerator: 1
+        rug: 3
+        sink: 2
+        sofa: 1
+        stove: 1
+        table: 1
+        toilet: 1
+        trash_can: 2
+        tv: 1
+        tv_stand: 1
+        wardrobe: 2
+        window: 5
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  apt_02:
+    sdf: worlds/apt_02/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -6.1
+    - 15.46
+    - 6.9
+    objects_file: worlds/apt_02/objects.json
+    rooms_file: worlds/apt_02/rooms.json
+    map_file: worlds/apt_02/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'apt_02' seed 22
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: apartment
+      rooms: 8
+      objects: 75
+      reachable_area_m2: 55.2
+      models: 77
+      objects_by_label:
+        bed: 4
+        bookshelf: 1
+        chair: 2
+        door: 8
+        fire_extinguisher: 1
+        kitchen_counter: 1
+        lamp: 1
+        laptop: 3
+        microwave: 1
+        mirror: 1
+        nightstand: 5
+        person: 1
+        picture: 9
+        plant: 6
+        radiator: 5
+        refrigerator: 1
+        rug: 4
+        sink: 2
+        sofa: 1
+        stove: 1
+        table: 1
+        toilet: 1
+        trash_can: 2
+        tv: 1
+        tv_stand: 1
+        wardrobe: 4
+        window: 7
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  apt_03:
+    sdf: worlds/apt_03/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -5.85
+    - 10.44
+    - 7.45
+    objects_file: worlds/apt_03/objects.json
+    rooms_file: worlds/apt_03/rooms.json
+    map_file: worlds/apt_03/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'apt_03' seed 33
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: apartment
+      rooms: 4
+      objects: 43
+      reachable_area_m2: 41.4
+      models: 45
+      objects_by_label:
+        bathtub: 1
+        bed: 1
+        bookshelf: 1
+        chair: 2
+        coffee_table: 1
+        door: 3
+        fire_extinguisher: 1
+        kitchen_counter: 1
+        lamp: 1
+        laptop: 1
+        microwave: 1
+        mirror: 1
+        nightstand: 2
+        picture: 6
+        plant: 3
+        radiator: 1
+        rug: 2
+        sink: 2
+        sofa: 1
+        stove: 1
+        table: 1
+        toilet: 1
+        trash_can: 2
+        tv: 1
+        tv_stand: 1
+        wardrobe: 1
+        window: 3
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  apt_04:
+    sdf: worlds/apt_04/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -6.05
+    - 14.63
+    - 6.45
+    objects_file: worlds/apt_04/objects.json
+    rooms_file: worlds/apt_04/rooms.json
+    map_file: worlds/apt_04/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'apt_04' seed 44
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: apartment
+      rooms: 6
+      objects: 59
+      reachable_area_m2: 33.1
+      models: 61
+      objects_by_label:
+        armchair: 1
+        bathtub: 1
+        bed: 2
+        bookshelf: 1
+        chair: 1
+        coffee_table: 1
+        desk: 1
+        door: 5
+        fire_extinguisher: 1
+        kitchen_counter: 1
+        lamp: 3
+        laptop: 4
+        microwave: 1
+        mirror: 1
+        nightstand: 3
+        person: 1
+        picture: 7
+        plant: 2
+        radiator: 3
+        refrigerator: 1
+        rug: 3
+        sink: 1
+        sofa: 1
+        stove: 1
+        table: 1
+        toilet: 1
+        trash_can: 2
+        tv: 1
+        tv_stand: 1
+        wardrobe: 2
+        window: 4
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  aws_bookstore:
+    sdf: worlds/aws_bookstore/world.sdf
+    spawn:
+      x: 5.93
+      y: 5.78
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -9.8
+    - -9.2
+    - 9.7
+    - 9.3
+    objects_file: worlds/aws_bookstore/objects.json
+    map_file: worlds/aws_bookstore/map.yaml
+    license: MIT-0 (AWS RoboMaker world and models)
+    source: https://github.com/aws-robotics/aws-robomaker-bookstore-world branch ros1, file worlds/bookstore.world
+    source_dataset: aws-robomaker
+    rtf_note: not measured yet
+    stats:
+      includes: 139
+      objects: 68
+      navigable_area_m2: 115.6
+      objects_by_label:
+        air_conditioner: 1
+        bicycle: 1
+        bookshelf: 16
+        chair: 16
+        desk: 6
+        door: 1
+        medical_device: 3
+        monitor: 21
+        table: 2
+        window: 1
+      skipped_non_include_models: []
+      models_copied: 26
+  aws_hospital:
+    sdf: worlds/aws_hospital/world.sdf
+    spawn:
+      x: 0.93
+      y: 11.48
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -14.5
+    - -37.0
+    - 14.5
+    - 23.2
+    objects_file: worlds/aws_hospital/objects.json
+    map_file: worlds/aws_hospital/map.yaml
+    license: MIT-0 (AWS RoboMaker world and models); OpenRobotics Fuel models CC-BY-4.0
+    source: https://github.com/aws-robotics/aws-robomaker-hospital-world branch ros1, file worlds/hospital.world
+    source_dataset: aws-robomaker
+    rtf_note: not measured yet
+    stats:
+      includes: 181
+      objects: 124
+      navigable_area_m2: 781.6
+      objects_by_label:
+        bathtub: 2
+        bed: 3
+        cabinet: 8
+        cart: 20
+        chair: 30
+        clutter: 2
+        coffee_table: 1
+        desk: 1
+        kitchen_counter: 3
+        medical_device: 12
+        nightstand: 3
+        person: 13
+        refrigerator: 1
+        rug: 1
+        shelf: 7
+        sofa: 3
+        table: 2
+        toilet: 6
+        trash_can: 3
+        tv: 1
+        vending_machine: 2
+      skipped_non_include_models: []
+      models_copied: 69
+  aws_small_house:
+    sdf: worlds/aws_small_house/world.sdf
+    spawn:
+      x: -9.32
+      y: 5.48
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -11.5
+    - -7.7
+    - 11.5
+    - 7.7
+    objects_file: worlds/aws_small_house/objects.json
+    map_file: worlds/aws_small_house/map.yaml
+    license: MIT-0 (AWS RoboMaker world and models)
+    source: https://github.com/aws-robotics/aws-robomaker-small-house-world branch ros1, file worlds/small_house.world
+    source_dataset: aws-robomaker
+    rtf_note: not measured yet
+    stats:
+      includes: 87
+      objects: 46
+      navigable_area_m2: 122.7
+      objects_by_label:
+        air_conditioner: 2
+        ball: 2
+        bed: 1
+        cabinet: 1
+        chair: 8
+        coffee_table: 1
+        door: 5
+        kitchen_counter: 2
+        monitor: 1
+        nightstand: 2
+        refrigerator: 1
+        rug: 2
+        sofa: 1
+        table: 3
+        trash_can: 2
+        tv: 3
+        window: 9
+      skipped_non_include_models: []
+      models_copied: 63
+  aws_small_warehouse:
+    sdf: worlds/aws_small_warehouse/world.sdf
+    spawn:
+      x: -0.88
+      y: -2.38
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -9.0
+    - -12.5
+    - 9.0
+    - 12.5
+    objects_file: worlds/aws_small_warehouse/objects.json
+    map_file: worlds/aws_small_warehouse/map.yaml
+    license: MIT-0 (AWS RoboMaker world and models)
+    source: https://github.com/aws-robotics/aws-robomaker-small-warehouse-world branch ros1, file worlds/small_warehouse.world
+    source_dataset: aws-robomaker
+    rtf_note: not measured yet
+    stats:
+      includes: 26
+      objects: 23
+      navigable_area_m2: 152.2
+      objects_by_label:
+        bucket: 3
+        clutter: 10
+        lamp: 1
+        pallet_jack: 1
+        shelf: 7
+        trash_can: 1
+      skipped_non_include_models: []
+      models_copied: 13
+  habtest_apartment_1:
+    sdf: worlds/habtest_apartment_1/world.sdf
+    spawn:
+      x: 0.92
+      y: -4.21
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.96
+    - -9.14
+    - 7.94
+    - 3.6
+    objects_file: worlds/habtest_apartment_1/objects.json
+    map_file: worlds/habtest_apartment_1/map.yaml
+    license: 'Habitat test scenes: Hugging Face card cc-by-nc-4.0 (no licence file in the archive); apartment_1
+      derives from Replica (research terms)'
+    source: habitat-test-scenes.zip (dl.fbaipublicfiles.com/habitat)
+    source_dataset: habitat-test-scenes
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.727854
+    stats:
+      source_file: apartment_1.glb
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.728
+      extent_m:
+      - 7.9
+      - 10.74
+      - 2.94
+      triangles: 381673
+      triangles_visual: 249911
+      triangles_ceiling: 36196
+      collision_boxes: 553
+      collision_pitch_m: 0.1
+      navigable_area_m2: 23.5
+      objects: 0
+      visual_mesh_mb: 68.5
+    source_scene_id: apartment_1.glb
+  habtest_van_gogh_room:
+    sdf: worlds/habtest_van_gogh_room/world.sdf
+    spawn:
+      x: 3.29
+      y: -0.5
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.78
+    - -2.87
+    - 6.99
+    - 2.67
+    objects_file: worlds/habtest_van_gogh_room/objects.json
+    map_file: worlds/habtest_van_gogh_room/map.yaml
+    robot_radius_m: 0.25
+    license: 'Habitat test scenes: Hugging Face card cc-by-nc-4.0 (no licence file in the archive); apartment_1
+      derives from Replica (research terms)'
+    source: habitat-test-scenes.zip (dl.fbaipublicfiles.com/habitat)
+    source_dataset: habitat-test-scenes
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 0.001202
+    stats:
+      source_file: van-gogh-room.glb
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -0.001
+      extent_m:
+      - 6.77
+      - 3.54
+      - 3.86
+      triangles: 11272
+      triangles_visual: 11272
+      triangles_ceiling: 98
+      collision_boxes: 164
+      collision_pitch_m: 0.1
+      navigable_area_m2: 5.7
+      objects: 0
+      visual_mesh_mb: 13.4
+    source_scene_id: van-gogh-room.glb
+  lab_01:
+    sdf: worlds/lab_01/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -7.7
+    - 28.1
+    - 7.9
+    objects_file: worlds/lab_01/objects.json
+    rooms_file: worlds/lab_01/rooms.json
+    map_file: worlds/lab_01/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'lab_01' seed 77
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: lab
+      rooms: 9
+      objects: 113
+      reachable_area_m2: 181.8
+      models: 115
+      objects_by_label:
+        bookshelf: 1
+        box: 4
+        cabinet: 14
+        chair: 9
+        desk: 2
+        door: 8
+        filing_cabinet: 1
+        fire_extinguisher: 8
+        laptop: 8
+        monitor: 9
+        person: 3
+        picture: 3
+        plant: 2
+        printer: 1
+        radiator: 3
+        server_rack: 10
+        trash_can: 7
+        water_cooler: 1
+        whiteboard: 6
+        window: 6
+        workbench: 7
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  lab_02:
+    sdf: worlds/lab_02/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -7.5
+    - 27.29
+    - 7.7
+    objects_file: worlds/lab_02/objects.json
+    rooms_file: worlds/lab_02/rooms.json
+    map_file: worlds/lab_02/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'lab_02' seed 88
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: lab
+      rooms: 12
+      objects: 135
+      reachable_area_m2: 152.0
+      models: 137
+      objects_by_label:
+        bookshelf: 2
+        box: 4
+        cabinet: 15
+        chair: 11
+        desk: 4
+        door: 11
+        filing_cabinet: 2
+        fire_extinguisher: 10
+        laptop: 5
+        monitor: 11
+        person: 5
+        picture: 6
+        plant: 3
+        printer: 1
+        radiator: 1
+        server_rack: 10
+        trash_can: 10
+        water_cooler: 2
+        whiteboard: 8
+        window: 7
+        workbench: 7
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  office_01:
+    sdf: worlds/office_01/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -7.2
+    - 33.18
+    - 7.2
+    objects_file: worlds/office_01/objects.json
+    rooms_file: worlds/office_01/rooms.json
+    map_file: worlds/office_01/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'office_01' seed 55
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: office
+      rooms: 14
+      objects: 168
+      reachable_area_m2: 177.9
+      models: 170
+      objects_by_label:
+        bookshelf: 7
+        box: 4
+        cabinet: 4
+        chair: 21
+        desk: 16
+        door: 13
+        filing_cabinet: 7
+        fire_extinguisher: 3
+        kitchen_counter: 1
+        laptop: 7
+        microwave: 1
+        mirror: 1
+        monitor: 16
+        person: 1
+        picture: 3
+        plant: 11
+        printer: 2
+        radiator: 2
+        refrigerator: 1
+        server_rack: 4
+        sink: 3
+        stove: 1
+        table: 2
+        toilet: 3
+        trash_can: 11
+        tv: 1
+        water_cooler: 3
+        whiteboard: 9
+        window: 10
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  office_02:
+    sdf: worlds/office_02/world.sdf
+    spawn:
+      x: 1.2
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.5
+    - -6.9
+    - 22.64
+    - 7.5
+    objects_file: worlds/office_02/objects.json
+    rooms_file: worlds/office_02/rooms.json
+    map_file: worlds/office_02/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'office_02' seed 66
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: office
+      rooms: 9
+      objects: 104
+      reachable_area_m2: 116.8
+      models: 106
+      objects_by_label:
+        bookshelf: 3
+        cabinet: 3
+        chair: 16
+        desk: 8
+        door: 8
+        filing_cabinet: 3
+        fire_extinguisher: 1
+        kitchen_counter: 1
+        laptop: 1
+        microwave: 1
+        mirror: 1
+        monitor: 8
+        person: 2
+        picture: 3
+        plant: 8
+        printer: 1
+        radiator: 3
+        refrigerator: 1
+        sink: 3
+        stove: 1
+        table: 2
+        toilet: 3
+        trash_can: 6
+        tv: 2
+        water_cooler: 3
+        whiteboard: 6
+        window: 6
+      robot_radius_m: 0.35
+      min_door_width_m: 1.0
+  replica_apartment_0:
+    sdf: worlds/replica_apartment_0/world.sdf
+    spawn:
+      x: 0.58
+      y: -5.54
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -4.29
+    - -10.82
+    - 7.07
+    - 5.95
+    objects_file: worlds/replica_apartment_0/objects.json
+    map_file: worlds/replica_apartment_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset apartment_0
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.512086
+    stats:
+      source_file: apartment_0
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.512
+      extent_m:
+      - 9.37
+      - 14.77
+      - 5.35
+      triangles: 9121554
+      triangles_visual: 248269
+      triangles_ceiling: 46508
+      collision_boxes: 1503
+      collision_pitch_m: 0.1
+      navigable_area_m2: 30.1
+      objects: 185
+      visual_mesh_mb: 30.9
+    source_scene_id: apartment_0
+  replica_apartment_1:
+    sdf: worlds/replica_apartment_1/world.sdf
+    spawn:
+      x: 4.08
+      y: 0.92
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.6
+    - -1.96
+    - 9.14
+    - 7.94
+    objects_file: worlds/replica_apartment_1/objects.json
+    map_file: worlds/replica_apartment_1/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset apartment_1
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.728073
+    stats:
+      source_file: apartment_1
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.728
+      extent_m:
+      - 10.74
+      - 7.9
+      - 2.94
+      triangles: 3817138
+      triangles_visual: 249279
+      triangles_ceiling: 54739
+      collision_boxes: 525
+      collision_pitch_m: 0.1
+      navigable_area_m2: 34.6
+      objects: 75
+      visual_mesh_mb: 29.1
+    source_scene_id: apartment_1
+  replica_apartment_2:
+    sdf: worlds/replica_apartment_2/world.sdf
+    spawn:
+      x: 0.96
+      y: 3.42
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.66
+    - -2.71
+    - 7.78
+    - 9.48
+    objects_file: worlds/replica_apartment_2/objects.json
+    map_file: worlds/replica_apartment_2/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset apartment_2
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.609341
+    stats:
+      source_file: apartment_2
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.609
+      extent_m:
+      - 9.44
+      - 10.2
+      - 2.81
+      triangles: 4267172
+      triangles_visual: 248928
+      triangles_ceiling: 50038
+      collision_boxes: 791
+      collision_pitch_m: 0.1
+      navigable_area_m2: 27.0
+      objects: 103
+      visual_mesh_mb: 28.5
+    source_scene_id: apartment_2
+  replica_frl_apartment_0:
+    sdf: worlds/replica_frl_apartment_0/world.sdf
+    spawn:
+      x: 3.99
+      y: -1.51
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -2.04
+    - -10.19
+    - 7.2
+    - 4.46
+    objects_file: worlds/replica_frl_apartment_0/objects.json
+    map_file: worlds/replica_frl_apartment_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset frl_apartment_0
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.585456
+    stats:
+      source_file: frl_apartment_0
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.585
+      extent_m:
+      - 7.25
+      - 12.65
+      - 3.08
+      triangles: 3506194
+      triangles_visual: 248639
+      triangles_ceiling: 5531
+      collision_boxes: 994
+      collision_pitch_m: 0.1
+      navigable_area_m2: 23.5
+      objects: 176
+      visual_mesh_mb: 31.4
+    source_scene_id: frl_apartment_0
+  replica_hotel_0:
+    sdf: worlds/replica_hotel_0/world.sdf
+    spawn:
+      x: 4.07
+      y: 1.17
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.91
+    - -2.66
+    - 6.68
+    - 3.52
+    objects_file: worlds/replica_hotel_0/objects.json
+    map_file: worlds/replica_hotel_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset hotel_0
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.0184
+    stats:
+      source_file: hotel_0
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.018
+      extent_m:
+      - 8.59
+      - 4.18
+      - 2.75
+      triangles: 2193298
+      triangles_visual: 249475
+      triangles_ceiling: 38247
+      collision_boxes: 455
+      collision_pitch_m: 0.1
+      navigable_area_m2: 5.3
+      objects: 83
+      visual_mesh_mb: 28.9
+    source_scene_id: hotel_0
+  replica_office_0:
+    sdf: worlds/replica_office_0/world.sdf
+    spawn:
+      x: 0.22
+      y: -1.83
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.01
+    - -4.15
+    - 3.39
+    - 2.86
+    objects_file: worlds/replica_office_0/objects.json
+    map_file: worlds/replica_office_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset office_0
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.128264
+    stats:
+      source_file: office_0
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.128
+      extent_m:
+      - 4.4
+      - 5.01
+      - 2.99
+      triangles: 1177518
+      triangles_visual: 249670
+      triangles_ceiling: 46484
+      collision_boxes: 340
+      collision_pitch_m: 0.1
+      navigable_area_m2: 3.4
+      objects: 28
+      visual_mesh_mb: 29.0
+    source_scene_id: office_0
+  replica_room_0:
+    sdf: worlds/replica_room_0/world.sdf
+    spawn:
+      x: 0.65
+      y: 2.29
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -1.88
+    - -2.19
+    - 7.89
+    - 4.51
+    objects_file: worlds/replica_room_0/objects.json
+    map_file: worlds/replica_room_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education
+      use only; see datasets/external/replica_src/LICENSE'
+    source: facebookresearch/Replica-Dataset room_0
+    source_dataset: replica
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - 1.0
+      t:
+      - 0.0
+      - 0.0
+      - 1.489681
+    stats:
+      source_file: room_0
+      up_axis: z
+      scale: 1.0
+      floor_z_source: -1.49
+      extent_m:
+      - 7.76
+      - 4.7
+      - 2.81
+      triangles: 1907294
+      triangles_visual: 249490
+      triangles_ceiling: 53906
+      collision_boxes: 293
+      collision_pitch_m: 0.1
+      navigable_area_m2: 8.3
+      objects: 64
+      visual_mesh_mb: 29.0
+    source_scene_id: room_0
+  replicacad_apt_0:
+    sdf: worlds/replicacad_apt_0/world.sdf
+    spawn:
+      x: 2.44
+      y: -0.23
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.68
+    - -9.16
+    - 5.58
+    - 5.83
+    objects_file: worlds/replicacad_apt_0/objects.json
+    map_file: worlds/replicacad_apt_0/map.yaml
+    robot_radius_m: 0.25
+    license: 'ReplicaCAD: LICENSE.txt in the dataset says CC BY-NC 4.0 (the Hugging Face card says CC
+      BY 4.0); treated as non-commercial, attribution required'
+    source: ai-habitat/ReplicaCAD_dataset apt_0
+    source_dataset: replicacad
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - -1.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      t:
+      - 0.0
+      - 0.0
+      - -0.0
+    stats:
+      source_file: apt_0
+      up_axis: y
+      scale: 1.0
+      floor_z_source: 0.0
+      extent_m:
+      - 7.26
+      - 13.0
+      - 3.13
+      triangles: 147002
+      triangles_visual: 147002
+      triangles_ceiling: 2026
+      collision_boxes: 1381
+      collision_pitch_m: 0.08
+      navigable_area_m2: 24.9
+      objects: 118
+      visual_mesh_mb: 58.6
+    source_scene_id: apt_0
+  replicacad_apt_1:
+    sdf: worlds/replicacad_apt_1/world.sdf
+    spawn:
+      x: 2.19
+      y: -0.13
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.68
+    - -9.16
+    - 5.58
+    - 5.83
+    objects_file: worlds/replicacad_apt_1/objects.json
+    map_file: worlds/replicacad_apt_1/map.yaml
+    robot_radius_m: 0.25
+    license: 'ReplicaCAD: LICENSE.txt in the dataset says CC BY-NC 4.0 (the Hugging Face card says CC
+      BY 4.0); treated as non-commercial, attribution required'
+    source: ai-habitat/ReplicaCAD_dataset apt_1
+    source_dataset: replicacad
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - -1.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      t:
+      - 0.0
+      - 0.0
+      - -0.0
+    stats:
+      source_file: apt_1
+      up_axis: y
+      scale: 1.0
+      floor_z_source: 0.0
+      extent_m:
+      - 7.26
+      - 13.0
+      - 3.13
+      triangles: 149018
+      triangles_visual: 149018
+      triangles_ceiling: 2076
+      collision_boxes: 1252
+      collision_pitch_m: 0.08
+      navigable_area_m2: 30.4
+      objects: 125
+      visual_mesh_mb: 59.3
+    source_scene_id: apt_1
+  replicacad_apt_2:
+    sdf: worlds/replicacad_apt_2/world.sdf
+    spawn:
+      x: -0.71
+      y: -2.83
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.68
+    - -9.16
+    - 5.58
+    - 5.83
+    objects_file: worlds/replicacad_apt_2/objects.json
+    map_file: worlds/replicacad_apt_2/map.yaml
+    robot_radius_m: 0.25
+    license: 'ReplicaCAD: LICENSE.txt in the dataset says CC BY-NC 4.0 (the Hugging Face card says CC
+      BY 4.0); treated as non-commercial, attribution required'
+    source: ai-habitat/ReplicaCAD_dataset apt_2
+    source_dataset: replicacad
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - -1.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      t:
+      - 0.0
+      - 0.0
+      - -0.0
+    stats:
+      source_file: apt_2
+      up_axis: y
+      scale: 1.0
+      floor_z_source: 0.0
+      extent_m:
+      - 7.26
+      - 13.0
+      - 3.13
+      triangles: 151206
+      triangles_visual: 151206
+      triangles_ceiling: 2077
+      collision_boxes: 1284
+      collision_pitch_m: 0.08
+      navigable_area_m2: 21.6
+      objects: 124
+      visual_mesh_mb: 60.0
+    source_scene_id: apt_2
+  replicacad_apt_3:
+    sdf: worlds/replicacad_apt_3/world.sdf
+    spawn:
+      x: 2.0
+      y: -3.18
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -3.68
+    - -9.16
+    - 5.58
+    - 5.83
+    objects_file: worlds/replicacad_apt_3/objects.json
+    map_file: worlds/replicacad_apt_3/map.yaml
+    robot_radius_m: 0.25
+    license: 'ReplicaCAD: LICENSE.txt in the dataset says CC BY-NC 4.0 (the Hugging Face card says CC
+      BY 4.0); treated as non-commercial, attribution required'
+    source: ai-habitat/ReplicaCAD_dataset apt_3
+    source_dataset: replicacad
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - -1.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      t:
+      - 0.0
+      - 0.0
+      - -0.0
+    stats:
+      source_file: apt_3
+      up_axis: y
+      scale: 1.0
+      floor_z_source: 0.0
+      extent_m:
+      - 7.26
+      - 13.0
+      - 3.13
+      triangles: 151070
+      triangles_visual: 151070
+      triangles_ceiling: 2067
+      collision_boxes: 1228
+      collision_pitch_m: 0.08
+      navigable_area_m2: 27.3
+      objects: 123
+      visual_mesh_mb: 60.0
+    source_scene_id: apt_3
+  sponza_test:
+    sdf: worlds/sponza_test/world.sdf
+    spawn:
+      x: -7.85
+      y: 1.99
+      z: 0.0
+      yaw: 0.0
+    bounds:
+    - -16.37
+    - -9.84
+    - 15.4
+    - 10.46
+    objects_file: worlds/sponza_test/objects.json
+    map_file: worlds/sponza_test/map.yaml
+    license: Cryengine Limited License Agreement (Crytek) - local test only, do not redistribute
+    source: Sponza.gltf
+    source_dataset: mesh-scene
+    rtf_note: not measured yet
+    scene_transform:
+      R:
+      - - 1.0
+        - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+        - -1.0
+      - - 0.0
+        - 1.0
+        - 0.0
+      t:
+      - 0.0
+      - 0.0
+      - 0.919164
+    stats:
+      source_file: Sponza.gltf
+      up_axis: y
+      scale: 1.0
+      floor_z_source: -0.919
+      extent_m:
+      - 29.77
+      - 18.31
+      - 12.45
+      triangles: 262267
+      collision_boxes: 727
+      collision_pitch_m: 0.1
+      navigable_area_m2: 238.4
+      objects: 0
+      visual_mesh_mb: 238.9
+  warehouse_01:
+    sdf: worlds/warehouse_01/world.sdf
+    spawn:
+      x: 13.72
+      y: 2.0
+      z: 0.0
+      yaw: 1.571
+    bounds:
+    - -1.5
+    - -1.5
+    - 29.5
+    - 21.5
+    objects_file: worlds/warehouse_01/objects.json
+    rooms_file: worlds/warehouse_01/rooms.json
+    map_file: worlds/warehouse_01/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'warehouse_01' seed 99
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: warehouse
+      rooms: 1
+      objects: 75
+      reachable_area_m2: 444.1
+      models: 77
+      objects_by_label:
+        barrel: 5
+        bookshelf: 1
+        box: 8
+        cart: 2
+        chair: 2
+        desk: 2
+        door: 3
+        filing_cabinet: 1
+        fire_extinguisher: 2
+        monitor: 2
+        pallet: 5
+        person: 2
+        plant: 1
+        shelf: 35
+        trash_can: 2
+        whiteboard: 1
+        window: 1
+      robot_radius_m: 0.35
+      min_door_width_m: 1.1
+  warehouse_02:
+    sdf: worlds/warehouse_02/world.sdf
+    spawn:
+      x: 17.73
+      y: 2.0
+      z: 0.0
+      yaw: 1.571
+    bounds:
+    - -1.5
+    - -1.5
+    - 37.5
+    - 27.5
+    objects_file: worlds/warehouse_02/objects.json
+    rooms_file: worlds/warehouse_02/rooms.json
+    map_file: worlds/warehouse_02/map.yaml
+    license: generated in this repository from SDF primitives (no third-party assets); CC0-1.0
+    source: x30_datasets.procgen preset 'warehouse_02' seed 111
+    source_dataset: procedural
+    rtf_note: not measured yet
+    stats:
+      kind: warehouse
+      rooms: 1
+      objects: 119
+      reachable_area_m2: 683.1
+      models: 121
+      objects_by_label:
+        barrel: 4
+        bookshelf: 1
+        box: 9
+        cart: 2
+        chair: 2
+        desk: 2
+        door: 3
+        filing_cabinet: 1
+        fire_extinguisher: 2
+        laptop: 1
+        monitor: 2
+        pallet: 5
+        person: 3
+        plant: 1
+        radiator: 1
+        shelf: 76
+        trash_can: 2
+        whiteboard: 1
+        window: 1
+      robot_radius_m: 0.35
+      min_door_width_m: 1.1
+episodes:
+  apt_01_goal_pose: episodes/apt_01_goal_pose.yaml
+  apt_01_object_nav: episodes/apt_01_object_nav.yaml
+  apt_01_velocity_follow: episodes/apt_01_velocity_follow.yaml
+  apt_02_goal_pose: episodes/apt_02_goal_pose.yaml
+  apt_02_object_nav: episodes/apt_02_object_nav.yaml
+  apt_02_velocity_follow: episodes/apt_02_velocity_follow.yaml
+  apt_03_goal_pose: episodes/apt_03_goal_pose.yaml
+  apt_03_object_nav: episodes/apt_03_object_nav.yaml
+  apt_03_velocity_follow: episodes/apt_03_velocity_follow.yaml
+  apt_04_goal_pose: episodes/apt_04_goal_pose.yaml
+  apt_04_object_nav: episodes/apt_04_object_nav.yaml
+  apt_04_velocity_follow: episodes/apt_04_velocity_follow.yaml
+  aws_bookstore_goal_pose: episodes/aws_bookstore_goal_pose.yaml
+  aws_bookstore_object_nav: episodes/aws_bookstore_object_nav.yaml
+  aws_bookstore_velocity_follow: episodes/aws_bookstore_velocity_follow.yaml
+  aws_hospital_goal_pose: episodes/aws_hospital_goal_pose.yaml
+  aws_hospital_object_nav: episodes/aws_hospital_object_nav.yaml
+  aws_hospital_velocity_follow: episodes/aws_hospital_velocity_follow.yaml
+  aws_small_house_goal_pose: episodes/aws_small_house_goal_pose.yaml
+  aws_small_house_object_nav: episodes/aws_small_house_object_nav.yaml
+  aws_small_house_velocity_follow: episodes/aws_small_house_velocity_follow.yaml
+  aws_small_warehouse_goal_pose: episodes/aws_small_warehouse_goal_pose.yaml
+  aws_small_warehouse_object_nav: episodes/aws_small_warehouse_object_nav.yaml
+  aws_small_warehouse_velocity_follow: episodes/aws_small_warehouse_velocity_follow.yaml
+  habtest_apartment_1_goal_pose: episodes/habtest_apartment_1_goal_pose.yaml
+  habtest_apartment_1_velocity_follow: episodes/habtest_apartment_1_velocity_follow.yaml
+  habtest_van_gogh_room_goal_pose: episodes/habtest_van_gogh_room_goal_pose.yaml
+  habtest_van_gogh_room_velocity_follow: episodes/habtest_van_gogh_room_velocity_follow.yaml
+  lab_01_goal_pose: episodes/lab_01_goal_pose.yaml
+  lab_01_object_nav: episodes/lab_01_object_nav.yaml
+  lab_01_velocity_follow: episodes/lab_01_velocity_follow.yaml
+  lab_02_goal_pose: episodes/lab_02_goal_pose.yaml
+  lab_02_object_nav: episodes/lab_02_object_nav.yaml
+  lab_02_velocity_follow: episodes/lab_02_velocity_follow.yaml
+  office_01_goal_pose: episodes/office_01_goal_pose.yaml
+  office_01_object_nav: episodes/office_01_object_nav.yaml
+  office_01_velocity_follow: episodes/office_01_velocity_follow.yaml
+  office_02_goal_pose: episodes/office_02_goal_pose.yaml
+  office_02_object_nav: episodes/office_02_object_nav.yaml
+  office_02_velocity_follow: episodes/office_02_velocity_follow.yaml
+  replica_apartment_0_goal_pose: episodes/replica_apartment_0_goal_pose.yaml
+  replica_apartment_0_object_nav: episodes/replica_apartment_0_object_nav.yaml
+  replica_apartment_0_velocity_follow: episodes/replica_apartment_0_velocity_follow.yaml
+  replica_apartment_1_goal_pose: episodes/replica_apartment_1_goal_pose.yaml
+  replica_apartment_1_object_nav: episodes/replica_apartment_1_object_nav.yaml
+  replica_apartment_1_velocity_follow: episodes/replica_apartment_1_velocity_follow.yaml
+  replica_apartment_2_goal_pose: episodes/replica_apartment_2_goal_pose.yaml
+  replica_apartment_2_object_nav: episodes/replica_apartment_2_object_nav.yaml
+  replica_apartment_2_velocity_follow: episodes/replica_apartment_2_velocity_follow.yaml
+  replica_frl_apartment_0_goal_pose: episodes/replica_frl_apartment_0_goal_pose.yaml
+  replica_frl_apartment_0_object_nav: episodes/replica_frl_apartment_0_object_nav.yaml
+  replica_frl_apartment_0_velocity_follow: episodes/replica_frl_apartment_0_velocity_follow.yaml
+  replica_hotel_0_goal_pose: episodes/replica_hotel_0_goal_pose.yaml
+  replica_hotel_0_object_nav: episodes/replica_hotel_0_object_nav.yaml
+  replica_hotel_0_velocity_follow: episodes/replica_hotel_0_velocity_follow.yaml
+  replica_office_0_goal_pose: episodes/replica_office_0_goal_pose.yaml
+  replica_office_0_object_nav: episodes/replica_office_0_object_nav.yaml
+  replica_office_0_velocity_follow: episodes/replica_office_0_velocity_follow.yaml
+  replica_room_0_goal_pose: episodes/replica_room_0_goal_pose.yaml
+  replica_room_0_object_nav: episodes/replica_room_0_object_nav.yaml
+  replica_room_0_velocity_follow: episodes/replica_room_0_velocity_follow.yaml
+  replicacad_apt_0_goal_pose: episodes/replicacad_apt_0_goal_pose.yaml
+  replicacad_apt_0_object_nav: episodes/replicacad_apt_0_object_nav.yaml
+  replicacad_apt_0_velocity_follow: episodes/replicacad_apt_0_velocity_follow.yaml
+  replicacad_apt_1_goal_pose: episodes/replicacad_apt_1_goal_pose.yaml
+  replicacad_apt_1_object_nav: episodes/replicacad_apt_1_object_nav.yaml
+  replicacad_apt_1_velocity_follow: episodes/replicacad_apt_1_velocity_follow.yaml
+  replicacad_apt_2_goal_pose: episodes/replicacad_apt_2_goal_pose.yaml
+  replicacad_apt_2_object_nav: episodes/replicacad_apt_2_object_nav.yaml
+  replicacad_apt_2_velocity_follow: episodes/replicacad_apt_2_velocity_follow.yaml
+  replicacad_apt_3_goal_pose: episodes/replicacad_apt_3_goal_pose.yaml
+  replicacad_apt_3_object_nav: episodes/replicacad_apt_3_object_nav.yaml
+  replicacad_apt_3_velocity_follow: episodes/replicacad_apt_3_velocity_follow.yaml
+  sponza_test_goal_pose: episodes/sponza_test_goal_pose.yaml
+  sponza_test_velocity_follow: episodes/sponza_test_velocity_follow.yaml
+  warehouse_01_goal_pose: episodes/warehouse_01_goal_pose.yaml
+  warehouse_01_object_nav: episodes/warehouse_01_object_nav.yaml
+  warehouse_01_velocity_follow: episodes/warehouse_01_velocity_follow.yaml
+  warehouse_02_goal_pose: episodes/warehouse_02_goal_pose.yaml
+  warehouse_02_object_nav: episodes/warehouse_02_object_nav.yaml
+  warehouse_02_velocity_follow: episodes/warehouse_02_velocity_follow.yaml

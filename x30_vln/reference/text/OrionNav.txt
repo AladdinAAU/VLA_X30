@@ -1,0 +1,520 @@
+                                                     Open-Architecture End-to-End System for
+                                                     Real-World Autonomous Robot Navigation
+
+                                        Venkata Naren Devarakonda1, Ali Umut Kaypak1, Raktim Gautam Goswami1, Naman Patel1,
+                                                    Rooholla Khorrambakht1, Prashanth Krishnamurthy1, Farshad Khorrami1
+
+arXiv:2410.06239v3 [cs.RO] 21 Apr 2026     Abstract-- Enabling robots to autonomously navigate un-             a real-world robot. The system integrates open-vocabulary
+                                        known, complex, and dynamic real-world environments                    hierarchical scene graphs for mapping, an LLM-based plan-
+                                        presents several challenges, including imperfect perception,           ner for high-level reasoning, and a control barrier function
+                                        partial observability, localization uncertainty, and safety con-       (CBF)-based low-level controller for safe execution (Fig. 1).
+                                        straints. Current approaches are typically limited to simula-
+                                        tions, where such challenges are not present. In this work,               Mapping and localization are fundamental capabilities for
+                                        we present a lightweight, open-architecture, end-to-end system         autonomous robots, commonly addressed through Simul-
+                                        for real-world robot autonomous navigation. Specifically, we           taneous Localization and Mapping (SLAM) methods [8],
+                                        deploy a real-time navigation system on a quadruped robot by           [9]. Recent work [10]­[13] augments SLAM with object
+                                        integrating multiple onboard components that communicate via           detection and segmentation, including open-vocabulary per-
+                                        ROS2. Given navigation tasks specified in natural language,            ception, to construct rich semantic maps. Building on these,
+                                        the system fuses onboard sensory data for localization and             we construct hierarchical scene graphs that encode objects
+                                        mapping with open-vocabulary semantics to build hierarchical           and their relationships, providing structured scene representa-
+                                        scene graphs from a continuously updated semantic object map.          tions for planning. To enable real-time onboard deployment,
+                                        An LLM-based planner leverages these graphs to generate                we adopt a lightweight design that combines 2D LiDAR
+                                        and adapt multi-step plans in real time as the scene evolves.          SLAM [14] with an optimized open-vocabulary segmentation
+                                        Through experiments across multiple indoor environments                model running on NVIDIA Jetson compute. Detected objects
+                                        using a Unitree Go2 quadruped, we demonstrate zero-shot real-          are represented as points within the scene graph, enabling
+                                        world autonomous navigation, achieving over 88% task success,          efficient construction and updates during operation. These
+                                        and provide analysis of system behavior during deployment.             representations provide the structured context required for
+                                                                                                               high-level planning with LLMs.
+                                                                 I. INTRODUCTION
+                                                                                                                  LLMs have recently emerged as powerful planners due to
+                                           As agentic artificial intelligence systems advance, enabling        their ability to reason over structured, context-rich represen-
+                                        their practical deployment in real-world tasks like navigation,        tations [7], [15], [16]. In our system, the LLM uses hierar-
+                                        manipulation, and interaction becomes increasingly impor-              chical scene graphs, formatted as JSONs, to generate high-
+                                        tant [1], [2]. While prior work has made progress in this              level plans for navigation tasks specified in natural language.
+                                        direction [3]­[6], it remains limited, often confined to simula-       Because the scene representation is continuously updated,
+                                        tion, characterized by long execution times, storage-intensive         the planner can revise plans online as the environment
+                                        representations, or an inability to handle dynamic changes,            evolves. These high-level plans are executed through lower-
+                                        and reliant on simplifying assumptions such as perfect                 level planners and controllers responsible for motion gener-
+                                        perception and localization. These limitations hinder real-            ation and CBF-based obstacle avoidance. The components
+                                        world deployment, particularly for robots that must operate in         communicate through ROS2, enabling the robot to translate
+                                        real time with onboard compute and generalize zero-shot to             natural language instructions into safe physical actions and
+                                        new environments. In practice, such deployment requires (a)            navigate to target objects or locations in previously unseen
+                                        reliable onboard mapping and localization, (b) an intelligent          environments. All modules except the LLM planner run on
+                                        planner capable of online adaptation, and (c) a safe low-level         NVIDIA Jetson computers onboard the robot.
+                                        controller for execution. Some recent methods (e.g., [3], [7])
+                                        demonstrate real-world examples, but they are not end-to-end              In summary, we present the first open-architecture, end-
+                                        in the real-world settings and rely on proprietary modules             to-end system for real-world autonomous robot navigation.
+                                        for tasks such as localization and navigation. In this work,           The system comprises an open-vocabulary hierarchical scene
+                                        we present OrionNav, the first open-architecture, end-to-end           graph for semantic mapping, an LLM-based planner for
+                                        system for real-time autonomous navigation deployed on                 adaptive high-level decision-making, and a safety-critical
+                                                                                                               low-level controller for execution. It is fully deployed on
+                                           *Equal Contribution                                                 a Unitree Go2 quadruped robot, operating in real time using
+                                           1Control/Robotics Research Laboratory (CRRL), Depart-               onboard sensing and computation.
+                                        ment of Electrical and Computer Engineering, NYU Tandon
+                                        School of Engineering, Brooklyn, NY, 11201. E-mails:
+                                        {d.naren, rgg9769, ak10531, nkp269, rk4342,
+                                        prashanth.krishnamurthy,khorrami}@nyu.edu
+                                           This work was supported in part by Google and in part by ARO under
+                                        Grant W911NF-22-1-0028, and in part by the New York University Abu
+                                        Dhabi (NYUAD) Center for Artificial Intelligence and Robotics (CAIR),
+                                        funded by Tamkeen under the NYUAD Research Institute Award CG010.
+Fig. 1. We introduce OrionNav, a modular open-architecture framework for end-to-end real-world autonomous navigation, deployed on a Unitree Go2
+quadruped robot. OrionNav fuses data from onboard LiDAR and odometry sensors for robust localization and mapping, while integrating open-world
+semantics to produce a semantic object map of the environment. This map is then clustered into distinct rooms, and room labels are assigned using
+the LLaMA3 LLM, generating a hierarchical scene graph. An LLM-based planner utilizes this scene graph, along with user commands, to create a
+high-level task execution plan, guiding low-level controllers to safely and efficiently achieve designated goals.
+
+                       II. RELATED WORKS                       efficiency in larger environments, often requiring high-end
+                                                               GPUs unsuitable for mobile robots.
+A. Scene Graphs and Semantic Mapping
+                                                               B. VLM/LLM for Robotic Task Planning and Navigation
+   Scene graphs provide an efficient representation for
+robotics by encoding environments as nodes (objects/regions)      Recent advances in robotic task planning leverage LLMs
+connected by edges (spatial/semantic relationships). Recent    for navigation and manipulation tasks [15], [24]­[26]. Con-
+work integrates open-vocabulary semantics using CLIP [17]      ceptGraphs [6], while focusing primarily on scene graph
+embeddings and VLMs [18], enabling scene understanding         generation, employs an LLM-based planner to retrieve target
+beyond predefined categories. While many scene graph ap-       objects from a pre-built scene graph as a downstream task.
+proaches exist, the most related to our work include Concept-  Similarly, HOV-SG [19] emphasizes scene graph generation
+Graphs [6], HOV-SG [19], and Clio [4], which create detailed   and utilizes an LLM to parse complex natural language
+scene representations for planning and navigation. However,    queries for object retrieval from the pre-built scene graph.
+these methods face limitations for real-time deployment:       While SayPlan [27], MoMa-LLM [28], and SayNav [7]
+ConceptGraphs relies on offline processing, HOV-SG uses        also leverage LLMs as high-level planners, they face con-
+computationally expensive clustering, and Clio is restricted   straints that limit their practical application. SayPlan [27]
+to predefined task sets.                                       requires pre-built scene graphs, whereas MoMa-LLM [28]
+                                                               and SayNav [7] rely on known robot poses and semantic
+   Semantic scene graph integrates semantic segmentation       object masks. OK-Robot [5] uses CLIP for open-ended
+with SLAM, providing both geometric structure and semantic     pick-and-place tasks, while PixelNav [29] enables RGB-
+understanding for robot navigation [2]. Recent advances in     based waypoint generation. However, these methods either
+vision­language models have enabled open-vocabulary seg-       create non-reusable environment representations or require
+mentation through large-scale image­text pretraining [13].     pre-built scenes. Recent VLM-enhanced navigation includes
+Methods such as Open-Vocabulary SAM [20] improve seg-          VLFM [3] for semantic value maps, ESC [30] leveraging
+mentation accuracy and efficiency, while FC-CLIP [21] in-      commonsense knowledge, and StructNav [31] combining
+troduces a fully convolutional architecture that reduces com-  geometric frontiers with semantic filtering. GAMAP [32]
+putational complexity while maintaining strong zero-shot       introduces multi-scale geometric-affordance guidance, while
+capabilities. In 3D perception, systems such as Kimera [10]    Zero-shot navigation [33] employs two-step VLM reasoning
+construct dynamic scene graphs by combining semantic           for exploration. However, dense semantic representations
+segmentation with SLAM. Other approaches process point         in such methods limit map reusability and require high-
+clouds directly for open-vocabulary 3D understanding [22],     end GPUs for onboard inference. In contrast, OrionNav
+[23]. However, these methods struggle with computational
+overcomes these constraints by performing perception, plan-
+ning, and control for navigation tasks using onboard sensors
+in real-time, enabling autonomous navigation in diverse,
+unknown, and dynamic real-world environments.
+
+                         III. FRAMEWORK                         Fig. 2. The semantic construct of indoor spaces enable the abstraction of
+                                                                rooms from the detected objects in the scene. The objects are first clustered
+Problem Statement. We consider the problem of deploy-           based on their concentration in the map. For each cluster, an LLM queried
+ment of embodied agents in the real world for goal nav-         to predict the room label given the object classes within and a set of feasible
+igation. Specifically, we want to enable a mobile robot         candidate room labels. The generated hierarchical graph serves as grounded
+equipped with standard onboard sensors like cameras and         semantic context for the LLM-based planner.
+LiDARs to interpret a high-level object/room search task
+and autonomously and safely navigate the environment to         categories. These embeddings are generated from template-
+reach the target. Real-world deployment introduces several      based prompts for each class and its synonyms, enabling
+challenges that are often abstracted away in simulation,        zero-shot recognition of unseen objects [21]. To improve ro-
+including imperfect perception, partial observability, local-   bustness, the system combines scores from an in-vocabulary
+ization uncertainty, and safety constraints during navigation.  classifier for categories seen during FC-CLIP training and an
+Addressing these challenges requires a tightly integrated sys-  out-of-vocabulary classifier that preserves CLIP's recognition
+tem capable of mapping the environment, understanding its       for unseen classes, filtering predicted masks by confidence
+semantic structure, and generating safe navigation commands     before semantic object mapping. Synonyms are mapped to
+based on high-level task objectives.                            a canonical class label to maintain consistent object naming
+                                                                for downstream scene graph construction.
+Framework Overview. We introduce OrionNav, a modular
+open-architecture framework that integrates the algorithmic        To enable real-time onboard inference on our resource-
+components required to deploy and evaluate object naviga-       constrained quadruped, we introduce several optimizations
+tion methods on physical robots in real-world environments.     to the FC-CLIP pipeline. The model is converted to half-
+The framework provides simple, explainable baseline mod-        precision (FP16) to reduce memory usage, and custom
+ules that together form a robust navigation pipeline while      CUDA kernels are implemented for the multi-scale de-
+remaining flexible enough to support alternative algorithms.    formable attention module to address numerical instability
+The system processes real-time sensor data and runs multiple    in reduced precision. We also replace the standard softmax
+modules in parallel to search for and navigate to a target      with a more efficient approximation and vectorize mask
+object or room.                                                 prediction by flattening tensors for parallel top-k selection.
+                                                                These modifications significantly improve runtime efficiency
+   A LiDAR-based 2D SLAM module in OrionNav localizes           while maintaining segmentation performance, enabling real-
+the robot and builds a map of the explored environment, pro-    time operation using the robot's onboard compute.
+viding global spatial context. A semantic perception module
+detects objects from RGB-D observations and grounds them        Semantic Object Mapping. We use the off-the-shelf SLAM
+in the map. These objects are organized into a hierarchical     toolbox [14] to estimate the robot's pose and construct a 2D
+scene graph that associates them with the rooms they belong     occupancy grid map of the environment. The module lever-
+to, enabling higher-level reasoning about the environment.      ages onboard LiDAR and legged-inertial odometry from the
+The graph is provided to an LLM planner to generate high-       Unitree Go2 and applies pose-graph optimization to maintain
+level commands, which are executed through a navigation         consistent 2D localization and mapping during operation.
+stack combining goal-directed navigation, frontier-based ex-    Detected objects are grounded in the map by reprojecting
+ploration, and a safe control wrapper for reliable motion       segmentation mask centers into 3D using the depth frame
+in complex environments. All components communicate             and camera intrinsics, then transforming them to the world
+through ROS2 in real time, enabling end-to-end execution on     frame using the SLAM-estimated robot pose. Object centers
+robotic platforms. While the framework provides a complete      are associated with existing instances using density-based
+pipeline, it remains highly modular, allowing individual        clustering (DBSCAN), enabling consistent tracking across
+modules to be replaced with alternatives. This design makes     frames and removing duplicates. If no match is found, a
+OrionNav a practical platform for evaluating and comparing      new object instance is created. When pose-graph updates
+object navigation approaches in real-world settings.            occur (e.g., from loop closure), object locations are updated
+                                                                to remain aligned with the refined map.
+A. Open-World Hierarchical Scene Graph
+
+Open-Vocabulary Semantic Segmentation. We obtain se-
+mantic object masks from RGB frames using an open-
+vocabulary segmentation model based on FC-CLIP [21]. The
+model uses a frozen ConvNeXt-L [34] CLIP backbone to
+extract image features and predict candidate object masks,
+which are then classified using text embeddings of object
+Hierarchical Scene Graph. Indoor environments are inher-          Algorithm 1 Task Execution (Input: user command)
+ently structured into distinct semantic components, primarily
+floors and rooms such as `office,' `kitchen,' and `bedroom,'      1: action history  []
+based on their intended function. The consistency of these
+labels across indoor environments makes them highly infor-        2: feedback  None; task accomplished  False
+mative semantic descriptors. This semantic structure natu-
+rally lends itself to representation through hierarchical scene   3: while not task accomplished do
+graphs, as explored in prior work [4], [19].
+                                                                  4: scene graph  HierarchicalSceneGraph.get latest()
+   Leveraging this structure, we partition the scene into mul-
+tiple spatial areas by applying DBSCAN on the coordinates         5: action  LLMPlanner.call(user command,
+of mapped objects. For each resulting cluster, we infer a
+semantic room label using a large language model (LLM).                scene graph, feedback, action history)
+The LLM receives the list of object labels within the cluster
+along with a curated set of candidate room labels and guide-      6: action history.append(action)
+lines to ensure consistent labeling across the environment.
+Room labels are generated in real time on-device using a          7: action success  RobotApi.send(action)
+memory-efficient 4-bit quantized version of LLaMA 3 [35].
+The resulting representation is stored as a hierarchical scene    8: if action success then
+graph implemented as a tree structure, where each node
+contains properties including its hierarchy level, semantic       9: if action = goto(<arg>) then
+label, class-specific instance identifier relative to the parent
+node, spatial location, and parent-child relationships (Fig. 2).  10:       task accomplished  ask agent(`Task done?')
+This representation provides an interpretable global semantic
+map that enables the language-based high-level planner to         11:       if not task accomplished then
+generate effective search strategies.
+                                                                  12:         feedback  `Task has not been accomplished.'
+B. LLM Planner
+                                                                  13:       else
+   The high-level planning module uses GPT-4-Turbo [18] to
+generate navigation and interaction strategies for the robot.     14:         feedback  None
+The planner operates using three action primitives: (a) goto,
+which directs the robot to a specified room or object; (b)        15:       end if
+search room, which instructs the robot to navigate to a room
+and scan for additional objects; and (c) explore globally,        16:  else
+which initiates autonomous exploration when insufficient
+information about the environment is available.                   17:       feedback  `Task has not been accomplished.'
+
+   The LLM receives the task description together with the        18:  end if
+hierarchical scene graph (Sec. III-A), formatted as JSON,
+which contains the discovered rooms and objects in the            19: else
+environment. The prompt specifies the LLM's role, available
+action primitives, and guidelines for reasoning and output        20: feedback  RobotApi.get recent action logs()
+formatting. Based on this information, the LLM selects
+an appropriate action primitive and fills in the required         21: end if
+arguments corresponding to rooms or objects in the scene
+graph. The planner also generates feedback explaining the         22: end while
+selected action. Planning proceeds iteratively, as shown in
+Algorithm 1. If the scene graph is empty, the system first        occupancy grid map built from a SLAM map (Sec. III-A).
+performs a 360 scan to initialize observations. The LLM           To improve safety, obstacles in the grid are radially inflated
+then generates a high-level action conditioned on the current     to account for the robot's footprint and maintain a safety
+scene graph and task. After action executing, the scene graph     margin. For local execution, we use a sampling-based Model
+is updated using new observations, and the LLM produces           Predictive Path Integral (MPPI) controller that accounts for
+the next action until the task is completed. Each action is       the robot's nonlinear dynamics while maintaining a forward-
+executed through the safe robot controller (Sec. III-C).          looking planning horizon. The MPPI controller generates ve-
+                                                                  locity commands passed to the robot's locomotion controller.
+C. Safe Robot Controller
+                                                                  Control Barrier Function. While the MPPI controller ac-
+Navigation. The ROS2 navigation stack [36] executes the           counts for nearby obstacles through the cost map, it does not
+goto commands generated by the LLM planner. Global                inherently guarantee collision avoidance. To further enhance
+trajectory planning uses a cost-aware A search over an            safety, we incorporate a Control Barrier Function Quadratic
+                                                                  Programming safety filter [37] between the MPPI output and
+                                                                  the robot's low-level velocity tracker. The filter processes
+                                                                  raw LiDAR point cloud data to assess the immediate sur-
+                                                                  roundings and adjusts control commands, when necessary,
+                                                                  to proactively avoid collisions. This additional safety layer
+                                                                  improves robustness in complex and dynamic environments.
+
+                                                                  Exploration. To facilitate efficient exploration of unknown
+                                                                  environments, we utilize the m-explore ROS2 package1. Each
+                                                                  frontier is weighted based on its distance Fd from the robot
+                                                                  and its size Fn, which reflects the potential unexplored
+                                                                  area reachable from that frontier. The frontier prioritization
+                                                                  weight is defined as Fw = Fd + Fn. We set  = 50 in our
+                                                                  experiments to favor closer frontiers and improve robustness
+                                                                  to measurement errors in long-range retrieval tasks.
+
+                                                                     1https://github.com/robo-friends/m-explore-ros2
+                    TABLE I
+EXPERIMENT SCENARIOS AND RESULTS
+
+            Task Type        Example Prompts         No. of Exp
+                                                   (Success/Total)
+       Scenario A: Short     find a potted plant,
+    Range Object Retrieval    go to a monitor,           32/36
+                                 find a chair
+       Scenario B: Long                                  41/45
+    Range Object Retrieval   find a break room           12/15
+Scenario C: Room Navigation                              85/96
+
+               Total
+
+                         IV. EXPERIMENTS                            Fig. 3. Success and failure cases of OrionNav across all experiments.
+                                                                    Visualization of our task execution framework with breakdown of different
+A. Implementation Details                                           observed failures that occur due to perception, and navigation failures. A
+                                                                    detailed breakdown of failures provided on the right.
+   The algorithm and all its components are implemented
+on the Unitree Go2 quadruped robot shown in Fig. 1. In              C. Results
+addition to its built-in legged-inertial sensors, the robot
+is equipped with a top-mounted Hesai LiDAR for high-                   OrionNav demonstrates strong real-world applicability,
+resolution mapping and a RealSense D455 stereo camera.              successfully completing 85 of 96 trials (Table I). Fig. 3
+Except for the LLM planner's cloud API calls, all processes         summarizes the results, including failure cases and their
+run on two onboard NVIDIA Jetson devices: the AGX Orin              causes. Two failures were due to erroneous SLAM maps
+handles computationally intensive semantic tasks, while the         and one due to high odometry error; excluding these, the
+Orin Nano manages high-frequency SLAM, navigation, and              remaining 93 trials proceeded without localization issues.
+control. During operation, RGB input from the stereo camera         Among them, the exploration algorithm failed to guide the
+(30 Hz, 640×480) is processed by the open-vocabulary                robot to the target location in three trials. Of the 90 trials with
+segmentation model to generate object masks at about 10             successful exploration, four failed due to semantic segmen-
+Hz. Our model recognizes 560 object classes and processes           tation errors where the target object was either undetected
+1306 text categories, while allowing new classes to be added        or misclassified. Additionally, one failure occurred in the
+dynamically. The semantic object map is updated at 2 Hz by          CBF-based navigation system. Notably, no failures were
+integrating odometry, stereo depth, segmentation outputs, and       attributed to the LLM planner or the scene graph generator,
+pose-graph corrections, while the hierarchical scene graph is       highlighting their robustness. Next, we provide a detailed
+refreshed at rates up to 0.5 Hz depending on the number of          analysis of the performance across the three task scenarios.
+detected objects and rooms.
+                                                                    Scenario A. The robot and target object are placed in the
+B. Experiment Setup                                                 same region without occlusions. We conduct 36 experiments
+                                                                    using four distinct objects placed at different locations. To
+   To demonstrate the framework's zero-shot object naviga-          account for the stochasticity of LLM outputs, three trials
+tion capabilities in real-world settings, we evaluate it in four    are performed for each target location from the same initial
+different office environments (Sec. IV-C). We further conduct       position. Our framework achieves a high success rate of
+comparative experiments with two related methods and ab-            approximately 88% in this scenario. During the robot's initial
+lated versions of OrionNav (Sec. IV-D) to highlight how our         360 scan, the system detects most objects in the environ-
+design choices enable reliable real-world deployment. These         ment and assigns room labels. If the target is observed during
+experiments also highlight the value of an open-sourced,            this scan, the planner immediately issues a goto command to
+end-to-end modular architecture towards efficient testing and       navigate to it; otherwise, it issues a search room command.
+comparison of different methods in real-world settings.             This adaptive strategy proves effective, as the target object
+                                                                    is typically detected during the subsequent search phase,
+   The office experiments are organized into three scenarios.       demonstrating the robustness of the exploration approach.
+Scenarios A and B focus on object retrieval tasks, while
+Scenario C addresses room navigation. In Scenario A (short-         Scenario B. In this scenario, the target object is placed
+range object retrieval), target objects are placed in the same      farther from the robot, often in separate rooms or corridors.
+room as the robot's starting position, testing the system's         Without prior knowledge of the environment, the robot must
+ability to quickly identify and approach objects with minimal       explore in real time, making the task more challenging than
+navigation complexity. Scenario B (long-range object re-            Scenario A. We use different objects placed at 15 distinct
+trieval) presents a more challenging setup, requiring naviga-       target locations, performing three trials from similar starting
+tion through corridors and multiple rooms to locate the target.     positions for each location. Despite the increased complexity,
+Scenario C (room navigation) evaluates the robot's ability to       the framework achieves a success rate of over 91%. An
+interpret higher-level goals by detecting and navigating to a
+specified room.
+example of Scenario B execution is shown in Fig. 4, where                                                TABLE II
+the robot performs global exploration multiple times until       COMPARISONS WITH BASELINE METHODS: TASK COMPLETION TIMES
+it detects an office, enters it, and searches the room to
+successfully locate the target bag.                                 (IN MINUTES) FOR EACH METHOD ACROSS EXPERIMENTS (E1-E9).
+                                                                 METHODS THAT EXCEED 10 MINUTES ARE CONSIDERED FAILURES (F).
+Scenario C. Scenario C focuses on locating specific rooms.
+We evaluate four target rooms from different starting po-        Method           E1 E2 E3 E4 E5 E6 E7 E8 E9
+sitions, repeating each experiment three times with slight
+variations, resulting in 15 trials with 12 successes. Fig. 5     Frontier-Search  3FFFFFFFF
+shows an example where the system searches for an office
+not visible from the robot's starting position. The LLM          Object-Map-Search F F F 3 2 3 4 F 5
+planner first issues an exploration command (Fig. 5b). During
+exploration, the robot enters a room with a coffee maker,        OrionNav (Ours) 5 3 4 2 2 2 3 3 4
+microwave, refrigerator, table, and chairs, which is classified
+as a break room (Fig. 5c). Since the target is not found,        original work, Clio was evaluated on an RTX 4090 GPU,
+exploration continues. The robot then enters another room        which provides roughly 16× more FLOPs than the NVIDIA
+containing computers, monitors, tables, cabinets, and chairs     Orin onboard our robot. Due to its computational demands,
+(Fig. 5d). Once classifying this as an office, the system halts  Clio could not run in real time on the robot. When eval-
+exploration and completes the task.                              uated offline on recorded sensor data, it produced frequent
+                                                                 object misclassifications and false positives. It also tended
+D. Comparative Studies                                           to fragment single rooms into multiple segments, leading
+                                                                 to inconsistent room detection and unsuccessful navigation
+   While OrionNav's contribution lies in its open-architecture   to the target object. OrionNav, on the other hand, uses a
+and end-to-end real world deployment, this section provides      lightweight hierarchical scene graph construction method
+qualitative comparisons with two related methods and two         designed for real-time onboard operation, producing more
+ablated versions of OrionNav to highlight how our design         consistent room-object associations and enabling reliable
+choices across modules enable this deployment.                   task execution on the robot.
+
+   A closely related approach to OrionNav is VLFM [3], an           Finally, we evaluate OrionNav against two ablated ver-
+object navigation method that uses vision-language models        sions of itself under dynamic environmental changes. In each
+for exploration and is primarily evaluated in simulation.        experiment, the robot searches for an object that is initially
+We use VLFM as a representative benchmark for zero-              absent and introduced later. We test two settings across nine
+shot camera-based object navigation methods developed in         trials: one using a pre-built map and another where the robot
+simulated settings. In our real-world tests, VLFM was unable     builds the map from scratch. In both cases, the queried object
+to complete the tasks considered, highlighting challenges        is added after the mapping phase, and the goal is to locate
+often encountered when transferring simulation-focused ap-       it while minimizing task completion time. We compare our
+proaches to physical robots. These include reliance on ac-       framework with two baselines: Frontier-Search and Object-
+curate odometry without SLAM-based correction, prede-            Map-Search. Frontier-Search explores frontiers and switches
+fined map sizes, limited field-of-view mapping (front-view       to random search once all frontiers are exhausted. Since it
+only) combined with frontier exploration, and pre-trained        lacks semantic reasoning, an operator manually checks the
+navigation policies that may not generalize well to new          object map to determine whether the queried object has been
+environments. Increasing map size can partially address          detected. Object-Map-Search uses a semantic object map
+coverage limitations but introduces computational trade-offs.    without room labels and introduces a new action primitive,
+For example, matching the size of our test environment           search object(<object name>), which navigates to known
+required increasing VLFM's map size to 2.5× the default,         instances of the object and performs a 360 scan to detect
+reducing mapping frequency by 37.5% (from 0.9 Hz to 0.5          nearby objects. Table II reports task completion times, with
+Hz). Increasing it to 5×, roughly the size of a building floor,  tasks exceeding 10 minutes considered failures.
+reduces the frequency to 0.17 Hz due to the quadratic scaling
+of dense map computation. Consistent with these challenges,      Frontier-Search. In our experiments, the Frontier-Search
+when we emulate realistic localization noise in the HM3D         baseline was largely ineffective, succeeding in only one of
+simulation suite by injecting zero-mean instantaneous and        nine trials and requiring about three minutes. In contrast, Ori-
+accumulated Gaussian noise into position and yaw (position:      onNav succeeded in all trials with substantially lower search
+inst = 0.015 m, acc = 0.0075 m; yaw: inst = 0.015 rad,           times. This improvement stems from two key components:
+acc = 0.0075 rad), VLFM's success rate drops by 10.2%            the hierarchical scene graph and the LLM-based planner.
+(from 52.5% to 42.3%). In contrast, OrionNav integrates          OrionNav continuously maintains a structured understanding
+SLAM-based localization, wide-field semantic perception,         of the environment through the scene graph, allowing the
+and modular navigation components designed for onboard           LLM planner to infer the most likely room containing the
+operation, enabling more reliable deployment on real robots.     queried object and guide the robot to search there directly.
+                                                                 By contrast, Frontier-Search lacks semantic reasoning and
+   We further compare our hierarchical scene graph construc-     relies purely on frontier or random exploration, leading
+tion with Clio [4] by integrating it into our system. In the     to inefficient searches and low success rates. Even when
+                                                                 environmental changes initially prevent detection, OrionNav
+                                                                 adapts by updating the scene graph and revising its plan, en-
+                                                                 abling successful object localization in subsequent attempts.
+Fig. 4. Long range object navigation task: The system is tasked with locating a bag on a floor of a building. It begins at the starting position (a) and
+initially searches the office-like space (b). After failing to find the bag, the system initiates global exploration (c, d, e). Upon detecting another office space
+(f), the system enters and searches it (g), successfully locating the bag.
+
+Fig. 5. Room navigation task: The system is tasked with locating an office room on a building floor. The LLM planner initiates the task by issuing an
+exploration command, during which the robot first encounters a break room. Continuing its search, the robot eventually reaches an office room which is
+correctly detected and classified during scene graph generation. The LLM planner then halts exploration, successfully completing the task.
+
+Object-Map-Search. The key distinction between the               navigation. The system continuously constructs an open-
+Object-Map-Search baseline and OrionNav is that the former       vocabulary hierarchical scene graph of the environment,
+relies on a semantic object map without room labels. This        which an LLM leverages to generate adaptive high-level
+results in a success rate of about 56%, compared to Orion-       plans, executed through a safety-critical low-level con-
+Nav's 100%, highlighting the benefit of the hierarchical scene   troller. Extensive real-world experiments on a Unitree Go2
+graph. Fig. 6 illustrates this difference in a scenario where    quadruped demonstrate high success rates and practical
+both systems receive a partial map containing an office, a       feasibility. We also provide a detailed analysis of system
+break room, and a long L-shaped corridor. The task is to         performance, including module-level comparisons and failure
+locate a monitor that is absent during initial mapping and       cases. Overall, through this work, we take a step toward
+later returned to the office. In Fig. 6a, the baseline assumes   deploying robotic systems in real-world environments and
+the monitor is on a table and navigates to the nearest one in    aim to inspire further research in this direction.
+the break room, where no monitor is present. It then resorts
+to global exploration before eventually reaching the office                                  REFERENCES
+and detecting the object. In contrast, OrionNav (Fig. 6b)
+uses the hierarchical scene graph to infer that a monitor         [1] T. Zhang, X. Hu, J. Xiao, and G. Zhang, "A survey of visual navi-
+is likely located in an office and navigates there directly,           gation: From geometry to embodied AI," Engineering Applications of
+detecting it in a single step. As shown in Table II, even in           Artificial Intelligence, vol. 114, p. 105036, 2022.
+successful trials, the baseline consistently required more time
+to complete the task than OrionNav.                               [2] J. Duan, S. Yu, H. L. Tan, H. Zhu, and C. Tan, "A survey of embodied
+                                                                       ai: From simulators to research tasks," IEEE Transactions on Emerging
+                          V. CONCLUSION                                Topics in Computational Intelligence, vol. 6, no. 2, pp. 230­244, 2022.
+
+   In this paper, we introduced OrionNav, an open-                [3] N. Yokoyama, S. Ha, D. Batra, J. Wang, and B. Bucher, "Vlfm:
+architecture, end-to-end system for real-world autonomous              Vision-language frontier maps for zero-shot semantic navigation,"
+                                                                       in Proceedings of the International Conference on Robotics and
+                                                                       Automation. Yokohama, Japan: IEEE, May 2024, pp. 42­48.
+
+                                                                  [4] D. Maggio, Y. Chang, N. Hughes, M. Trang, D. Griffith, C. Dougherty,
+                                                                       E. Cristofalo, L. Schmid, and L. Carlone, "Clio: Real-time task-driven
+                                                                       open-set 3d scene graphs," IEEE Robotics and Automation Letters,
+                                                                       vol. 9, no. 10, pp. 8921­8928, 2024.
+Fig. 6. Autonomous object navigation in changing environment: The                    dynamic world," Journal of Open Source Software, vol. 6, no. 61, p.
+system is provided with a partial map of the environment containing an               2783, 2021. [Online]. Available: https://doi.org/10.21105/joss.02783
+office room. A monitor is later placed in the office room and the system is
+tasked with finding it. In (a), the Object-Map-Search baseline uses only       [15] I. Singh, V. Blukis, A. Mousavian, A. Goyal, D. Xu, J. Tremblay,
+a semantic object map without room labels. In (b), OrionNav uses the                 D. Fox, J. Thomason, and A. Garg, "ProgPrompt: Generating situated
+proposed hierarchical scene graph.                                                   robot task plans using large language models," in Proceedings of
+                                                                                     the International Conference on Robotics and Automation, London,
+ [5] P. Liu, Y. Orru, C. Paxton, N. M. M. Shafiullah, and L. Pinto, "OK-             United Kingdom, May 2023, pp. 11 523­11 530.
+      Robot: What really matters in integrating open-knowledge models for
+      robotics," arXiv preprint arXiv:2401.12202, 2024.                        [16] W. Zhai, J. Liao, Z. Chen, B. Su, and X. Zhao, "A survey of task
+                                                                                     planning with large language models," Intelligent Computing, vol. 4,
+ [6] Q. Gu, A. Kuwajerwala, S. Morin, K. M. Jatavallabhula, B. Sen,                  p. 0124, 2025.
+      A. Agarwal, C. Rivera, W. Paul, K. Ellis, R. Chellappa, et al.,
+      "Conceptgraphs: Open-vocabulary 3d scene graphs for perception and       [17] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal,
+      planning," in Proceedings of the International Conference on Robotics          G. Sastry, A. Askell, P. Mishkin, J. Clark, G. Krueger, and I. Sutskever,
+      and Automation, Yokohama, Japan, May 2024, pp. 5021­5028.                      "Learning transferable visual models from natural language supervi-
+                                                                                     sion," in Proceedings of the International Conference on Machine
+ [7] A. Rajvanshi, K. Sikka, X. Lin, B. Lee, H.-P. Chiu, and A. Velasquez,           Learning, vol. 139, Vienna, Austria, July 2021, pp. 8748­8763.
+      "Saynav: Grounding large language models for dynamic planning
+      to navigation in new environments," in Proceedings of the Interna-       [18] J. Achiam, S. Adler, S. Agarwal, L. Ahmad, I. Akkaya, F. L. Aleman,
+      tional Conference on Automated Planning and Scheduling, Banff, AB,             D. Almeida, J. Altenschmidt, S. Altman, S. Anadkat, et al., "Gpt-4
+      Canada, June 2024, pp. 464­474.                                                technical report," arXiv preprint arXiv:2303.08774, 2023.
+
+ [8] H. Wang and M. Li, "A new era of indoor scene reconstruction: A           [19] A. Werby, C. Huang, M. Bu¨chner, A. Valada, and W. Burgard, "Hier-
+      survey," IEEE Access, vol. 12, pp. 110 160­110 192, 2024.                      archical Open-Vocabulary 3D Scene Graphs for Language-Grounded
+                                                                                     Robot Navigation," in Proceedings of the Robotics: Science and
+ [9] H. Yin, X. Xu, S. Lu, X. Chen, R. Xiong, S. Shen, C. Stachniss, and             Systems, Delft, Netherlands, July 2024.
+      Y. Wang, "A survey on global lidar localization: Challenges, advances
+      and open problems," International Journal of Computer Vision, vol.       [20] H. Yuan, X. Li, C. Zhou, Y. Li, K. Chen, and C. C. Loy, "Open-
+      132, no. 8, pp. 3139­3171, 2024.                                               vocabulary SAM: segment and recognize twenty-thousand classes in-
+                                                                                     teractively," in Proceedings of the European Conference on Computer
+[10] A. Rosinol, A. Violette, M. Abate, N. Hughes, Y. Chang, J. Shi,                 Vision, Milan, Italy, September 2024.
+      A. Gupta, and L. Carlone, "Kimera: From SLAM to spatial perception
+      with 3d dynamic scene graphs," International Journal of Robotics         [21] Q. Yu, J. He, X. Deng, X. Shen, and L. Chen, "Convolutions die
+      Research, vol. 40, no. 12-14, pp. 1510­1546, 2021.                             hard: Open-vocabulary segmentation with single frozen convolutional
+                                                                                     CLIP," in Proceedings of the Advances in Neural Information Pro-
+[11] Y. Wang, Y. Tian, J. Chen, K. Xu, and X. Ding, "A survey of                     cessing Systems, New Orleans, LA, USA, December 2023.
+      visual SLAM in dynamic environment: The evolution from geometric
+      to semantic approaches," IEEE Transactions on Instrumentation and        [22] R. Ding, J. Yang, C. Xue, W. Zhang, S. Bai, and X. Qi, "PLA:
+      Measurement, vol. 73, pp. 1­21, 2024.                                          language-driven open-vocabulary 3d scene understanding," in Proc.
+                                                                                     International Conference on Computer Vision and Pattern Recogni-
+[12] R. G. Goswami, H. Sinha, P. Amith, J. Hari, P. Krishnamurthy,                   tion, Vancouver, BC, Canada, June 2023, pp. 7010­7019.
+      J. Rizzo, and F. Khorrami, "Floor plan based active global localization
+      and navigation aid for persons with blindness and low vision," IEEE      [23] J. Schult, F. Engelmann, A. Hermans, O. Litany, S. Tang, and B. Leibe,
+      Robotics and Automation Letters, no. 12, pp. 11 058­11 065, 2024.              "Mask3d: Mask transformer for 3d semantic instance segmentation,"
+                                                                                     in Proceedings of the International Conference on Robotics and
+[13] J. Wu, X. Li, S. Xu, H. Yuan, H. Ding, Y. Yang, X. Li, J. Zhang,                Automation, London, UK, May 2023, pp. 8216­8223.
+      Y. Tong, X. Jiang, B. Ghanem, and D. Tao, "Towards open vocabulary
+      learning: A survey," IEEE Transactions on Pattern Analysis and           [24] W. Huang, F. Xia, T. Xiao, H. Chan, J. Liang, P. Florence, A. Zeng,
+      Machine Intelligence, vol. 46, no. 7, pp. 5092­5113, 2024.                     J. Tompson, I. Mordatch, Y. Chebotar, et al., "Inner monologue:
+                                                                                     Embodied reasoning through planning with language models," in
+[14] S. Macenski and I. Jambrecic, "SLAM toolbox: SLAM for the                       Proceedings of the Conference on Robot Learning, Atlanta, GA, USA,
+                                                                                     December 2023, pp. 1769­1782.
+
+                                                                               [25] M. Ahn, A. Brohan, N. Brown, Y. Chebotar, O. Cortes, B. David,
+                                                                                     C. Finn, K. Gopalakrishnan, K. Hausman, A. Herzog, et al., "Do as
+                                                                                     I can, not as I say: Grounding language in robotic affordances," in
+                                                                                     Proceedings of the Conference on Robot Learning, Auckland, New
+                                                                                     Zealand, December 2022, pp. 287­318.
+
+                                                                               [26] V. N. Devarakonda, A. U. Kaypak, S. Yuan, P. Krishnamurthy, Y. Fang,
+                                                                                     and F. Khorrami, "MultiTalk: Introspective and extrospective dialogue
+                                                                                     for human-environment-llm alignment," in Proc. International Con-
+                                                                                     ference on Robotics and Automation, Atlanta, GA, USA, May 2025,
+                                                                                     pp. 10 737­10 743.
+
+                                                                               [27] K. Rana, J. Haviland, S. Garg, J. Abou-Chakra, I. Reid, and N. Suen-
+                                                                                     derhauf, "Sayplan: Grounding large language models using 3d scene
+                                                                                     graphs for scalable robot task planning," in Proc. Conference on Robot
+                                                                                     Learning, Atlanta, GA, USA, November 2023, pp. 23­72.
+
+                                                                               [28] D. Honerkamp, M. Bu¨chner, F. Despinoy, T. Welschehold, and A. Val-
+                                                                                     ada, "Language-grounded dynamic scene graphs for interactive object
+                                                                                     search with mobile manipulation," IEEE Robotics and Automation
+                                                                                     Letters, vol. 9, no. 10, pp. 8298­8305, 2024.
+
+                                                                               [29] W. Cai, S. Huang, G. Cheng, Y. Long, P. Gao, C. Sun, and H. Dong,
+                                                                                     "Bridging zero-shot object navigation and foundation models through
+                                                                                     pixel-guided navigation skill," in Proceedings of the International
+                                                                                     Conference on Robotics and Automation, Yokohama, Japan, May
+                                                                                     2024, pp. 5228­5234.
+
+                                                                               [30] K. Zhou, K. Zheng, C. Pryor, Y. Shen, H. Jin, L. Getoor, and X. E.
+                                                                                     Wang, "ESC: Exploration with soft commonsense constraints for
+                                                                                     zero-shot object navigation," in International Conference on Machine
+                                                                                     Learning, Honolulu, HI, July 2023, pp. 42 829­42 842.
+
+                                                                               [31] J. Chen, G. Li, S. Kumar, B. Ghanem, and F. Yu, "How To Not
+                                                                                     Train Your Dragon: Training-free Embodied Object Goal Navigation
+                                                                                     with Semantic Frontiers," in Proceedings of the Robotics: Science and
+                                                                                     Systems, Daegu, Republic of Korea, July 2023.
+[32] H. Huang, Y. Hao, C. Wen, A. Tzes, Y. Fang, et al., "Gamap: Zero-shot
+      object goal navigation with multi-scale geometric-affordance guid-
+      ance," Advances in Neural Information Processing Systems, vol. 37,
+      pp. 39 386­39 408, 2024.
+
+[33] C. Wen, Y. Huang, H. Huang, Y. Huang, S. Yuan, Y. Hao, H. Lin,
+      Y.-S. Liu, and Y. Fang, "Zero-shot object navigation with vision-
+      language models reasoning," in International Conference on Pattern
+      Recognition. Springer, 2025, pp. 389­404.
+
+[34] Z. Liu, H. Mao, C.-Y. Wu, C. Feichtenhofer, T. Darrell, and S. Xie, "A
+      convnet for the 2020s," in Proceedings of the Conference on Computer
+      Vision and Pattern Recognition, New Orleans, LA, USA, June 2022,
+      pp. 11 966­11 976.
+
+[35] A. Dubey, A. Jauhri, A. Pandey, A. Kadian, A. Al-Dahle, A. Letman,
+      A. Mathur, A. Schelten, A. Yang, A. Fan, et al., "The llama 3 herd
+      of models," arXiv preprint arXiv:2407.21783, 2024.
+
+[36] S. Macenski, F. Mart´in, R. White, and J. G. Clavero, "The marathon 2:
+      A navigation system," in 2020 IEEE/RSJ International Conference on
+      Intelligent Robots and Systems (IROS). IEEE, 2020, pp. 2718­2725.
+
+[37] B. Dai, R. Khorrambakht, P. Krishnamurthy, and F. Khorrami, "Sailing
+      through point clouds: Safe navigation using point cloud based control
+      barrier functions," IEEE Robotics and Automation Letters, vol. 9, no. 9,
+      pp. 7731­7738, 2024.
+

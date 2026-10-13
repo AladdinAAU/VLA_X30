@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>x30_agent</name>
+  <version>0.1.0</version>
+  <description>Reasoner agent (VLM tool calling over the skill registry) and NaVILA-style instruction follower, plus non-LLM baselines.</description>
+  <maintainer email="burgerbdd@gmail.com">X30 VLN</maintainer>
+  <license>Apache-2.0</license>
+  <depend>rclpy</depend>
+  <depend>x30_msgs</depend>
+  <depend>x30_common</depend>
+  <depend>tf2_ros</depend>
+  <depend>sensor_msgs</depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-pil</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

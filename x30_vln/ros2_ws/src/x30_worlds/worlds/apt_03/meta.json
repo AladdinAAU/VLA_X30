@@ -1,0 +1,60 @@
+{
+ "sdf": "worlds/apt_03/world.sdf",
+ "spawn": {
+  "x": 1.2,
+  "y": 0.0,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.5,
+  -5.85,
+  10.44,
+  7.45
+ ],
+ "objects_file": "worlds/apt_03/objects.json",
+ "rooms_file": "worlds/apt_03/rooms.json",
+ "map_file": "worlds/apt_03/map.yaml",
+ "license": "generated in this repository from SDF primitives (no third-party assets); CC0-1.0",
+ "source": "x30_datasets.procgen preset 'apt_03' seed 33",
+ "source_dataset": "procedural",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "kind": "apartment",
+  "rooms": 4,
+  "objects": 43,
+  "reachable_area_m2": 41.4,
+  "models": 45,
+  "objects_by_label": {
+   "bathtub": 1,
+   "bed": 1,
+   "bookshelf": 1,
+   "chair": 2,
+   "coffee_table": 1,
+   "door": 3,
+   "fire_extinguisher": 1,
+   "kitchen_counter": 1,
+   "lamp": 1,
+   "laptop": 1,
+   "microwave": 1,
+   "mirror": 1,
+   "nightstand": 2,
+   "picture": 6,
+   "plant": 3,
+   "radiator": 1,
+   "rug": 2,
+   "sink": 2,
+   "sofa": 1,
+   "stove": 1,
+   "table": 1,
+   "toilet": 1,
+   "trash_can": 2,
+   "tv": 1,
+   "tv_stand": 1,
+   "wardrobe": 1,
+   "window": 3
+  },
+  "robot_radius_m": 0.35,
+  "min_door_width_m": 1.0
+ }
+}

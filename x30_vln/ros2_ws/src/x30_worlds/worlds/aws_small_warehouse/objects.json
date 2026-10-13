@@ -1,0 +1,853 @@
+[
+ {
+  "id": 0,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_01",
+  "pose": {
+   "x": -5.795,
+   "y": -0.957,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.102,
+   18.047,
+   6.529
+  ],
+  "bbox": [
+   -6.839,
+   -9.98,
+   0.0,
+   -4.737,
+   8.067,
+   6.529
+  ],
+  "size_local": [
+   2.102,
+   18.047,
+   6.529
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfF_01"
+ },
+ {
+  "id": 1,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_02",
+  "pose": {
+   "x": 4.732,
+   "y": 0.579,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   0.139,
+   0.029,
+   6.691,
+   1.019,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfE_01"
+ },
+ {
+  "id": 2,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_03",
+  "pose": {
+   "x": 4.732,
+   "y": -4.827,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   -5.267,
+   0.029,
+   6.691,
+   -4.387,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfE_01"
+ },
+ {
+  "id": 3,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_04",
+  "pose": {
+   "x": 4.732,
+   "y": -8.665,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   -9.105,
+   0.029,
+   6.691,
+   -8.225,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfE_01"
+ },
+ {
+  "id": 4,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_05",
+  "pose": {
+   "x": 4.732,
+   "y": -1.243,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   -1.683,
+   0.029,
+   6.691,
+   -0.803,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfD_01"
+ },
+ {
+  "id": 5,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_06",
+  "pose": {
+   "x": 4.732,
+   "y": -3.039,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   -3.479,
+   0.029,
+   6.691,
+   -2.599,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfD_01"
+ },
+ {
+  "id": 6,
+  "label": "shelf",
+  "label_id": 19,
+  "instance": "shelf_07",
+  "pose": {
+   "x": 4.732,
+   "y": -6.751,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "bbox": [
+   2.772,
+   -7.19,
+   0.029,
+   6.691,
+   -6.311,
+   2.643
+  ],
+  "size_local": [
+   3.918,
+   0.88,
+   2.613
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_ShelfD_01"
+ },
+ {
+  "id": 7,
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_01",
+  "pose": {
+   "x": 0.0,
+   "y": 0.0,
+   "z": -4.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.023,
+   1.007,
+   1.518
+  ],
+  "bbox": [
+   -0.511,
+   -0.503,
+   8.5,
+   0.513,
+   0.503,
+   10.018
+  ],
+  "size_local": [
+   1.023,
+   1.007,
+   1.518
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_Lamp_01"
+ },
+ {
+  "id": 8,
+  "label": "bucket",
+  "label_id": 63,
+  "instance": "bucket_01",
+  "pose": {
+   "x": 0.433,
+   "y": 9.632,
+   "z": 0.0,
+   "yaw": -1.5632
+  },
+  "size": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "bbox": [
+   -0.181,
+   9.157,
+   0.005,
+   1.048,
+   10.107,
+   1.409
+  ],
+  "size_local": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_Bucket_01"
+ },
+ {
+  "id": 9,
+  "label": "bucket",
+  "label_id": 63,
+  "instance": "bucket_02",
+  "pose": {
+   "x": -1.832,
+   "y": -6.375,
+   "z": 0.0,
+   "yaw": -1.5632
+  },
+  "size": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "bbox": [
+   -2.447,
+   -6.85,
+   0.005,
+   -1.217,
+   -5.9,
+   1.409
+  ],
+  "size_local": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_Bucket_01"
+ },
+ {
+  "id": 10,
+  "label": "bucket",
+  "label_id": 63,
+  "instance": "bucket_03",
+  "pose": {
+   "x": 0.433,
+   "y": 8.59,
+   "z": 0.0,
+   "yaw": -1.5632
+  },
+  "size": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "bbox": [
+   -0.181,
+   8.115,
+   0.005,
+   1.048,
+   9.065,
+   1.409
+  ],
+  "size_local": [
+   1.229,
+   0.95,
+   1.404
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_Bucket_01"
+ },
+ {
+  "id": 11,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_01",
+  "pose": {
+   "x": 5.708,
+   "y": 8.617,
+   "z": -0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "bbox": [
+   4.624,
+   7.616,
+   0.012,
+   6.785,
+   9.618,
+   1.098
+  ],
+  "size_local": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringA_01"
+ },
+ {
+  "id": 12,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_02",
+  "pose": {
+   "x": 3.409,
+   "y": 8.617,
+   "z": -0.017,
+   "yaw": 0.0
+  },
+  "size": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "bbox": [
+   2.324,
+   7.616,
+   0.012,
+   4.485,
+   9.618,
+   1.098
+  ],
+  "size_local": [
+   2.161,
+   2.002,
+   1.086
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringA_01"
+ },
+ {
+  "id": 13,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_03",
+  "pose": {
+   "x": -1.491,
+   "y": 5.222,
+   "z": -0.017,
+   "yaw": -1.5832
+  },
+  "size": [
+   1.997,
+   2.159,
+   1.086
+  ],
+  "bbox": [
+   -2.499,
+   4.151,
+   0.012,
+   -0.502,
+   6.311,
+   1.098
+  ],
+  "size_local": [
+   1.997,
+   2.159,
+   1.086
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringA_01"
+ },
+ {
+  "id": 14,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_04",
+  "pose": {
+   "x": 3.325,
+   "y": 3.822,
+   "z": -0.012,
+   "yaw": 1.5639
+  },
+  "size": [
+   2.072,
+   1.787,
+   1.76
+  ],
+  "bbox": [
+   2.289,
+   2.929,
+   0.018,
+   4.361,
+   4.716,
+   1.778
+  ],
+  "size_local": [
+   2.072,
+   1.787,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 15,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_05",
+  "pose": {
+   "x": 5.542,
+   "y": 3.816,
+   "z": -0.016,
+   "yaw": -1.5832
+  },
+  "size": [
+   2.082,
+   1.799,
+   1.76
+  ],
+  "bbox": [
+   4.501,
+   2.917,
+   0.014,
+   6.583,
+   4.716,
+   1.775
+  ],
+  "size_local": [
+   2.082,
+   1.799,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 16,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_06",
+  "pose": {
+   "x": 5.384,
+   "y": 6.137,
+   "z": 0.0,
+   "yaw": 3.15
+  },
+  "size": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "bbox": [
+   4.489,
+   5.1,
+   0.03,
+   6.279,
+   7.175,
+   1.79
+  ],
+  "size_local": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 17,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_07",
+  "pose": {
+   "x": 3.236,
+   "y": 6.137,
+   "z": 0.0,
+   "yaw": 3.15
+  },
+  "size": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "bbox": [
+   2.341,
+   5.1,
+   0.03,
+   4.131,
+   7.175,
+   1.79
+  ],
+  "size_local": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 18,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_08",
+  "pose": {
+   "x": -1.574,
+   "y": 2.302,
+   "z": -0.016,
+   "yaw": -3.1332
+  },
+  "size": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "bbox": [
+   -2.469,
+   1.265,
+   0.014,
+   -0.678,
+   3.339,
+   1.775
+  ],
+  "size_local": [
+   1.791,
+   2.075,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 19,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_09",
+  "pose": {
+   "x": -1.22,
+   "y": 9.407,
+   "z": -0.016,
+   "yaw": 1.5639
+  },
+  "size": [
+   2.072,
+   1.787,
+   1.76
+  ],
+  "bbox": [
+   -2.256,
+   8.513,
+   0.014,
+   -0.184,
+   10.301,
+   1.775
+  ],
+  "size_local": [
+   2.072,
+   1.787,
+   1.76
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringC_01"
+ },
+ {
+  "id": 20,
+  "label": "clutter",
+  "label_id": 55,
+  "instance": "clutter_10",
+  "pose": {
+   "x": -1.635,
+   "y": -7.812,
+   "z": -0.32,
+   "yaw": 0.0
+  },
+  "size": [
+   1.017,
+   1.522,
+   1.492
+  ],
+  "bbox": [
+   -2.143,
+   -8.573,
+   0.013,
+   -1.126,
+   -7.051,
+   1.505
+  ],
+  "size_local": [
+   1.017,
+   1.522,
+   1.492
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "aws:aws_robomaker_warehouse_ClutteringD_01"
+ },
+ {
+  "id": 21,
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_01",
+  "pose": {
+   "x": -1.592,
+   "y": 7.715,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.479,
+   0.909,
+   1.275
+  ],
+  "bbox": [
+   -2.332,
+   7.261,
+   0.033,
+   -0.853,
+   8.17,
+   1.308
+  ],
+  "size_local": [
+   1.479,
+   0.909,
+   1.275
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_TrashCanC_01"
+ },
+ {
+  "id": 22,
+  "label": "pallet_jack",
+  "label_id": 64,
+  "instance": "pallet_jack_01",
+  "pose": {
+   "x": -0.276,
+   "y": -9.482,
+   "z": 0.023,
+   "yaw": 0.0
+  },
+  "size": [
+   1.161,
+   0.54,
+   0.966
+  ],
+  "bbox": [
+   -0.786,
+   -9.767,
+   0.035,
+   0.375,
+   -9.227,
+   1.001
+  ],
+  "size_local": [
+   1.161,
+   0.54,
+   0.966
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "aws:aws_robomaker_warehouse_PalletJackB_01"
+ }
+]

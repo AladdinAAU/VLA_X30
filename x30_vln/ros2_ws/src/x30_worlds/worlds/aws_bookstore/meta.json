@@ -1,0 +1,40 @@
+{
+ "sdf": "worlds/aws_bookstore/world.sdf",
+ "spawn": {
+  "x": 5.93,
+  "y": 5.78,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -9.8,
+  -9.2,
+  9.7,
+  9.3
+ ],
+ "objects_file": "worlds/aws_bookstore/objects.json",
+ "map_file": "worlds/aws_bookstore/map.yaml",
+ "license": "MIT-0 (AWS RoboMaker world and models)",
+ "source": "https://github.com/aws-robotics/aws-robomaker-bookstore-world branch ros1, file worlds/bookstore.world",
+ "source_dataset": "aws-robomaker",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "includes": 139,
+  "objects": 68,
+  "navigable_area_m2": 115.6,
+  "objects_by_label": {
+   "air_conditioner": 1,
+   "bicycle": 1,
+   "bookshelf": 16,
+   "chair": 16,
+   "desk": 6,
+   "door": 1,
+   "medical_device": 3,
+   "monitor": 21,
+   "table": 2,
+   "window": 1
+  },
+  "skipped_non_include_models": [],
+  "models_copied": 26
+ }
+}

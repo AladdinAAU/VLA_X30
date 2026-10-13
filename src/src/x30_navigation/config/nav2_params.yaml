@@ -1,0 +1,429 @@
+# Nav2 parameters for the X30 closed-arena simulation.
+#
+# Adapted from src/nav_launch/config/nav2_params.yaml in the
+# quadruped_navigation_ros2 submodule (Brekke, Berge, Dybdahl, Singh & Tyapin,
+# "ROS 2-Driven Navigation and Sensor Platform for Quadruped Robots",
+# Robotics 15(4):70, 2026 - https://github.com/mil-as/quadruped_navigation_ros2),
+# which was tuned for Boston Dynamics Spot. Changes made for the X30 sim:
+#   - robot_base_frame: body -> TORSO (X30 description base link name)
+#   - use_sim_time: false -> true everywhere
+#   - footprint: resized for the larger X30 chassis (verify against the real
+#     X30 footprint before trusting this near obstacles)
+#   - MPPI vx_max/vx_min/vy_max/wz_max: rescaled to the actual velocity
+#     limits enforced by unitree_guide_controller's StateTrotting FSM
+#     (v_x_limit=[-0.4,0.4], v_y_limit=[-0.3,0.3], w_yaw_limit=[-0.5,0.5]
+#     m/s or rad/s) - the paper's values (1.0/1.9) were tuned for Spot's own
+#     controller and would just get clamped/saturated on the X30 otherwise.
+#   - local_costmap: the paper uses the spatio_temporal_voxel_layer (STVL)
+#     plugin fed by the ZED/Livox point clouds on real Spot. That package
+#     isn't part of a stock ROS 2 install, so for this simple test bed the
+#     local costmap uses the same LaserScan-based nav2_costmap_2d obstacle
+#     layer as the global costmap. Swap back to STVL + /camera/points if you
+#     want closer fidelity to the paper's setup.
+#   - map_server yaml_filename: cleared (pass via the 'map' launch argument
+#     instead of a hardcoded path).
+
+bt_navigator:
+  ros__parameters:
+    use_sim_time: True
+    global_frame: map
+    robot_base_frame: TORSO
+    odom_topic: /odom
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    wait_for_service_timeout: 1000
+    action_server_result_timeout: 900.0
+    navigators: ["navigate_to_pose", "navigate_through_poses"]
+    navigate_to_pose:
+      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+    navigate_through_poses:
+      plugin: "nav2_bt_navigator::NavigateThroughPosesNavigator"
+    # Built-in BT plugins load automatically on Jazzy; listing them in
+    # plugin_lib_names makes bt_navigator crash with "already registered".
+    error_code_names:
+      - compute_path_error_code
+      - follow_path_error_code
+
+bt_navigator_navigate_through_poses_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+bt_navigator_navigate_to_pose_rclcpp_node:
+  ros__parameters:
+    use_sim_time: True
+
+controller_server:
+  ros__parameters:
+    controller_frequency: 25.0
+    use_sim_time: True
+    FollowPath:
+      plugin: "nav2_mppi_controller::MPPIController"
+      time_steps: 60
+      model_dt: 0.04
+      batch_size: 1500
+      vx_std: 0.1
+      vy_std: 0.1
+      wz_std: 0.2
+      # Speed envelope the sim X30 walks stably at (see docs/SIMULATION_GUIDE.md)
+      vx_max: 0.2
+      vx_min: -0.1
+      vy_max: 0.0
+      wz_max: 0.3
+      iteration_count: 1
+      prune_distance: 1.7
+      transform_tolerance: 0.1
+      temperature: 0.3
+      gamma: 0.015
+      motion_model: "DiffDrive"
+      visualize: false
+      TrajectoryVisualizer:
+        trajectory_step: 5
+        time_step: 3
+      AckermannConstraints:
+        min_turning_r: 0.2
+      critics: ["TwirlingCritic", "ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic", "VelocityDeadbandCritic"]
+      ConstraintCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 4.0
+      GoalCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 5.0
+        threshold_to_consider: 1.4
+      GoalAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 6.0
+        threshold_to_consider: 1.0
+      PreferForwardCritic:
+        enabled: false
+        cost_power: 1
+        cost_weight: 1.0
+        threshold_to_consider: 2.5
+      ObstaclesCritic:
+        enabled: true
+        cost_power: 1
+        repulsion_weight: 1.2
+        critical_weight: 2.0
+        consider_footprint: true
+        collision_cost: 10000.0
+        collision_margin_distance: 0.1
+        near_goal_distance: 0.5
+      PathAlignCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 14.0
+        max_path_occupancy_ratio: 0.05
+        trajectory_point_step: 4
+        threshold_to_consider: 0.8
+        offset_from_furthest: 20
+        use_path_orientations: false
+      PathFollowCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 6.0
+        offset_from_furthest: 5
+        threshold_to_consider: 1.4
+      PathAngleCritic:
+        enabled: true
+        cost_power: 1
+        cost_weight: 2.0
+        offset_from_furthest: 4
+        threshold_to_consider: 1.0
+        max_angle_to_furthest: 0.2
+        forward_preference: true
+      VelocityDeadbandCritic:
+        enabled: false
+        cost_power: 1
+        cost_weight: 35.0
+        deadband_velocities: [0.1, 0.1, 0.1]
+      TwirlingCritic:
+        enabled: true
+        twirling_cost_power: 1
+        twirling_cost_weight: 0.1
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      global_frame: map
+      robot_base_frame: TORSO
+      use_sim_time: True
+      rolling_window: true
+      width: 7
+      height: 7
+      resolution: 0.05
+      footprint: '[ [0.5, 0.32], [-0.5, 0.32], [-0.5, -0.32], [0.5, -0.32] ]'
+      plugins: ["obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 10.0
+        inflation_radius: 0.35
+      always_send_full_costmap: True
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: TORSO
+      use_sim_time: True
+      footprint: '[ [0.5, 0.32], [-0.5, 0.32], [-0.5, -0.32], [0.5, -0.32] ]'
+      resolution: 0.05
+      track_unknown_space: true
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+        observation_sources: scan
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 10.0
+        inflation_radius: 1.0
+      always_send_full_costmap: True
+
+map_server:
+  ros__parameters:
+    use_sim_time: True
+    bond_name: "lifecycle_manager_navigation"
+    yaml_filename: ""
+
+map_saver:
+  ros__parameters:
+    use_sim_time: True
+    save_map_timeout: 5.0
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65
+
+planner_server:
+  ros__parameters:
+    planner_plugins: ["GridBased"]
+    use_sim_time: True
+
+    GridBased:
+      plugin: "nav2_smac_planner::SmacPlannerHybrid"
+      tolerance: 1.0
+      downsample_costmap: false
+      downsampling_factor: 1
+      allow_unknown: true
+      max_iterations: 1000000
+      max_on_approach_iterations: 1000
+      terminal_checking_interval: 5000
+      max_planning_time: 3.5
+      motion_model_for_search: "REEDS_SHEPP"
+      cost_travel_multiplier: 2.0
+      angle_quantization_bins: 64
+      analytic_expansion_ratio: 3.5
+      analytic_expansion_max_length: 3.0
+      analytic_expansion_max_cost: 200.0
+      analytic_expansion_max_cost_override: false
+      minimum_turning_radius: 0.60
+      reverse_penalty: 1.8
+      change_penalty: 0.15
+      non_straight_penalty: 1.20
+      cost_penalty: 2.0
+      retrospective_penalty: 0.025
+      rotation_penalty: 5.0
+      lookup_table_size: 20.0
+      cache_obstacle_heuristic: True
+      allow_reverse_expansion: False
+      smooth_path: True
+      debug_visualizations: False
+      smoother:
+        max_iterations: 1000
+        w_smooth: 0.3
+        w_data: 0.2
+        tolerance: 1.0e-10
+        do_refinement: true
+
+smoother_server:
+  ros__parameters:
+    use_sim_time: True
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: True
+
+behavior_server:
+  ros__parameters:
+    costmap_topic: local_costmap/costmap_raw
+    footprint_topic: local_costmap/published_footprint
+    cycle_frequency: 10.0
+    behavior_plugins: ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
+    spin:
+      plugin: "nav2_behaviors::Spin"
+    backup:
+      plugin: "nav2_behaviors::BackUp"
+    drive_on_heading:
+      plugin: "nav2_behaviors::DriveOnHeading"
+    wait:
+      plugin: "nav2_behaviors::Wait"
+    assisted_teleop:
+      plugin: "nav2_behaviors::AssistedTeleop"
+    global_frame: odom
+    robot_base_frame: TORSO
+    transform_tolerance: 0.1
+    use_sim_time: True
+    simulate_ahead_time: 2.0
+    max_rotational_vel: 0.5
+    min_rotational_vel: 0.2
+    rotational_acc_lim: 3.2
+
+robot_state_publisher:
+  ros__parameters:
+    use_sim_time: True
+
+waypoint_follower:
+  ros__parameters:
+    use_sim_time: True
+    loop_rate: 20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled: True
+      waypoint_pause_duration: 200
+
+velocity_smoother:
+  ros__parameters:
+    use_sim_time: True
+    smoothing_frequency: 20.0
+    scale_velocities: False
+    feedback: "OPEN_LOOP"
+    max_velocity: [0.2, 0.0, 0.3]
+    min_velocity: [-0.1, 0.0, -0.3]
+    max_accel: [0.4, 0.0, 0.8]
+    max_decel: [-0.4, 0.0, -0.8]
+    odom_topic: "odom"
+    odom_duration: 0.1
+    deadband_velocity: [0.0, 0.0, 0.0]
+    velocity_timeout: 1.0
+
+# Jazzy's navigation_launch.py chain is:
+#   controller_server -> cmd_vel_nav -> velocity_smoother -> cmd_vel_smoothed
+#   -> collision_monitor -> /cmd_vel
+# /cmd_vel is the single velocity interface: the sim's cmd_vel_bridge and the
+# real X30 velocity input both consume it, so the same pipeline runs on both.
+collision_monitor:
+  ros__parameters:
+    use_sim_time: True
+    base_frame_id: "TORSO"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
+    transform_tolerance: 0.2
+    source_timeout: 1.0
+    base_shift_correction: True
+    stop_pub_timeout: 2.0
+    polygons: ["FootprintApproach"]
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      footprint_topic: "/local_costmap/published_footprint"
+      time_before_collision: 1.2
+      simulation_time_step: 0.1
+      min_points: 6
+      visualize: False
+      enabled: True
+    observation_sources: ["scan"]
+    scan:
+      type: "scan"
+      topic: "scan"
+      enabled: True
+
+# Lifecycle-managed by Jazzy's nav2 bringup, so they need params to configure
+# even though the robot server path doesn't use them.
+route_server:
+  ros__parameters:
+    use_sim_time: True
+    boundary_radius_to_achieve_node: 1.0
+    radius_to_achieve_node: 2.0
+    smooth_corners: true
+    operations: ["AdjustSpeedLimit", "ReroutingService", "CollisionMonitor"]
+    ReroutingService:
+      plugin: "nav2_route::ReroutingService"
+    AdjustSpeedLimit:
+      plugin: "nav2_route::AdjustSpeedLimit"
+    CollisionMonitor:
+      plugin: "nav2_route::CollisionMonitor"
+      max_collision_dist: 3.0
+    edge_cost_functions: ["DistanceScorer", "CostmapScorer"]
+    DistanceScorer:
+      plugin: "nav2_route::DistanceScorer"
+    CostmapScorer:
+      plugin: "nav2_route::CostmapScorer"
+
+docking_server:
+  ros__parameters:
+    use_sim_time: True
+    controller_frequency: 50.0
+    initial_perception_timeout: 5.0
+    wait_charge_timeout: 5.0
+    dock_approach_timeout: 30.0
+    undock_linear_tolerance: 0.05
+    undock_angular_tolerance: 0.1
+    max_retries: 3
+    base_frame: "TORSO"
+    fixed_frame: "odom"
+    dock_backwards: false
+    dock_prestaging_tolerance: 0.5
+    dock_plugins: ['simple_charging_dock']
+    simple_charging_dock:
+      plugin: 'opennav_docking::SimpleChargingDock'
+      docking_threshold: 0.05
+      staging_x_offset: -0.7
+      use_external_detection_pose: true
+      use_battery_status: false
+      use_stall_detection: false
+      external_detection_timeout: 1.0
+      external_detection_translation_x: -0.18
+      external_detection_translation_y: 0.0
+      external_detection_rotation_roll: -1.57
+      external_detection_rotation_pitch: -1.57
+      external_detection_rotation_yaw: 0.0
+      filter_coef: 0.1
+    controller:
+      k_phi: 3.0
+      k_delta: 2.0
+      v_linear_min: 0.15
+      v_linear_max: 0.15
+      use_collision_detection: true
+      costmap_topic: "local_costmap/costmap_raw"
+      footprint_topic: "local_costmap/published_footprint"
+      transform_tolerance: 0.1
+      projection_time: 5.0
+      simulation_step: 0.1
+      dock_collision_threshold: 0.3

@@ -1,0 +1,47 @@
+# Independent LAN copy of the Qwen VLM service. This file leaves the framework
+# compose definitions untouched; stop other GPU-heavy containers before use.
+services:
+  vlm-lan-model:
+    profiles: [lan-vlm]
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: x30-vlm-lan-model
+    hostname: vlm-lan-model
+    init: true
+    command:
+      - -hf
+      - ${VLM_HF:-Qwen/Qwen3-VL-8B-Instruct-GGUF:Q4_K_M}
+      - --alias
+      - ${VLM_ALIAS:-qwen3-vl}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - -ngl
+      - "99"
+      - -c
+      - "${VLM_CTX:-16384}"
+      - --parallel
+      - "${VLM_PARALLEL:-1}"
+      - --jinja
+      - --api-key
+      - ${VLM_API_KEY:?Set VLM_API_KEY before starting the LAN VLM}
+    environment:
+      LLAMA_CACHE: /models
+    volumes:
+      - ${VLM_MODELS_DIR:-D:/vlm-models}:/models
+    ports:
+      - "${VLM_BIND_IP:?Set VLM_BIND_IP to this machine's LAN IPv4}:${VLM_PORT:-8000}:8000"
+    networks: [x30_net]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 60s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

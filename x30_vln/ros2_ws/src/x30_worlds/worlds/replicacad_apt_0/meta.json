@@ -1,0 +1,66 @@
+{
+ "sdf": "worlds/replicacad_apt_0/world.sdf",
+ "spawn": {
+  "x": 2.44,
+  "y": -0.23,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -3.68,
+  -9.16,
+  5.58,
+  5.83
+ ],
+ "objects_file": "worlds/replicacad_apt_0/objects.json",
+ "map_file": "worlds/replicacad_apt_0/map.yaml",
+ "robot_radius_m": 0.25,
+ "license": "ReplicaCAD: LICENSE.txt in the dataset says CC BY-NC 4.0 (the Hugging Face card says CC BY 4.0); treated as non-commercial, attribution required",
+ "source": "ai-habitat/ReplicaCAD_dataset apt_0",
+ "source_dataset": "replicacad",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    -1.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   -0.0
+  ]
+ },
+ "stats": {
+  "source_file": "apt_0",
+  "up_axis": "y",
+  "scale": 1.0,
+  "floor_z_source": 0.0,
+  "extent_m": [
+   7.26,
+   13.0,
+   3.13
+  ],
+  "triangles": 147002,
+  "triangles_visual": 147002,
+  "triangles_ceiling": 2026,
+  "collision_boxes": 1381,
+  "collision_pitch_m": 0.08,
+  "navigable_area_m2": 24.9,
+  "objects": 118,
+  "visual_mesh_mb": 58.6
+ },
+ "source_scene_id": "apt_0"
+}

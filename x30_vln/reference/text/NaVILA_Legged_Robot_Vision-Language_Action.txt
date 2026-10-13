@@ -1,0 +1,1063 @@
+                                        NaVILA: Legged Robot Vision-Language-Action
+
+                                                             Model for Navigation
+
+                                        An-Chieh Cheng1,     Yandong Ji1,  Zhaojing Yang2,  Zaitian Gongye1  Xueyan Zou1
+                                                 Jan Kautz3
+                                                             Erdem Biyik2  Hongxu Yin3,     Sifei Liu3,  Xiaolong Wang1,3,
+
+                                                             1UC San Diego 2USC 3NVIDIA
+
+                                                             https://navila-bot.github.io
+
+arXiv:2412.04453v2 [cs.RO] 17 Feb 2025  Workspace                    Turn left immediately. Go straight forward. Step on the mat. Keep going forward.
+                                                                                             Stop when you are very close to the trash can.
+
+                                                             Move forward and exit the office area. And then turn right and stop near the blue trash can.
+
+                                        Home       Move forward out of the room. Turn right at the end. Proceed to the grass and stop in front of the soccers.
+
+                                                   Walk forward, when seeing the stair bars, turn right and walk around the stairs until reaching the hallway.
+                                                                             Turn right and walk along the hallway, stop in front of a bathroom.
+
+                                                                             Walk forward along the way. Turn a little left and keep going straight. Stop in front of the red door.
+
+                                                 Outdoor
+
+                                                                                                   Move forward along the way. Turn left at the yellow fire hydrant.
+                                                                                                         Go forward along the slope and stop in front of the door.
+
+                                        Fig. 1: Real-world demonstration of NaVILA: Upon receiving human instructions, NaVILA uses a vision-language model to process RGB
+                                        video frames and employs locomotion skills to execute the task on a robot. The robot successfully handles long-horizon navigation tasks
+                                        and operates safely in challenging environments.
+
+                                                                                                                                instructions all the way to low-level leg joint actions. We propose
+                                           Abstract--This paper proposes to solve the problem of Vision- NaVILA, a 2-level framework that unifies a Vision-Language-
+                                        and-Language Navigation with legged robots, which not only Action model (VLA) with locomotion skills. Instead of directly
+                                        provides a flexible way for humans to command but also allows predicting low-level actions from VLA, NaVILA first generates
+                                        the robot to navigate through more challenging and cluttered mid-level actions with spatial information in the form of language,
+                                        scenes. However, it is non-trivial to translate human language (e.g., "moving forward 75cm"), which serves as an input for a
+
+                                                                                                                                visual locomotion RL policy for execution. NaVILA substantially
+                                            Equal contribution, ordered alphabetically.  Equal advising.
+improves previous approaches on existing benchmarks. The            locomotion policy to handle sophisticated obstacle avoidance
+same advantages are demonstrated in our newly developed             and increases overall robustness.
+benchmarks with IsaacLab, featuring more realistic scenes, low-
+level controls, and real-world robot experiments.                      To train the VLA, we demonstrate how to (i) integrate
+                                                                    historical context and current observations in VLN within
+                          I. INTRODUCTION                           existing VLM frameworks, (ii) create a specialized navigation
+                                                                    prompt tailored for VLN tasks, (iii) utilize real-world data
+   The ability to perform Vision-and-Language Navigation            from YouTube human touring videos to improve navigation
+(VLN) has become a foundational component in modern                 in continuous environments, and (iv) introduce a carefully cu-
+robotics systems. With VLN, a robot is expected to navigate         rated dataset blend designed to enhance VLN generalizability.
+around unseen environments without a provided map following         These strategies allow us to fine-tune a general-purpose image-
+a language instruction [1­6]. This not only offers a better inter-  based VLM into a navigation-focused agent while simultane-
+face for humans, but also strengthen cross-scene generalization     ously training it on general vision-language datasets, thereby
+through languages. In this paper, we further extend the study       maintaining its broad generalization capabilities. Moreover,
+of VLN with legged robots (e.g., quadruped or humanoid).            this is the first work to show that direct training on human
+Using legs instead of wheels allows robots to navigate in more      videos improves navigation in continuous environments.
+challenging and cluttered scenarios. As the examples shown
+in Fig. 1, our robot can navigate through a messy laboratory           To train robust locomotion skills, we employ a single-
+space with narrow walkways, transition from room to room in         stage approach to learn vision-based locomotion policy. We
+a house, as well as tackle outdoor challenging environments         construct a height map from raw LiDAR point clouds and
+such as uneven terrains with small rocks, holes, and troughs.       introduce randomization to bridge the sim-to-real gap. This
+                                                                    controller takes the output from our VLA model, converts
+   To translate language to action, the robot needs to reason       it into command velocities, and tracks these velocities by
+about the input language, and perform closed-loop planning          controlling the positions of the joints. This end-to-end ap-
+as well as low-level control. With the recent advancement in        proach enables the training of visual locomotion skills that
+Large Language Models (LLMs) and Vision-Language Models             are both robust and safe, facilitating deployment in real-world,
+(VLMs), several end-to-end Vision-Language-Action (VLA)             challenging environments (e.g., strong sunlight or near certain
+systems have been developed [7­9]. These systems fine-tune          transparent surfaces).
+a general-propose VLM with large-scale robot manipulation
+demonstrations to produce low-level actions. While unifying            In our experiments, we show that our VLA significantly
+reasoning and execution in a single model is fascinating and        outperforms the state-of-the-arts on classic VLN benchmarks,
+shows encouraging results, it is worth diving deeper into the       with over 17% improvement in success rate. Additionally, our
+question: Is there a better way to represent actions beyond         single-stage locomotion policy outperforms previous policy
+the quantized low-level commands? After all, LLMs and               distillation-based methods by a substantial margin. To better
+VLMs were primarily trained with natural language. Unifying         simulate the challenges of locomotion navigation in VLN, we
+reasoning and execution becomes challenging when we need            introduce a new benchmark, VLN-CE-Isaac, using Isaac Sim.
+to convert that reasoning into precise, non-verbal actions.         This benchmark considers detailed robotic joint movements
+                                                                    and interactions with environments, which prior VLN works
+   Inspired by the recent progress on VLM [10, 11] for spatial      have not explored. In our VLN-CE-Isaac experiments, our
+location and distance reasoning, we propose NaVILA, a two-          vision-based policy outperforms the blind policy by a signif-
+level framework for legged robot VLN: A VLM is fine-                icant margin, showing a 14% improvement in success rate.
+tuned to output a mid-level action (VLA) in the form of             We also demonstrate that our VLA can be deployed across
+language such as "turn right 30 degrees", and a low-level           different robots (Unitree Go2, Unitree H1, Booster T1), each
+visual locomotion policy is trained to follow this instruction      using distinct locomotion skills. Finally, we deploy NaVILA in
+for execution. The mid-level action output of the VLA conveys       the real world, exhibiting impressive robustness and achieving
+the location and direction information without the low-level        an 88% success rate on 25 instructions, including a 75%
+commands. The advantages of this framework are three-fold:          success rate on complex instructions across diverse scenes.
+(i) By decoupling low-level execution from VLAs, the same
+VLA can be applied across different robots by swapping                                           II. METHOD
+the low-level policy; (ii) Representing actions as mid-level
+language instructions enables VLA training with diverse data           NaVILA integrates high-level visual language understand-
+sources, including real human videos and reasoning QA tasks.        ing with low-level locomotion control (Fig.2). It employs a
+This enhances reasoning capabilities without overfitting out-       VLM to process single-view images and generate waypoint
+puts to specific low-level commands and can leverage real-          instructions in natural language, which a locomotion policy
+world data for generalization; (iii) NaVILA operates on two         translates into precise joint movements for real-time robot
+distinct timescales: the VLA, typically a large and computa-        control. The synergy between the VLM's reasoning and the
+tionally intensive model, runs at a lower frequency, providing      locomotion policy's execution enables NaVILA to generalize
+high-level navigation commands; while the locomotion policy         across diverse environments. We first describe how we tame
+operates in real-time. This dual-frequency approach allows the      VLMs for high-level VLN in Sec.II-A, then outline our robot
+                                                                    configuration and locomotion policy in Sec. II-B.
+Instruction  Walk forward and turn right.
+             Pass the rug and stop by the desk.
+
+                                                 Current View     VLA Move forward 75 cm.
+
+                                                                                      Velocity           ...
+
+                                                 History Views                     Commands      Policy    Joint
+                                                                                                         Positions
+                                                                          Prior Actions
+                                                                     Joint Pos. & Vel.
+
+                                                                          Orientation
+                                                                  Angular Velocity
+
+                                                                                 Proprioception
+
+             Height Map
+
+Fig. 2: NaVILA is a two-level framework combining high-level visual language understanding with low-level locomotion control. Our VLA
+model processes single-view images to produce mid-level actions in natural language, which are then converted into precise joint movements
+by an advanced low-level locomotion policy. This integration allows for strong generalization and adaptability across different real-world
+environments, and can operate the robot in real-time.
+
+A. Taming VLMs for Vision Language Navigation                     which is crucial for a VLN agent to make immediate decisions
+                                                                  (e.g., turning right at an intersection or stopping when the goal
+   VLN requires processing video inputs as observations. A        is reached). On the other hand, frames before time step t are
+common approach to handling video inputs in VLMs is               historical frames that function as a memory bank, helping the
+through video encoders [12]. However, recent progress in          agent track overall progress (e.g., remembering the starting
+VLMs has largely been driven by the availability of image-        location, reasoning about places already visited and planning
+text data. While there have been efforts to extend this success   the next step). Uniformly sampling frames at regular intervals,
+to video encoders, the lack of large, high-quality video-         as done in VILA, is not ideal because it doesn't differentiate
+text datasets has limited their pre-training. To address this     between these two types of representations. Therefore, we first
+challenge, we opt for image-based vision-language models in       extract the most recent frame t as the current observation and
+our approach. These models exhibit stronger generalization        then uniformly sample frames from the preceding t-1 frames,
+abilities and possess broader knowledge, making them more         ensuring the first frame is always included. Additionally, since
+suitable for tackling the generalization challenges in VLN.       current and historical observations serve different roles, we
+Specifically, we built our approach upon VILA [13­19], a fam-     distinguish them in our task prompt using textual cues like a
+ily of efficient VLMs for both understanding and generation.      video of historical observations: for memory
+VILA's pre-training has proven particularly effective for multi-  frames and current observation: for the latest frame.
+image reasoning, making it especially suitable for VLN tasks      Unlike [12], we avoid introducing additional special tokens
+where understanding sequential image relationships is critical.   that could complicate the LLM's learning process. Instead, we
+                                                                  adhere to our design principle of keeping both the input and
+VILA Preliminary. VILA consists of three main compo-              output of LLM in the language domain to fully leverage the
+nents: a vision encoder, a projector, and an LLM. The vi-         reasoning capabilities of the pre-trained LLM. By integrating
+sion encoder processes the input images, converting them          these tokens for historical and current observations with the
+into a sequence of visual tokens. These tokens are then           navigation instruction, we construct a navigation task prompt,
+downsampled and mapped into the language domain via               as shown in Fig. 2.
+an MLP projector. Afterward, the projected tokens, along          Learning from Human Videos. Recent studies [24­26] have
+with text tokens, are sent to the LLM for auto-regressive         shown that collecting trajectory-instruction pairs from human
+generation. When handling videos, VILA uniformly sampled          videos can enhance navigation capabilities. However, prior
+frames at regular intervals. It puts all the frame information    work has been limited to discrete navigation settings and has
+before any text. A typical prompt for describing a video          mainly used real videos for pre-training to reduce domain
+might look like "frame3frame6frame9...Tell                        gaps or improve landmark understanding, rather than for
+me about this video." Notably, with sequence par-                 directly training navigation models. Extending this approach
+allel training [16], VILA can include frames up to 1024.          to continuous settings presents a significant challenge due to
+VILA undergoes a 3-stage training process: first, it pre-trains   the difficulty of obtaining continuous action labels. Recent
+a connector between the frozen LLM and vision backbones           advances in metric-pose estimation in the wild have now made
+using alignment data [20]; then it pre-trains both the connector  this feasible, enabling us to extract spatial understanding from
+and the LLM using text-image interleaved corpus [21, 22]; and     human videos and train navigation models directly.
+finally, it fine-tunes all modules (vision encoder, connector,
+LLM) with instruction tuning data [20, 23].                          Our data pipeline, shown in Fig. 4, starts with 2K egocentric
+                                                                  touring videos from YouTube, which provide a rich source of
+Navigation Prompts. In vision-language navigation tasks,          real-world data to learn robot navigation from human behavior.
+images from different time steps serve two distinct purposes.     We process these videos into 20K diverse and representative
+The image at time step t represents the current observation,
+History Views   Current View                             Navigation Prompt
+
+                              Imagine you are a robot programmed for navigation tasks.
+                              You have been given a video of historical observations:
+
+                                                              ...
+
+                              and current observation:
+                              Your assigned task is:
+
+Vision Encoder                                                    Walk forward and turn right.
+ Down Sample & Projector                                          Pass the rug and stop by the desk.
+
+                              Analyze this series of images to decide your next move,
+
+                              which could involve turning left or right by a specific degree,
+
+                              moving forward a certain distance, or stop if the task is completed.
+
+                196 tokens                                        Large Language Model                      
+
+...
+
+196 × t tokens                The next action is                   degrees   degrees                  d cm    .
+
+Fig. 3: Overview of our VLA framework. We denote the purple blocks ( ) as memory tokens sampled from historical frames, and the red
+
+blocks ( ) as the current observation tokens.  denotes trainable parameters. In our experiments, we tested configurations with 8 to 64
+
+frames for t.
+
+trajectories using entropy-based sampling [26]. Next, we es-      for a more even distribution. All navigation-specific data
+timate camera poses using MASt3R [27] to extract step-by-         undergo the previously described frame extraction strategy and
+step actions, and we generate natural language instructions for   are paired with navigation task prompts.
+each trajectory using VLM-based [13] captioning followed by
+LLM [28] rephrasing. This approach allows us to leverage             To further improve scene understanding and address the
+human demonstrations for continuous navigation, a capability      limited instructions in R2R-CE and RxR-CE, we incorpo-
+that was previously non-trivial to achieve.                       rate auxiliary navigational datasets. Following [12], we use
+                                                                  augmented instructions from EnvDrop [31] and introduce an
+Supervised Fine-tuning Data Blend. Effective Supervised           auxiliary task of navigation trajectory summarization. Given
+Fine-tuning (SFT) data is crucial for developing a robust         a trajectory video, we sample frames by retaining the first
+vision-language action model. The model should specialize         frame and uniformly selecting historical frames, using the
+in embodied tasks while avoiding overfitting to specific ac-      annotated instructions as labels. The LLM is then tasked
+tions. It should also generalize well to real-world scenarios     with describing the robot's trajectory based on these frames.
+while retaining broad-world knowledge. Thanks to NaVILA's         To further enhance spatial scene understanding, we integrate
+modular framework, which offers exceptional scalability and       the ScanQA [32] dataset, which features real-world 3D scan
+adaptability, integrating diverse data sources into our pipeline  QA pairs with human-edited questions and free-form answers
+is straightforward. This flexibility allows us to enhance gener-  grounded in 3D objects. For training, we use multi-view RGB
+alizability for navigation. Our SFT data blend is designed from   images from the raw scans to support this task.
+four perspectives: (1) Navigational data from real videos, (2)
+Navigational data from simulations, (3) Auxiliary navigational       Finally, to maintain the model's general capabilities, we
+data, and (4) General VQA datasets.                               incorporate general VQA datasets from [23, 33, 34]. This com-
+                                                                  prehensive dataset design ensures that NaVILA can generalize
+   For simulated navigational data, the available VLN datasets    effectively to novel scenes and real-world environments.
+in continuous environments are limited, with only R2R-
+CE [29] and RxR-CE [30] providing sparse path points con-         Training and Inference Paradigm. Our training process
+verted from discrete VLN versions. We leverage both datasets      begins with the stage two model of VILA, which has al-
+within the Habitat simulator, using a shortest path follower      ready undergone visual language corpus pre-training. We then
+to generate action sequences along the geodesic shortest path.    apply our SFT data blend to train the entire VLM for one
+This results in step-wise navigation videos, where each sample    epoch, following standard practices. During this training, all
+comprises a (t + 1)-frame video and the corresponding oracle      three components--vision encoder, connector, and LLM--are
+action at time step t. To encourage the LLM to generate           unfrozen. For the inference phase, we implement a regular
+continuous value labels for distances and angles, we merge        expression parser [35], to extract action types (such as forward
+consecutive actions (e.g., combining two forward 25 cm steps      or turn left) and their corresponding arguments (like specific
+into a single forward 50 cm step), with a maximum of three        distance or angles) from the LLM output. This method has
+consecutive actions. This merging process not only reduces        demonstrated effectiveness in both simulated environments
+dataset size for more efficient processing but also introduces    and real-world experiments, where we empirically found
+greater diversity in actions, mitigating overfitting. Addition-   that all actions throughout all experiments are successfully
+ally, to address label imbalance--particularly the underrepre-    matched and mapped.
+sentation of the stop action--we apply a rebalancing technique
+                              Youtube Videos                                                                    RGB Depth
+
+                 Entropy-based Trajectory Sampling                                                              Height Map
+
+                                                                                                    height (m)
+
+                                                                                    (a) Simulation  (b) Real
+
+                      Metric Pose Est.               VLM & LLM                      Fig. 5: Height map reconstruction from point cloud. (a) Go2 robot
+                                                                                    follows velocity commands while avoiding obstacles in simulation.
+                                 (MASt3R)            Instructions                   Red dots show LiDAR points raycasting from the sensor center to the
+                                                                                    terrain mesh. The right image shows a preprocessed height map with
+                     Step-wise Actions            Walk down the hallway and         values clipped to sensor constraints; darker colors indicate higher
+                                                      enter the dining room.        heights. (b) Safe locomotion near glass. The top-down height map
+                          Turn right 30 degrees.                                    detects glass surfaces where depth and RGB images fail.
+
+Fig. 4: Data pipeline for transforming human touring videos in the                  the surrounding terrain using a height map from the LiDAR
+wild into pairwise navigation data within a continuous environment.                 sensor.
+We begin by processing the videos into meaningful trajectories                      Incorporating Height Map from LiDAR Point Cloud.
+through entropy-based sampling [26]. Then we extract step-wise                      Given LiDAR's superior ability to detect transparent objects
+actions through metric camera pose estimation [27], and utilize                     and robust performance under strong sunlight, we chose the
+VLM [13] and LLM [28] to generate instructions.                                     manufacturer-provided LiDAR as the primary sensor for per-
+                                                                                    ceiving the robot's surroundings and ensuring safe navigation.
+B. Visual Locomotion Policy                                                         The Unitree L1 generates point clouds with a wide field of
+                                                                                    view of 360 × 90, from which we create a 2.5D height map
+   In this section, we begin with a brief overview of the Go2                       based on the parameters listed in the Supplementary. For each
+                                                                                    voxel grid, the lowest value within the range is selected, and
+robot dog, the experimental platform used in this work. Next,                       a maximum filter is then applied over the last 5 lidar point
+                                                                                    clouds to smooth the resulting height map.
+we describe the development of the end-to-end vision-based                          Training. Different from most existing works [38­41] that
+                                                                                    utilize the two-stage teacher-student training paradigm, we
+control policy, which interprets high-level language navigation                     adopt a single-stage manner to train the locomotion policy.
+                                                                                    Compared to two-stage training, single-stage RL is more time-
+commands from the VLM and converts them into precise joint                          efficient as it eliminates the need for policy distillation. Ad-
+                                                                                    ditionally, the policy interacts directly with the environment,
+movements. This control policy is trained in the Isaac Sim                          allowing it to explore and potentially discover novel strategies.
+                                                                                    With the support of ray-casting in Isaac Lab, our vision-based
+simulator using Isaac Lab [36] and then directly deployed to                        RL policy training achieves a high throughput over 60K FPS
+                                                                                    on an RTX 4090 GPU.
+the real-world robot.
+                                                                                                             III. EXPERIMENTS
+Go2 Robot. As shown in Fig. 5, the robot is equipped with a
+                                                                                       We conduct experiments to answer the following questions:
+LiDAR sensor mounted at the base of its head, broadcasting                          (1) How does our VLA's performance compare to state-of-the-
+                                                                                    art methods in VLN-CE benchmarks and general spatial scene
+point clouds at a frequency of 15Hz. The robot features 18                          understanding tasks? (Sec. III-A) (2) How does the perfor-
+                                                                                    mance of our single-stage visual locomotion policy compare
+degrees of freedom (DoFs), comprising 6 DoFs for its base                           to policy distillation-based approaches? (Sec. III-B) (3) How to
+                                                                                    evaluate locomotion navigation in simulators, and how effec-
+and 3 DoFs for each of its four legs. In the policy training                        tive and flexible is NaVILA in these scenarios? (Sec. III-C) (4)
+                                                                                    Can NaVILA pipeline be successfully deployed in real robot
+process, we left the 6 DoFs on the base unconstrained so that                       VLN experiments? (Sec. III-D)
+
+the policy only controls the 12 joint motors on the legs.                           A. High-level VLA Performance
+
+Interpreting High-level Commands. As in our formulation,                            VLN-CE Benchmarks. We evaluate our VLA on the VLN-
+                                                                                    CE benchmarks, which provide continuous environments for
+VLM outputs a fixed set of actionable words, such as {move                          executing navigational actions in reconstructed photorealistic
+                                                                                    indoor scenes. We focus on the val-unseen split in both
+forward, turn left, turn right, stop}, we casts these instruc-                      R2R (Room-to-Room) and RxR (Room-across-Room) datasets
+
+tions  to  fixed     command  velocities          {0.5 m s-1,     rad         s-1,
+                                                               6
+           s-1,
+-  6  rad        0}  and  execute  with  corresponding  time   durations
+
+to align with the specific VLM value.
+
+Low-level Action and Observation Space. The action space
+
+a of the control policy is defined as the desired joint position
+qd  R12, which is converted into torque input for the
+
+simulator using the stiffness and dampness. We adopt the PPO
+
+algorithm [37] to train the policy. During training, the critic
+
+observes the privileged environment and generates a value
+
+function to update the actor, while the actor only receives
+
+sensor data available in the real world. The observation space
+of the critic oc contains the proprioception and velocity com-
+
+mand at the current time step t and a privileged terrain height
+
+scan around the robot. The proprioceptive data includes robot
+
+linear and angular velocity, orientation, joint positions, joint
+
+velocities, and the previous action. In the actor's observation
+space, oa, linear velocity is excluded, as it is unavailable in
+
+the real world, and instead, a history of proprioceptive data is
+
+used to infer this information implicitly. The robot perceives
+TABLE I: Comparison with state-of-the-art methods on the Val-Unseen split of R2R-CE [29] and RxR-CE [30].  indicates methods using
+the waypoint predictor from Hong et al. [42]. NaVILA outperforms all methods that do not rely on simulator pre-trained waypoint predictors,
+even when those methods leverage additional inputs such as depth, panoramic views, and odometry.
+
+                                 Observation                         R2R Val-Unseen              RxR Val-Unseen
+
+                    S.RGB Pano. Depth Odo.                 NE        OS  SR  SPL          NE     SR  SPL  nDTW 
+
+HPN+DN [43]                                                6.31      40.0 36.0 34.0         -    -     -         -
+CMA [42]                                                   6.20                           8.76
+VLNBERT [42]                                               5.74      52.0 41.0 36.0       8.98   26.5 22.1       47.0
+Sim2Sim [44]                                               6.07
+GridMM [45]                                                5.11      53.0 44.0 39.0         -    27.0 22.6       46.7
+                                                           5.54                             -
+Ego2-Map [46]                                              5.53      52.0 43.0 36.0         -    -     -         -
+DreamWalker [47]                                           5.40                             -
+Reborn [48]                                                4.71      61.0 49.0 41.0       5.98   -     -         -
+ETPNav [49]                                                4.42                           5.64
+HNR [50]                                                   4.57      56.0 47.0 41.0       5.50   -     -         -
+BEVBert [51]                                               4.80                           4.00
+HAMT+ScaleVLN [52]                                                   59.0 49.0 44.0         -    -     -         -
+                                                           7.90
+                                                           7.90      57.0 50.0 46.0         -    48.6 42.0       63.3
+                                                           6.83                             -
+                                                           7.02      65.0 57.0 49.0       10.90  54.7 44.8       61.9
+                                                           6.28                             -
+                                                           5.55      67.0 61.0 51.0         -    56.3 46.7       63.5
+                                                           7.77                           7.06
+                                                           7.37      67.0 59.0 50.0       12.10  68.5  -         69.6
+                                                           10.10                            -
+                                                           9.55      -  55.0 51.0           -    -     -         -
+                                                           5.47                             -
+AG-CMTP [53]                                               5.22      39.0 23.0 19.0         -    -     -         -
+R2R-CMTP [53]                                                                             6.77
+LAW [54]                                                             38.0 26.0 22.0              -     -         -
+CM2 [55]
+WS-MGMap [56]                                                        44.0 35.0 31.0              8.0   8.0       38.0
+AO-Planner [57]
+Seq2Seq [58]                                                         41.0 34.0 27.0              -     -         -
+CMA [58]
+RGB-Seq2Seq [58]                                                     47.0 38.0 34.0              -     -         -
+RGB-CMA [58]
+NaVid [12]                                                           59.0 47.0 33.0              43.3 30.5       50.1
+NaVILA
+                                                                     37.0 25.0 22.0              13.9 11.9       30.8
+
+                                                                     40.0 32.0 30.0              -     -         -
+
+                                                                     8.0 0.0         0.0         -     -         -
+
+                                                                     10.0 5.0        4.0         -     -         -
+
+                                                                     49.0 37.0 35.0              -     -         -
+
+                                                                     62.5 54.0 49.0              49.3 44.0       58.8
+
+TABLE II: Cross-dataset performance on the RxR-CE [30] Val-          leaving out the RxR training set. We then evaluate its zero-
+Unseen split. All results are obtained without training on the RxR-  shot performance on the RxR Val-Unseen split. As shown
+CE training set. NaVILA significantly outperforms NaVid [12], the    in Table II, our method significantly outperforms NaVid,
+current single-view state-of-the-art.                                the current state-of-the-art model, with a substantial 10%
+                                                                     improvement in SR.
+                    Observation          RxR Val-Unseen              Spatial Scene Understanding Benchmarks. As a general
+                                                                     navigation agent, robust spatial scene understanding (e.g.,
+                  S.RGB Depth Odo.    NE  OS  SR  SPL                object localization, referring, and spatial reasoning) is crucial.
+                                                                     To evaluate NaVILA's capabilities in scene understanding, we
+LAW [54]                              10.87 21.0 8.0 8.0             conduct evaluations on the ScanQA Validation benchmark, a
+                                      8.98 25.3 14.4 9.2             widely used dataset for 3D Question Answering. ScanQA is
+CM2 [55]                              9.83 29.8 15.0 12.1            based on real-world scans, and we use multi-view images from
+                                      11.8 5.02 3.51 3.43            these scans as input to query NaVILA for answers. As shown
+WS-MGMap [56]                         11.7 10.7 4.41 2.47            in Table III, NaVILA significantly outperforms the previous
+                                                                     state-of-the-art model, NaviLLM [60], by a substantial margin
+Seq2Seq [58]                                                         (20 points higher on the CIDEr score). Moreover, when using
+                                                                     64 frames, NaVILA's performance demonstrates superior per-
+CMA [58]                                                             formance compared to state-of-the-art 3D-based large multi-
+                                                                     modal models [61, 62]. This is particularly noteworthy as
+RGB-Seq2Seq [12]                      11.2 12.2 0.0 0.0              these other models require either 3D scans or RGBD data
+                                                                     with camera poses as inputs, while our method achieves better
+RGB-CMA [12]                          9.55 14.8 0.0 0.0              results with less observation.
+
+A2NAV [59]                            -       - 16.8 6.3             B. Low-level RL Policy Performance
+
+NaVid [12]                            8.41 34.5 23.8 21.2               To highlight the advantages of our RL policy over policy
+                                                                     distillation-based approaches, we compared it to Regularized
+NaVILA                                8.78 46.8 34.3 28.2            Online Adaptation (ROA) [68]. In ROA training, the model
+                                                                     first learns a privileged encoder that processes height scan
+within VLN-CE, as these are the two most recognized bench-           points and other privileged observations. This privileged en-
+marks in VLN. We employ the following widely used evalua-            coder then supervises an adaptation encoder, which takes the
+tion metrics for VLN tasks: Navigation Error (NE), Oracle            same 2.5D heightmap as our low-level policy as input. We
+Success Rate (OS), Success Rate (SR), Success-weighted               evaluated both approaches using three metrics: linear velocity
+Path Length (SPL), and normalize dynamic time wrapping
+(nDTW). We show results in Table I, where NaVILA sig-
+nificantly surpasses all baselines that do not rely on simulator
+pre-trained waypoint predictors in both benchmarks using a
+single model. Notably, this also marks the first time a VLN
+agent, trained solely on single-view RGB input, achieves
+comparable or superior results to models that use panoramic
+views, odometry, or simulator-pretrained waypoint predictors.
+This suggests that NaVILA's strong generalization capabilities
+can effectively compensate for the limited observations in
+RGB views or sensors.
+
+   To evaluate the cross-dataset performance, we follow [12]
+by training NaVILA exclusively on R2R samples, while
+TABLE III: Evaluation of spatial scene understanding performance
+on the ScanQA dataset [32] Validation split. NaVILA outperforms
+current state-of-the-art VLA models and demonstrates superior per-
+formance to other 3D LMMs that require additional input, such as
+depth or camera pose. Note that  indicates 3D LMMs that require
+task-specific fine-tuning on the ScanQA dataset.
+
+                                   ScanQA Validation
+
+                             Bleu-4  Rouge  Cider  Meteor  EM 
+
+Task-specific Specialist                                                    Fig. 6: VLN-CE-Isaac Benchmark visualization.
+VoteNet+MCAN [63]
+ScanRefer+MCAN [63]          6.2 29.8 54.7 11.4 17.3                        TABLE IV: VLN-CE-Isaac evaluation results.
+ScanQA [32]                  7.9 30.0 55.4 11.5 18.6
+3D-VisTA [64]                10.1 33.3 64.9 13.1 21.0                            Low-level Observation  VLN-CE-Isaac
+                             10.4 35.7 69.6 13.9 22.4
+
+3D Large Multi-modal Models                                                      Proprio. LiDAR Height Scan NE  OS  SR  SPL 
+
+3D-LLM(flamingo) [65]        7.2   32.3 59.2 12.2 20.4              Oracle                              5.25 59.8 51.3 46.9
+
+3D-LLM(BLIP 2-flant5) [65] 12.0    35.7 69.4 14.5 20.5              Unitree Go2
+
+LL3DA [66]                   13.5  37.3 76.8 15.9 -                 NaVILA-Blind                        6.03 49.0 36.2 33.3
+                                                                                                        5.49 58.7 50.2 45.5
+Chat-3Dv2 [67]               14.0  -  87.6            -  -          NaVILA-Vision       
+
+Scene-LLM [61]               12.0  40.0 80.0 16.6 27.2
+
+LEO [62]                     13.2  49.2 101.4 20.0 24.5                 Unitree H1
+                                                                    NaVILA-Blind 
+2D Vision-Langauge-Action Models                                    NaVILA-Vision                       7.67 33.3 24.4 21.0
+
+NaviLLM [60]                 12.0  38.4 75.9 15.4 23.0                                                  5.86 54.6 45.3 40.3
+                                   46.4 95.1 18.7 27.0
+NaVILA (8 frames)            14.8  49.3 102.7 20.1 28.6                       TABLE V: Low level policy performance.
+
+NaVILA (64 frames)           16.9
+
+error, angular velocity error, and collision rate. The first two                        Linear Vel.     Angular Vel.    Collision
+metrics assess how accurately the policy follows velocity                                 Error            Error         Rate 
+commands, while the third measures the model's obstacle
+avoidance capabilities. As shown in Table V, our low-level          ROA(w/BCLoss) [68]    0.189         0.152              3.25
+policy outperforms ROA in all three metrics, particularly
+achieving a significantly lower collision rate, demonstrating       ROA [68]              0.161         0.152              3.09
+the effectiveness of our training approach.
+                                                                    NaVILA                0.066         0.113              0.81
+C. Legged Robot Navigation Performance in Simulation
+                                                                    the vision-based policy outperforms the blind policy by 14%
+High-fidelity VLN-CE-Isaac Benchmark. Currently, there              in Success Rate in Go2 settings and 21% in H1 settings,
+are no VLN-CE benchmarks tailored specifically for legged           owing to its superior obstacle avoidance capability. We also
+robots. Existing benchmarks [29, 30] for vision-language nav-       compare NaVILAs with a baseline using Oracle's low-level
+igation are based on the Habitat [69] simulator, which focuses      policy (assuming perfect command execution without realistic
+on high-level planning without addressing precise low-level         physics). Results show a 15% lower success rate on the
+robotic control. For instance, agents in Habitat can navigate       Go2 setup and a 27% lower success rate on the H1 setup
+through narrow gaps, such as a 10 cm space between two              when Oracle policy is not presented. These performance gaps
+sofas, which is impractical for legged robots like quadrupeds       highlight the increased challenges and realism introduced by
+or humanoids. To overcome this limitation, we introduce             our benchmark. Additionally, we also observe that the success
+a new benchmark VLN-CE-Isaac built on Isaac Sim. Isaac              rate of NaVILA on the H1 robot is significantly lower than
+Sim's high-fidelity simulation captures detailed robotic joint      on the Go2, which is expected due to the larger size of the
+movements and interactions with the environment, enabling           humanoid robot.
+comprehensive evaluations of the entire navigation pipeline,
+from high-level planning to precise robotic execution. We           D. Real World Evaluation
+incorporate the same scenes from R2R, with robots deployed
+in the environment, as shown in Fig. 6. From the 1,839                 We then conduct experiments in the real world, using 25
+trajectories in the R2R Val-Unseen split, we select 1,077           instructions, each repeated three times, covering both sim-
+traversable trajectories with high-quality meshes to ensure         ple and complex tasks across three types of environments:
+realistic navigation scenarios. For consistency, we evaluate        Workspace, Home, and Outdoor open environments. Sim-
+performance using the same metrics as prior work.                   ple instructions consist of one or two navigation commands,
+                                                                    where the robot does not need to navigate between rooms (e.g.,
+   Notably, VLN-CE-Isaac is compatible with a variety of            "Go to the chair and stop"). In contrast, complex instructions
+robotic platforms. To demonstrate this flexibility, we test         involve three or more commands, requiring the robot to
+our NaVILA model on a Unitree Go2 robot and also a                  traverse multiple rooms or landmarks (e.g., "Walk out of the
+Unitree H1 robot within the benchmark. To highlight the             room, turn right, enter the room in front of you, and stop at the
+effectiveness of the vision-based policy, we compare it against     table"). We use standard metrics (SR and NE) and compare
+a proprioception-only (blind) policy. As shown in Table IV,         NaVILA against GPT-4o, a state-of-the-art VLM known for
+                                                                    its strong generalizability. As shown in Table VI, NaVILA
+                                                                    significantly outperforms GPT-4o in both SR and NE. We
+                                                                    also ablate the effectiveness of adding human videos, and the
+TABLE VI: Real-world experiments on quadruped (Unitree Go2)            rotating, rather than teleporting between nodes. To bridge
+and humanoid (Booster T1) conducted in different environments          the gap between discrete and continuous navigation, some
+(Workspace, Home, and Outdoor). Simple and Complex refer               approaches [44, 49, 51, 94] use simulator pre-trained waypoint
+to simple and complex instruction-following tasks, respectively. Note  models [42, 43] that predict candidate positions around the
+that  indicates models trained without human touring videos.           agent and have shown significant performance gains. However,
+                                                                       they often struggle to generalize due to their reliance on
+Workspace  Home  Outdoor                                               simulator-specific data. Additionally, the candidate positions
+                                                                       predicted by these models only cover nearby locations and
+ Simple Complex Simple Complex Simple Complex                          do not account for low-level motion planning or obstacle
+NE SR NE SR NE SR NE SR NE SR NE SR                                    avoidance. In this paper, we aim to advance VLN toward
+                                                                       real-world robotics applications, particularly for challenging-
+    Unitree Go2                                                        legged robots. NaVILA handles both high-level decision-
+                                                                       making and generates low-level actions to control the robot's
+GPT-4o [28] 2.01 0.67 2.38 0.33 1.49 0.53 3.00 0.00 - 0.67 - 0.50      full motion. Additionally, we introduce a new VLN benchmark
+NaVILA  2.00 0.60 1.81 0.73 2.17 0.47 2.32 0.40 - 0.00 - 0.00          built on Isaac Sim, offering a more realistic simulation envi-
+NaVILA 1.29 1.00 1.76 0.80 1.15 1.00 1.76 0.67 - 1.00 - 0.83           ronment, which we believe will benefit future work in VLN.
+                                                                       Robot Foundation Models. Robot foundation models aim to
+    Booster T1                                                         provide a unified framework that processes inputs from various
+                                                                       modalities (e.g., vision and language) and directly outputs
+GPT-4o [28] 1.53 0.67 2.78 0.13 - - - - - 0.44 - -                     actions to enable robots to perform complex tasks. Existing
+NaVILA  2.36 0.40 2.16 0.62 - - - - - 0.22 - -                         works [7, 8, 95] trained on large-scale robotic datasets to get
+NaVILA 1.18 0.93 1.91 0.67 - - - - - 0.89 - -                          general robot policies, but mainly focusing on manipulation
+                                                                       tasks. Doshi et al. [96] and Yang et al. [97] proposed end-
+results show that with the help of human videos, the model can         to-end visual-language cross-embodiment models for different
+generalize better to outdoor scenes and achieve higher success         robotic tasks. Recently, several foundational navigation models
+rates across all environments. To demonstrate the flexibility          have been proposed [98­100]. However, they mainly focus on
+of our two-level approach, we also evaluated it on a Booster           goal navigation with either short language descriptions or a
+Dynamics T1 humanoid robot, using the same VLA model                   target image as input. As for legged robots, Ding et al. [101]
+without any retraining. Despite variations such as changes in          proposed a unified model to leverage vision and language
+camera height and camera view angle, NaVILA consistently               inputs and generate executable low-level actions. Another line
+outperformes the baselines, highlighting the strong gener-             of work [102, 103] focuses on training specialized policies as
+alization capabilities of our model. Our qualitative results           a skill bank to handle specific actions, with either a VLM or
+are presented in Fig.1 and Fig.7. In Fig. 7, we demonstrate            LLM serving as the controller to decide which skill to execute.
+integration with speech recognition, enabling voice-controlled         Similarly, these methods cannot perform instruction-following
+navigation through our framework. These results highlight the          tasks, as they struggle to comprehend complex instructions
+effectiveness of NaVILA in bridging the gap between vision-            that are essential for general navigation. To address this, we
+language understanding and real-world navigation tasks.                propose a VLA model specifically designed for general vision
+                                                                       language navigation tasks.
+                        IV. RELATED WORK                               Legged Robot Locomotion Learning. Legged robot locomo-
+                                                                       tion learning focuses on enabling robots to traverse various
+Visual Navigation. Visual navigation has been a long-standing          terrains. Previous works [104, 105] rely solely on robot's
+research topic in robotics [71­74]. Classical methods rely             proprioceptive information struggle in scenarios like obstacle
+on pre-computed [75] or geometric maps built with depth                avoidance. Other end-to-end vision-based approaches [106­
+sensors [76] or monocular cameras while localizing the robot           109] are vulnerable to extreme environmental conditions, such
+(SLAM) [77, 78]. More recently, learning-based approaches              as intense sunlight, due to the limitations of sensors. Lee et al.
+using Imitation Learning [79, 80] and Reinforcement Learn-             [38] incorporate LiDAR sensors in addition to depth cameras
+ing [81, 82] have demonstrated strong performance and ex-              to improve terrain sensing, but rely on time-inefficient two-
+panded applications to Vision-Language Navigation.                     stage training. Additionally, during training, Miki et al. [39]
+Vision-Language Navigation. Vision-Language Navigation                 query predefined terrain heights to construct a height map and
+(VLN) is a fundamental challenge in embodied AI, where                 then rely on an external tool[110] for height map generation
+agents navigate complex environments using visual cues and             during deployment, resulting in discrepancies between training
+natural language instructions. The field has evolved signifi-          and deployment. To overcome these limitations, we propose
+cantly over time. Early research [1, 30, 83] focused on discrete       a single-stage RL framework that integrates LiDAR sensing
+navigation in simulated environments like MP3D [84], where             inputs during training, allowing the robot to directly learn
+agents teleport between predefined nodes on a navigation               from interacting with the environments for better efficiency
+graph [31, 85­91]. As foundation models advanced, many                 and robustness in complex scenarios.
+VLN systems improved dramatically by leveraging large-scale
+pre-trained models [25, 92] and pre-training techniques [24,
+52, 93], approaching human-level performance in this set-
+ting. However, this setup emphasized high-level decision-
+making while neglecting the challenges of underlying motion
+control. Recently, research [12, 54­57] has shifted towards
+continuous environments (VLN-CE [58]) using simulators like
+Habitat [69]. This introduces greater complexity, as agents
+must perform mid-level actions such as moving forward or
+(a)                 Walk forward, turn right at the trash can and stop close to the door.
+
+      Hey Robot...
+
+(b)
+
+    Turn right and walk around the stairs until reaching the hallway. Turn a little left, move towards the portrait poster and you'll see
+  an open door. Go straight forward to enter the room until the end of the circular space. Turn left and enter the bathroom. Proceed to
+
+                              the bath mat and step onto it. Turn right and walk forward to reach the weighing machine.
+
+(c)
+
+                                   Go along the slope and step into the parking lot. Stop in front of the orange cone.
+(d)
+
+                                             Move along the way and stop in front of the stone bench and table.
+(e)
+
+                                                              Go up the stairs and stop in front of the door.
+
+Fig. 7: Qualitative results from the real-world deployment of NaVILA. (a) We integrate speech recognition [70] into NaVILA, allowing
+a human to control the robot using voice commands that begin with "Hey Robot!". (b) The robot successfully handles long-horizon
+navigation tasks. Given a lengthy instruction, it moves through different areas of the house and stops at the specified goal. (c), (d), and (e)
+The robot demonstrates its ability to navigate through obstacles, traverse challenging terrains, and climb up and down stairs.
+
+               V. CONCLUSION AND LIMITATIONS                  CE-Isaac1K, and demonstrates strong real-world performance
+                                                              across diverse environments and legged robots.
+   We introduce NaVILA, a two-level framework that unifies
+VLAs with locomotion skills for generic navigation. NaV-      Limitations. While NaVILA demonstrates strong perfor-
+ILA generates high-level language commands while a real-      mance, it fails in some real-world cases (see Appx. Sec. E).
+time locomotion policy handles obstacle avoidance, enhancing  Enhancing generalizability and spatial understanding through
+robustness across robots. This design preserves reasoning,    larger-scale training in realistic simulations could help. Ad-
+prevents overfitting, and enables direct learning from human  ditionally, image-based vision-language models are compu-
+videos for better generalization. NaVILA achieves a 17% gain  tationally intensive. Advances in long-context LLMs may
+on classic VLN benchmarks, outperforms distillation-based     alleviate this by enabling more efficient sequence processing.
+low-level policies, surpasses vision-blind policies on VLN-
+                            REFERENCES                               2024. 3, 4, 6, 8, 1
+                                                               [13] Ji Lin, Hongxu Yin, Wei Ping, Pavlo Molchanov, Mo-
+ [1] Peter Anderson, Qi Wu, Damien Teney, Jake Bruce,
+      Mark Johnson, Niko Su¨nderhauf, Ian Reid, Stephen              hammad Shoeybi, and Song Han. Vila: On pre-training
+      Gould, and Anton Van Den Hengel. Vision-and-                   for visual language models. In CVPR, 2024. 3, 4, 5
+      language navigation: Interpreting visually-grounded      [14] Yecheng Wu, Zhuoyang Zhang, Junyu Chen, Haotian
+      navigation instructions in real environments. In CVPR,         Tang, Dacheng Li, Yunhao Fang, Ligeng Zhu, Enze Xie,
+      2018. 2, 8                                                     Hongxu Yin, Li Yi, et al. Vila-u: a unified foundation
+                                                                     model integrating visual understanding and generation.
+ [2] Xin Wang, Qiuyuan Huang, Asli Celikyilmaz, Jianfeng             arXiv preprint, 2024.
+      Gao, Dinghan Shen, Yuan-Fang Wang, William Yang          [15] Yunhao Fang, Ligeng Zhu, Yao Lu, Yan Wang, Pavlo
+      Wang, and Lei Zhang. Reinforced cross-modal match-             Molchanov, Jan Kautz, Jang Hyun Cho, Marco Pavone,
+      ing and self-supervised imitation learning for vision-         Song Han, and Hongxu Yin. Vila 2: Vila augmented
+      language navigation. In CVPR, 2019.                            vila. arXiv preprint, 2024.
+                                                               [16] Fuzhao Xue, Yukang Chen, Dacheng Li, Qinghao Hu,
+ [3] Devendra Singh Chaplot, Dhiraj Gandhi, Saurabh                  Ligeng Zhu, Xiuyu Li, Yunhao Fang, Haotian Tang,
+      Gupta, Abhinav Gupta, and Ruslan Salakhutdinov.                Shang Yang, Zhijian Liu, et al. Longvila: Scaling long-
+      Learning to explore using active neural slam. In ICLR,         context visual language models for long videos. arXiv
+      2020.                                                          preprint, 2024. 3
+                                                               [17] Hanrong Ye, De-An Huang, Yao Lu, Zhiding Yu, Wei
+ [4] Devendra Singh Chaplot, Dhiraj Prakashchand Gandhi,             Ping, Andrew Tao, Jan Kautz, Song Han, Dan Xu, Pavlo
+      Abhinav Gupta, and Russ R Salakhutdinov. Object goal           Molchanov, et al. X-vila: Cross-modality alignment for
+      navigation using goal-oriented semantic exploration. In        large language model. arXiv preprint, 2024.
+      NeurIPS, 2020.                                           [18] De-An Huang, Shijia Liao, Subhashree Radhakrishnan,
+                                                                     Hongxu Yin, Pavlo Molchanov, Zhiding Yu, and Jan
+ [5] Devendra Singh Chaplot, Ruslan Salakhutdinov, Abhi-             Kautz. Lita: Language instructed temporal-localization
+      nav Gupta, and Saurabh Gupta. Neural topological slam          assistant. In ECCV, 2024.
+      for visual navigation. In CVPR, 2020.                    [19] Zhijian Liu, Ligeng Zhu, Baifeng Shi, Zhuoyang Zhang,
+                                                                     Yuming Lou, Shang Yang, Haocheng Xi, Shiyi Cao,
+ [6] Ram Ramrakhya, Eric Undersander, Dhruv Batra, and               Yuxian Gu, Dacheng Li, et al. Nvila: Efficient frontier
+      Abhishek Das. Habitat-web: Learning embodied object-           visual language models. arXiv preprint, 2024. 3
+      search strategies from human demonstrations at scale.    [20] Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae
+      In CVPR, 2022. 2                                               Lee. Visual instruction tuning. In NeurIPS, 2023. 3
+                                                               [21] Minwoo Byeon, Beomhee Park, Haecheon Kim,
+ [7] Anthony Brohan, Noah Brown, Justice Carbajal, Yev-              Sungjun Lee, Woonhyuk Baek, and Saehoon Kim.
+      gen Chebotar, Xi Chen, Krzysztof Choromanski, Tianli           Coyo-700m: Image-text pair dataset. https://github.com/
+      Ding, Danny Driess, Avinava Dubey, Chelsea Finn,               kakaobrain/coyo-dataset, 2022. 3
+      et al. Rt-2: Vision-language-action models transfer web  [22] Wanrong Zhu, Jack Hessel, Anas Awadalla,
+      knowledge to robotic control. arXiv preprint, 2023. 2,         Samir Yitzhak Gadre, Jesse Dodge, Alex Fang,
+      8                                                              Youngjae Yu, Ludwig Schmidt, William Yang Wang,
+                                                                     and Yejin Choi. Multimodal c4: An open, billion-scale
+ [8] Moo Jin Kim, Karl Pertsch, Siddharth Karamcheti,                corpus of images interleaved with text. In NeurIPS,
+      Ted Xiao, Ashwin Balakrishna, Suraj Nair, Rafael               2024. 3
+      Rafailov, Ethan Foster, Grace Lam, Pannag Sanketi,       [23] Haotian Liu, Chunyuan Li, Yuheng Li, and Yong Jae
+      et al. Openvla: An open-source vision-language-action          Lee. Improved baselines with visual instruction tuning.
+      model. arXiv preprint, 2024. 8                                 In CVPR, 2024. 3, 4
+                                                               [24] Pierre-Louis Guhur, Makarand Tapaswi, Shizhe Chen,
+ [9] Abhishek Padalkar, Acorn Pooley, Ajinkya Jain, Alex             Ivan Laptev, and Cordelia Schmid. Airbert: In-domain
+      Bewley, Alex Herzog, Alex Irpan, Alexander Khazatsky,          pretraining for vision-and-language navigation. In
+      Anant Rai, Anikait Singh, Anthony Brohan, et al. Open          ICCV, 2021. 3, 8
+      x-embodiment: Robotic learning datasets and rt-x mod-    [25] Arjun Majumdar, Ayush Shrivastava, Stefan Lee, Peter
+      els. In ICRA, 2024. 2                                          Anderson, Devi Parikh, and Dhruv Batra. Improving
+                                                                     vision-and-language navigation with image-text pairs
+[10] Boyuan Chen, Zhuo Xu, Sean Kirmani, Brain Ichter,               from the web. In ECCV, 2020. 8
+      Dorsa Sadigh, Leonidas Guibas, and Fei Xia. Spa-         [26] Kunyang Lin, Peihao Chen, Diwei Huang, Thomas H
+      tialvlm: Endowing vision-language models with spatial          Li, Mingkui Tan, and Chuang Gan. Learning vision-
+      reasoning capabilities. In CVPR, 2024. 2                       and-language navigation from youtube videos. In ICCV,
+
+[11] An-Chieh Cheng, Hongxu Yin, Yang Fu, Qiushan Guo,
+      Ruihan Yang, Jan Kautz, Xiaolong Wang, and Sifei
+      Liu. Spatialrgpt: Grounded spatial reasoning in vision-
+      language models. In NeurIPS, 2024. 2
+
+[12] Jiazhao Zhang, Kunyu Wang, Rongtao Xu, Gengze
+      Zhou, Yicong Hong, Xiaomeng Fang, Qi Wu, Zhizheng
+      Zhang, and Wang He. Navid: Video-based vlm plans the
+      next step for vision-and-language navigation. In RSS,
+      2023. 3, 4, 5                                             [42] Yicong Hong, Zun Wang, Qi Wu, and Stephen Gould.
+[27] Vincent Leroy, Yohann Cabon, and Je´ro^me Revaud.                Bridging the gap between learning in discrete and
+                                                                      continuous environments for vision-and-language navi-
+      Grounding image matching in 3d with mast3r. In ECCV.            gation. In CVPR, 2022. 6, 8
+      Springer, 2024. 4, 5
+[28] OpenAI. Hello gpt-4o, 2024. URL https://openai.com/        [43] Jacob Krantz, Aaron Gokaslan, Dhruv Batra, Stefan
+      index/hello-gpt-4o/. 4, 5, 8                                    Lee, and Oleksandr Maksymets. Waypoint models
+[29] Jacob Krantz, Erik Wijmans, Arjun Majundar, Dhruv                for instruction-guided navigation in continuous environ-
+      Batra, and Stefan Lee. Beyond the nav-graph: Vision             ments. In CVPR, 2021. 6, 8
+      and language navigation in continuous environments. In
+      ECCV, 2020. 4, 6, 7, 1                                    [44] Jacob Krantz and Stefan Lee. Sim-2-sim transfer for
+[30] Alexander Ku, Peter Anderson, Roma Patel, Eugene Ie,             vision-and-language navigation in continuous environ-
+      and Jason Baldridge. Room-across-room: Multilingual             ments. In ECCV, 2022. 6, 8
+      vision-and-language navigation with dense spatiotem-
+      poral grounding. In EMNLP, 2020. 4, 6, 7, 8               [45] Zihan Wang, Xiangyang Li, Jiahao Yang, Yeqi Liu, and
+[31] Hao Tan, Licheng Yu, and Mohit Bansal. Learning                  Shuqiang Jiang. Gridmm: Grid memory map for vision-
+      to navigate unseen environments: Back translation with          and-language navigation. In ICCV, 2023. 6
+      environmental dropout. In NAACL, 2019. 4, 8
+[32] Daichi Azuma, Taiki Miyanishi, Shuhei Kurita, and          [46] Yicong Hong, Yang Zhou, Ruiyi Zhang, Franck Der-
+      Motoaki Kawanabe. Scanqa: 3d question answering for             noncourt, Trung Bui, Stephen Gould, and Hao Tan.
+      spatial scene understanding. In CVPR, 2022. 4, 7                Learning navigational visual representations with se-
+[33] Lin Chen, Jisong Li, Xiaoyi Dong, Pan Zhang, Con-                mantic map supervision. In ICCV, 2023. 6
+      ghui He, Jiaqi Wang, Feng Zhao, and Dahua Lin.
+      Sharegpt4v: Improving large multi-modal models with       [47] Hanqing Wang, Wei Liang, Luc Van Gool, and Wen-
+      better captions. In ECCV, 2024. 4                               guan Wang. Dreamwalker: Mental planning for contin-
+[34] Muhammad Maaz, Hanoona Rasheed, Salman Khan,                     uous vision-language navigation. In ICCV, 2023. 6
+      and Fahad Shahbaz Khan. Video-chatgpt: Towards de-
+      tailed video understanding via large vision and language  [48] Dong An, Zun Wang, Yangguang Li, Yi Wang, Yicong
+      models. In ACL, 2024. 4                                         Hong, Yan Huang, Liang Wang, and Jing Shao. 1st
+[35] Steven M Kearns. Extending regular expressions with              place solutions for rxr-habitat vision-and-language nav-
+      context operators and parse extraction. Software: Prac-         igation competition. In CVPRW, 2022. 6
+      tice and Experience, 1991. 4
+[36] Mayank Mittal, Calvin Yu, Qinxi Yu, Jingzhou Liu,          [49] Dong An, Hanqing Wang, Wenguan Wang, Zun Wang,
+      Nikita Rudin, David Hoeller, Jia Lin Yuan, Ritvik               Yan Huang, Keji He, and Liang Wang. Etpnav: Evolv-
+      Singh, Yunrong Guo, Hammad Mazhar, Ajay Man-                    ing topological planning for vision-language navigation
+      dlekar, Buck Babich, Gavriel State, Marco Hutter, and           in continuous environments. IEEE TPAMI, 2024. 6, 8
+      Animesh Garg. Orbit: A unified simulation framework
+      for interactive robot learning environments. In RAL,      [50] Zihan Wang, Xiangyang Li, Jiahao Yang, Yeqi Liu,
+      2023. 5                                                         Junjie Hu, Ming Jiang, and Shuqiang Jiang. Lookahead
+[37] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec             exploration with neural radiance representation for con-
+      Radford, and Oleg Klimov. Proximal policy optimiza-             tinuous vision-language navigation. In CVPR, 2024. 6
+      tion algorithms. arXiv preprint, 2017. 5
+[38] Joonho Lee, Jemin Hwangbo, Lorenz Wellhausen,              [51] Dong An, Yuankai Qi, Yangguang Li, Yan Huang, Liang
+      Vladlen Koltun, and Marco Hutter. Learning                      Wang, Tieniu Tan, and Jing Shao. Bevbert: Multimodal
+      quadrupedal locomotion over challenging terrain. Sci-           map pre-training for language-guided navigation. In
+      ence Robotics, 2020. 5, 8                                       ICCV, 2023. 6, 8
+[39] Takahiro Miki, Joonho Lee, Jemin Hwangbo, Lorenz
+      Wellhausen, Vladlen Koltun, and Marco Hutter. Learn-      [52] Zun Wang, Jialu Li, Yicong Hong, Yi Wang, Qi Wu,
+      ing robust perceptive locomotion for quadrupedal robots         Mohit Bansal, Stephen Gould, Hao Tan, and Yu Qiao.
+      in the wild. Science Robotics, 2022. 8                          Scaling data generation in vision-and-language naviga-
+[40] Gabriel B Margolis, Ge Yang, Kartik Paigwar, Tao                 tion. In ICCV, 2023. 6, 8
+      Chen, and Pulkit Agrawal. Rapid locomotion via
+      reinforcement learning. In RSS, 2022.                     [53] Kevin Chen, Junshen K Chen, Jo Chuang, Marynel
+[41] Joonho Lee, Marko Bjelonic, Alexander Reske, Lorenz              Va´zquez, and Silvio Savarese. Topological planning
+      Wellhausen, Takahiro Miki, and Marco Hutter. Learn-             with transformers for vision-and-language navigation.
+      ing robust autonomous navigation and locomotion for             In CVPR, 2021. 6
+      wheeled-legged robots. Science Robotics, 2024. 5
+                                                                [54] Sonia Raychaudhuri, Saim Wani, Shivansh Patel, Unnat
+                                                                      Jain, and Angel Chang. Language-aligned waypoint
+                                                                      (law) supervision for vision-and-language navigation in
+                                                                      continuous environments. In EMNLP, 2021. 6, 8
+
+                                                                [55] Georgios Georgakis, Karl Schmeckpeper, Karan Wan-
+                                                                      choo, Soham Dan, Eleni Miltsakaki, Dan Roth, and
+                                                                      Kostas Daniilidis. Cross-modal map learning for vision
+                                                                      and language navigation. In CVPR, 2022. 6
+
+                                                                [56] Peihao Chen, Dongyu Ji, Kunyang Lin, Runhao Zeng,
+                                                                      Thomas Li, Mingkui Tan, and Chuang Gan. Weakly-
+                                                                      supervised multi-granularity map learning for vision-
+      and-language navigation. In NeurIPS, 2022. 6                   ICML, 2023. 9
+[57] Jiaqi Chen, Bingqian Lin, Xinmin Liu, Xiaodan Liang,      [71] Hans Peter Moravec. Obstacle avoidance and naviga-
+
+      and Kwan-Yee K Wong. Affordances-oriented planning             tion in the real world by a seeing robot rover. Stanford
+      using foundation models for continuous vision-language         University, 1980. 8
+      navigation. arXiv preprint, 2024. 6, 8                   [72] Alberto Elfes. Sonar-based real-world mapping and
+[58] Jacob Krantz, Erik Wijmans, Arjun Majumdar, Dhruv               navigation. IEEE Journal on Robotics and Automation,
+      Batra, and Stefan Lee. Beyond the nav-graph: Vision-           1987.
+      and-language navigation in continuous environments. In   [73] Sebastian Thrun, Dieter Fox, Wolfram Burgard, and
+      ECCV, 2020. 6, 8                                               Frank Dellaert. Robust monte carlo localization for
+[59] Peihao Chen, Xinyu Sun, Hongyan Zhi, Runhao Zeng,               mobile robots. Artificial intelligence, 2001.
+      Thomas H. Li, Gaowen Liu, Mingkui Tan, and Chuang        [74] Theophile Gervet, Soumith Chintala, Dhruv Batra, Ji-
+      Gan. A2nav: Action-aware zero-shot robot navigation            tendra Malik, and Devendra Singh Chaplot. Navigating
+      by exploiting vision-and-language ability of foundation        to objects in the real world. Science Robotics, 2023. 8
+      models. arXiv preprint, 2023. 6                          [75] Sebastian Thrun, Maren Bennewitz, Wolfram Burgard,
+[60] Duo Zheng, Shijia Huang, Lin Zhao, Yiwu Zhong, and              Armin B Cremers, Frank Dellaert, Dieter Fox, Dirk
+      Liwei Wang. Towards learning a generalist model for            Hahnel, Charles Rosenberg, Nicholas Roy, Jamieson
+      embodied navigation. In CVPR, 2024. 6, 7                       Schulte, et al. Minerva: A second-generation museum
+[61] Rao Fu, Jingyu Liu, Xilun Chen, Yixin Nie, and Wen-             tour-guide robot. In ICRA, 1999. 8
+      han Xiong. Scene-llm: Extending language model for       [76] Richard A Newcombe, Shahram Izadi, Otmar Hilliges,
+      3d visual understanding and reasoning. arXiv preprint,         David Molyneaux, David Kim, Andrew J Davison,
+      2024. 6, 7                                                     Pushmeet Kohi, Jamie Shotton, Steve Hodges, and An-
+[62] Jiangyong Huang, Silong Yong, Xiaojian Ma, Xiongkun             drew Fitzgibbon. Kinectfusion: Real-time dense surface
+      Linghu, Puhao Li, Yan Wang, Qing Li, Song-Chun                 mapping and tracking. In International Symposium on
+      Zhu, Baoxiong Jia, and Siyuan Huang. An embodied               Mixed and Augmented Reality, 2011. 8
+      generalist agent in 3d world. In ICML, 2024. 6, 7        [77] Andrew J Davison, Ian D Reid, Nicholas D Molton,
+[63] Zhou Yu, Jun Yu, Yuhao Cui, Dacheng Tao, and                    and Olivier Stasse. Monoslam: Real-time single camera
+      Qi Tian. Deep modular co-attention networks for visual         slam. IEEE TPAMI, 2007. 8
+      question answering. In CVPR, 2019. 7                     [78] Eagle S Jones and Stefano Soatto. Visual-inertial
+[64] Ziyu Zhu, Xiaojian Ma, Yixin Chen, Zhidong Deng,                navigation, mapping and localization: A scalable real-
+      Siyuan Huang, and Qing Li. 3d-vista: Pre-trained               time causal approach. The International Journal of
+      transformer for 3d vision and text alignment. In ICCV,         Robotics Research, 2011. 8
+      2023. 7                                                  [79] Devendra Singh Chaplot, Kanthashree Mysore Sathyen-
+[65] Yining Hong, Haoyu Zhen, Peihao Chen, Shuhong                   dra, Rama Kumar Pasumarthi, Dheeraj Rajagopal, and
+      Zheng, Yilun Du, Zhenfang Chen, and Chuang Gan. 3d-            Ruslan Salakhutdinov. Gated-attention architectures for
+      llm: Injecting the 3d world into large language models.        task-oriented language grounding. In AAAI, 2018. 8
+      In NeurIPS, 2023. 7                                      [80] Felipe Codevilla, Matthias Mu¨ller, Antonio Lo´pez,
+[66] Sijin Chen, Xin Chen, Chi Zhang, Mingsheng Li, Gang             Vladlen Koltun, and Alexey Dosovitskiy. End-to-end
+      Yu, Hao Fei, Hongyuan Zhu, Jiayuan Fan, and Tao                driving via conditional imitation learning. In ICRA,
+      Chen. Ll3da: Visual interactive instruction tuning for         2018. 8
+      omni-3d understanding reasoning and planning. In         [81] Volodymyr Mnih, Koray Kavukcuoglu, David Silver,
+      CVPR, 2024. 7                                                  Andrei A Rusu, Joel Veness, Marc G Bellemare, Alex
+[67] Haifeng Huang, Zehan Wang, Rongjie Huang, Luping                Graves, Martin Riedmiller, Andreas K Fidjeland, Georg
+      Liu, Xize Cheng, Yang Zhao, Tao Jin, and Zhou Zhao.            Ostrovski, et al. Human-level control through deep
+      Chat-scene: Bridging 3d scene and large language mod-          reinforcement learning. Nature, 2015. 8
+      els with object identifiers. In NeurIPS, 2024. 7         [82] TP Lillicrap. Continuous control with deep reinforce-
+[68] Zipeng Fu, Xuxin Cheng, and Deepak Pathak. Deep                 ment learning. arXiv preprint, 2015. 8
+      whole-body control: Learning a unified policy for ma-    [83] Yuankai Qi, Qi Wu, Peter Anderson, Xin Wang,
+      nipulation and locomotion. In CoRL, 2022. 6, 7                 William Yang Wang, Chunhua Shen, and Anton van den
+[69] Manolis Savva, Abhishek Kadian, Oleksandr                       Hengel. Reverie: Remote embodied visual referring
+      Maksymets, Yili Zhao, Erik Wijmans, Bhavana                    expression in real indoor environments. In CVPR, 2020.
+      Jain, Julian Straub, Jia Liu, Vladlen Koltun, Jitendra         8
+      Malik, et al. Habitat: A platform for embodied ai        [84] Angel Chang, Angela Dai, Thomas Funkhouser, Ma-
+      research. In ICCV, 2019. 7, 8                                  ciej Halber, Matthias Niessner, Manolis Savva, Shuran
+[70] Alec Radford, Jong Wook Kim, Tao Xu, Greg Brock-                Song, Andy Zeng, and Yinda Zhang. Matterport3d:
+      man, Christine McLeavey, and Ilya Sutskever. Robust            Learning from rgb-d data in indoor environments. In
+      speech recognition via large-scale weak supervision. In        3DV, 2017. 8
+[85] Daniel Fried, Ronghang Hu, Volkan Cirik, Anna                      Scaling on-policy rl with transformers results in mas-
+      Rohrbach, Jacob Andreas, Louis-Philippe Morency,                  terful navigators. In CoRL, 2024. 8
+      Taylor Berg-Kirkpatrick, Kate Saenko, Dan Klein, and       [99] Dhruv Shah, Ajay Sridhar, Arjun Bhorkar, Noriaki
+      Trevor Darrell. Speaker-follower models for vision-and-           Hirose, and Sergey Levine. Gnm: A general navigation
+      language navigation. In NeurIPS, 2018. 8                          model to drive any robot. In ICRA, 2023.
+                                                                [100] Ajay Sridhar, Dhruv Shah, Catherine Glossop, and
+[86] Chih-Yao Ma, Jiasen Lu, Zuxuan Wu, Ghassan Al-                     Sergey Levine. Nomad: Goal masked diffusion policies
+      Regib, Zsolt Kira, Richard Socher, and Caiming Xiong.             for navigation and exploration. In ICRA, 2024. 8
+      Self-monitoring navigation agent via auxiliary progress   [101] Pengxiang Ding, Han Zhao, Zhitao Wang, Zhenyu Wei,
+      estimation. In ICLR, 2019.                                        Shangke Lyu, and Donglin Wang. Quar-vla: Vision-
+                                                                        language-action model for quadruped robots. In ECCV,
+[87] Liyiming Ke, Xiujun Li, Yonatan Bisk, Ari Holtzman,                2024. 8
+      Zhe Gan, Jingjing Liu, Jianfeng Gao, Yejin Choi, and      [102] Annie S Chen, Alec M Lessing, Andy Tang, Govind
+      Siddhartha Srinivasa. Tactical rewind: Self-correction            Chada, Laura Smith, Sergey Levine, and Chelsea Finn.
+      via backtracking in vision-and-language navigation. In            Commonsense reasoning for legged robot adaptation
+      CVPR, 2019.                                                       with vision-language models. arXiv preprint, 2024. 8
+                                                                [103] Yutao Ouyang, Jinhan Li, Yunfei Li, Zhongyu Li,
+[88] Yicong Hong, Cristian Rodriguez, Yuankai Qi, Qi Wu,                Chao Yu, Koushil Sreenath, and Yi Wu. Long-horizon
+      and Stephen Gould. Language and visual entity rela-               locomotion and manipulation on a quadrupedal robot
+      tionship graph for agent navigation. In NeurIPS, 2020.            with large language models. arXiv preprint, 2024. 8
+                                                                [104] Yikai Wang, Zheyuan Jiang, and Jianyu Chen. Learning
+[89] Shizhe Chen, Pierre-Louis Guhur, Cordelia Schmid, and              robust, agile, natural legged locomotion skills in the
+      Ivan Laptev. History aware multimodal transformer for             wild. In CoRL, 2023. 8
+      vision-and-language navigation. In NeurIPS, 2021.         [105] Junfeng Long, Zirui Wang, Quanyi Li, Liu Cao, Jiawei
+                                                                        Gao, and Jiangmiao Pang. Hybrid internal model:
+[90] Jiaqi Chen, Bingqian Lin, Ran Xu, Zhenhua Chai, Xiao-              Learning agile legged locomotion with simulated robot
+      dan Liang, and Kwan-Yee Wong. Mapgpt: Map-guided                  response. In ICLR, 2024. 8
+      prompting with adaptive path planning for vision-and-     [106] Simar Kareer, Naoki Yokoyama, Dhruv Batra, Sehoon
+      language navigation. In ACL, 2024.                                Ha, and Joanne Truong. Vinl: Visual navigation and
+                                                                        locomotion over obstacles. In ICRA, 2023. 8
+[91] Gengze Zhou, Yicong Hong, Zun Wang, Xin Eric               [107] Ruihan Yang, Minghao Zhang, Nicklas Hansen, Huazhe
+      Wang, and Qi Wu. Navgpt-2: Unleashing navigational                Xu, and Xiaolong Wang. Learning vision-guided
+      reasoning capability for large vision-language models.            quadrupedal locomotion end-to-end with cross-modal
+      In ECCV, 2024. 8                                                  transformers. In ICLR, 2022.
+                                                                [108] Chieko Sarah Imai, Minghao Zhang, Yuchen Zhang,
+[92] Xiujun Li, Chunyuan Li, Qiaolin Xia, Yonatan Bisk,                 Marcin Kierebin´ski, Ruihan Yang, Yuzhe Qin, and
+      Asli Celikyilmaz, Jianfeng Gao, Noah Smith, and Yejin             Xiaolong Wang. Vision-guided quadrupedal locomotion
+      Choi. Robust navigation with language pretraining and             in the wild with multi-modal delay randomization. In
+      stochastic sampling. In EMNLP, 2019. 8                            IROS, 2022.
+                                                                [109] Ruihan Yang, Ge Yang, and Xiaolong Wang. Neural
+[93] Aishwarya Kamath, Peter Anderson, Su Wang, Jing Yu                 volumetric memory for visual locomotion control. In
+      Koh, Alexander Ku, Austin Waters, Yinfei Yang, Jason              CVPR, 2023. 8
+      Baldridge, and Zarana Parekh. A new path: Scaling         [110] Takahiro Miki, Lorenz Wellhausen, Ruben Grandia,
+      vision-and-language navigation with synthetic instruc-            Fabian Jenelten, Timon Homberger, and Marco Hutter.
+      tions and imitation learning. In CVPR, 2023. 8                    Elevation mapping for locomotion and navigation using
+                                                                        gpu. In IROS, 2022. 8
+[94] Muhammad Zubair Irshad, Chih-Yao Ma, and Zsolt             [111] Ji Lin, Jiaming Tang, Haotian Tang, Shang Yang, Wei-
+      Kira. Hierarchical cross-modal agent for robotics                 Ming Chen, Wei-Chen Wang, Guangxuan Xiao, Xingyu
+      vision-and-language navigation. In ICRA, 2021. 8                  Dang, Chuang Gan, and Song Han. Awq: Activation-
+                                                                        aware weight quantization for llm compression and
+[95] Octo Model Team, Dibya Ghosh, Homer Walke, Karl                    acceleration. In MLSys, 2024. 3
+      Pertsch, Kevin Black, Oier Mees, Sudeep Dasari, Joey
+      Hejna, Tobias Kreiman, Charles Xu, et al. Octo: An
+      open-source generalist robot policy. In RSS, 2024. 8
+
+[96] Ria Doshi, Homer Rich Walke, Oier Mees, Sudeep
+      Dasari, and Sergey Levine. Scaling cross-embodied
+      learning: One policy for manipulation, navigation, lo-
+      comotion and aviation. In CoRL, 2024. 8
+
+[97] Jonathan Yang, Catherine Glossop, Arjun Bhorkar,
+      Dhruv Shah, Quan Vuong, Chelsea Finn, Dorsa Sadigh,
+      and Sergey Levine. Pushing the limits of cross-
+      embodiment learning for manipulation and navigation.
+      arXiv preprint, 2024. 8
+
+[98] Kuo-Hao Zeng, Zichen Zhang, Kiana Ehsani, Rose
+      Hendrix, Jordi Salvador, Alvaro Herrasti, Ross Girshick,
+      Aniruddha Kembhavi, and Luca Weihs. Poliformer:
+       APPENDIX                                                       3) Different Memory Sizes: We conduct an ablation study
+TABLE OF CONTENTS                                                  to evaluate the impact of memory size (number of history
+                                                                   frames) on the navigation task using R2R-CE benchmark.
+A More Ablation Studies . . . . . . . . . . . . . . . . . 1        The results in Table IX show that for R2R-CE, 8 frames
+   A1 Different Simulation Data Blends . . . . . . . . 1           are sufficient to cover most instruction horizons, with limited
+   A2 Human Touring Video Data . . . . . . . . . . . 1             performance gains from increasing the memory size. For real-
+   A3 Different Memory Sizes . . . . . . . . . . . . . 1           world experiments, we use an 8-frame memory size due to
+                                                                   latency constraints.
+B More Qualitative Results . . . . . . . . . . . . . . . . 1
+   B1 VLN-CE-Isaac . . . . . . . . . . . . . . . . . . 1           TABLE IX: Ablation study on different memory size using R2R-
+   B2 Real-World . . . . . . . . . . . . . . . . . . . . 1         CE [29] Validation Unseen split.
+   B3 Spatial Scene Understanding . . . . . . . . . . . 3
+                                                                                                  R2R-CE Val Unseen
+C More Implementation Details . . . . . . . . . . . . . 3                              NE  OSR  SR  SPL 
+   C1 Video Navigation Trajectory Summarization . . 3
+   C2 VLA Hyperparameters . . . . . . . . . . . . . . 3            NaVid [12]          5.47  49.0  37.0  35.0
+   C3 Locomotion Motion Policy . . . . . . . . . . . . 3
+   C4 VLA Compute Resources . . . . . . . . . . . . 3              NaVILA  (8 frames)  5.37  57.6  49.7  45.5
+
+D Parameter-efficient Quantization . . . . . . . . . . . . 3       NaVILA  (16 frames) 5.63  55.8  48.6  44.4
+E Limitations . . . . . . . . . . . . . . . . . . . . . . . 4
+                                                                   NaVILA  (32 frames) 5.74  55.9  49.5  44.1
+
+                                                                   NaVILA  (64 frames) 5.63  60.5  50.1  45.4
+
+A. More Ablation Studies                                           B. More Qualitative Results
+
+   1) Different Simulation Data Blends: We perform an ab-             1) VLN-CE-Isaac: Here we show a visualization example
+lation study to assess the impact of different simulation data     highlighting why the Go2 vision policy significantly outper-
+blends on training VLA. As shown in Table VII, training navi-      forms the blind policy. As demonstrated in Figure 8, when
+gation data without label rebalancing leads to a significant drop  encountering an obstacle, the VLA, which is not specifically
+in performance. Additionally, training VLA exclusively on          trained for obstacle avoidance, failed to navigate around it
+RxR data demonstrates reasonable cross-dataset performance         effectively. The blind policy, following the VLA's commands
+on R2R-CE, supporting our observations in Table II. Lastly,        without additional sensory input, became stuck at the obstacle.
+we investigate whether excluding RxR dataset degrades R2R-         In contrast, the vision-based policy, trained to handle obstacles
+CE performance. The results suggest that the RxR dataset does      using LiDAR input, can autonomously avoid dangers even
+not significantly contribute to the R2R-CE performance.            when the high-level VLA model does not detect them.
+
+TABLE VII: Results on R2R-CE using different data blends.
+
+                                     R2R-CE Val Unseen
+
+NaVILA  (w/o Label Balancing)  NE    OSR    SR    SPL 
+NaVILA  (w/ RxR only)
+NaVILA  (w/o RxR)              7.82   47.5  30.0   25.1
+NaVILA                         7.57   40.8  31.5   27.8
+                               6.11   57.0  47.7   42.4
+                               5.37   57.6  49.7   45.5
+
+   2) Human Touring Video Data: We perform ablation stud-                                         Blind Policy
+ies in simulations to assess the effect of using real-world data
+from YouTube human touring videos. As shown in Table VIII,                                      Vision Policy
+incorporating this data leads to significant performance gains,    Fig. 8: Comparison between Go2 blind policy and vision policy. The
+with approximately 5% improvements in OS, SR, and SPL              blind policy failed to avoid the obstacles and got stuck. The vision
+metrics. Similarly, results from real-world experiments (Ta-       policy detected the obstacle and got around to avoiding it.
+ble VI) demonstrate higher success rates and fewer navigation
+errors. These results validate the effectiveness of our data          2) Real-World: We show more real-world results in Fig-
+pipeline and highlight the scalability of NaVILA's framework,      ure 9. NaVILA demonstrates robust performance and excep-
+which supports easy integration of data from diverse sources.      tional generalization across diverse settings.
+TABLE VIII: Results on R2R-CE using additional real data from
+human touring videos.
+
+                                            R2R-CE Val Unseen
+                                     NE  OSR  SR  SPL 
+                     NaVILA  5.37 57.6 49.7 45.5
+                     NaVILA 5.22 62.5 54.0 49.0
+
+    indicates models trained without human touring videos.
+                                            Turn left a little. Go straight forward. Stop when you step on the grass.
+
+                                                   Walk forward. Step on the grass and continue going forward.
+                                                             Stop when you are close to the big bear statue.
+
+                                             Walk to the other end of the room, turn left and find a toy kitchen set.
+
+              Move forward into the kitchen. Turn right at the corner, and then walk straight forward. Stop in front of the red bowl.
+
+                            Walk forward out of the room. Turn right and enter the other room and stop in front of the table.
+
+                        Turn right immediately, walk along the hallway, turn left at the end and enter the most left bedroom.
+
+                                            Walk all the way down, turn left at the intersection and find a bookshelf.
+
+                                                Walk all the way down, turn left at the intersection and find a ball.
+Fig. 9: We show more results in diverse environments, such as urban streets, campus sidewalks, courtyards, and different houses. These
+settings add significant variety and challenges, including challenging terrains, dynamic objects, and different lighting conditions. The results
+NaVILA achieved represent a significant milestone, showcasing capabilities that have never been demonstrated before.
+   3) Spatial Scene Understanding: In Figure 10, we show
+NaVILA's qualitative results on spatial scene understanding
+using the ScanQA benchmark. Given a sequence of images
+sampled from a video, NaVILA can ground and locate objects
+correctly.
+
+                                                                            Fig. 11: Random rough, obstacle and slope terrain.
+                                                                     TABLE X: Reward function parameters for training RL policy.
+
+                                                                     Reward                         Expression               Weight
+
+Q: Where does the trash can set?                                     Linear velocity tracking       exp(-vxcmyd - vxy 22)    1.5
+NaVILA: To right of toilet.                                                                         exp(- ycmawd - yaw 2)
+Q: What is hanging on the wall between the toilet and the bath tub?  Angular velocity tracking      vz2                      1.5
+NaVILA: Toilet paper.                                                Linear velocity penalty (z)    xy 22                    -2.0
+                                                                     Angular velocity penalty (xy)  g22                      -0.05
+Q: What can be seen on the wall on the right of the chair?           Flat orientation               ¨2                       -2.0
+NaVILA: Whiteboard.                                                  Joint accelerations            - q22                    -2.5 × 10-7
+Q: What color is the mini fridge in the corner of the room?          Energy                         (htarget - h)2           -2 × 10-5
+NaVILA: Black.                                                       Body height
+                                                                     Feet slipping                  -vfeet · 1[Ffeet > 1]2   -5.0
+Fig. 10: Spatial scene understanding results on ScanQA benchmark.                                                            0.05
+C. More Implementation Details
+                                                                     TABLE XI: Domain randomization parameters for training RL policy.
+   1) Video Navigation Trajectory Summarization: We pro-
+vide the data prompts for our auxiliary task of video navigation             Parameter                          Value
+trajectory summarization. Following the approach in [12], we
+construct prompt templates that characterize the LLM as a                    Body Mass                          [-3.0, 3.0]
+robot designed for navigation. We process the trajectory videos              Static Ground Friction             [0.4, 4.0]
+into history frames, insert the frame tokens into the prompt,                Dynamic Ground Friction            [0.4, 4.0]
+and ask the LLM to infer the navigation instructions from                    Motor Strength                     [0.9,1.1]
+the video. This task is designed to enhance the robot's scene                System Delay                       [t, t]
+understanding and its familiarity with the instruction format.
+                                                                     TABLE XII: LiDAR and Height Map parameters in simulation.
+Assume you are a robot designed for navigation. You
+are provided with captured image sequences:                                  Parameter                          Value
+
+<frame3><frame6><frame9>...                                                  Channels                           32
+                                                                             Vertical Range (degrees)           (0, 90)
+Based on this image sequence, please describe the                            Horizontal Range (degrees)         (-180, 180)
+navigation trajectory of the robot.                                          Horizontal Resolution (degrees)    4
+                                                                             Voxel Size (m)                     0.06
+   2) VLA Hyperparameters: Please refer to VILA's paper for                  X Range (m)                        [-0.8, 0.2]
+details on the hyperparameters used in the first two stages. In              Y Range (m)                        [-0.8, 0.8]
+the instruction fine-tuning stage, we use a learning rate of 1e-4            Z Range (m)                        [0.05, 0.5]
+with cosine decay and a warm-up ratio of 0.03. We will release
+both our training code and data upon paper publication.                 4) VLA Compute Resources: The first two stages of NaV-
+                                                                     ILA are inherited from VILA [13], which is trained on 16
+   3) Locomotion Motion Policy: The reward functions and             A100 GPU nodes, with each node having 8 GPUs. The
+domain randomization used during Go2 locomotion policy               training times for each stage of our 8B model are as follows:
+training are listed in Table X and Table XI. The robust policy       connector initialization takes 4 hours, visual language pre-
+is trained on flat, rough, slope and obstacle terrains shown         training takes 30 hours. The final visual instruction-tuning
+in Figure 11. LiDAR and height map settings are detailed in          stage is experimented on 4 A100 GPU nodes, taking 18 hours.
+Table XII.                                                           During inference time, the VLA model in NaVILA can be
+                                                                     served using a single RTX 4090 GPU with roughly 1 FPS.
+
+                                                                     D. Parameter-efficient Quantization
+
+                                                                        We explore optimization techniques to improve NaVILA's
+                                                                     inference efficiency. Specifically, we apply AWQ [111], a
+                                                                     state-of-the-art quantization method for VLMs, to the FP16
+                                                                     NaVILA-8B model. By converting it to the W4A16 format
+                                                                     (low-bit weight-only quantization), we achieved significant
+                                                                     improvements: memory requirements dropped by half, and
+                                                                     processing speed improved by about 40%. Most importantly,
+                                                                     navigation capabilities remained robust. Results are detailed
+                                                                     in Table XIII. These optimizations make NaVILA deployable
+                                                                     directly on the robot, which will significantly eliminate image
+                                                                     transmission time. We leave this as future work.
+Fig. 12: Obstacle avoidance screenshots. Locomotion policy can ensure collision-free in the face of high grass, certain transparent glass, and
+large objects under strong sunlight. The policy presents robustness on sand and grass terrains.
+
+TABLE XIII: NaVILA quantization results. The computational cost is tested on RTX 4090 with 1737 context tokens and 10 generated
+tokens, using a sample from R2R-CE as the test case.
+
+                Computational Cost                           R2R Val-Unseen
+
+                Total Latency (ms)  GPU Memory (GB)   NE  OS  SR  SPL 
+
+NaVILA (FP16)   594.58  18.5                          5.37 57.6 49.7 45.5
+                                                      5.66 56.8 48.2 43.6
+NaVILA (W4A16)  367.80              8.6
+
+E. Limitations
+
+   In Figure 13, we highlight a failure case in the real world where the robot initially follows the prompt but ultimately fails
+to reach the bedroom. This failure arises from the robot's inability to perform effective error correction when deviations occur.
+To further enhance performance, improving generalizability and spatial understanding is key. One potential direction is larger-
+scale training on more realistic simulations, which could provide more diverse navigation scenarios and error recovery cases.
+Additionally, incorporating explicit reasoning data during training could help the model better anticipate and correct mistakes.
+
+                Walk along the hallway and enter the bedroom.
+                         Fig. 13: Failure case of NaVILA.
+

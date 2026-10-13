@@ -1,0 +1,6 @@
+# Scoring rectangles (world frame) for the taught-places navigation test (scripts/teach/run_use.sh): the ground-truth rooms of the tour and a 1.7 x 2.0 m patch around the delivery spot.
+world: aws_hospital
+rooms:
+  - {name: "Room C", rect: [0.0, -6.5, 3.4, 0.0]}
+  - {name: "Room E", rect: [0.0, -13.7, 3.4, -6.7]}
+  - {name: "Delivery spot", rect: [3.3, -15.2, 5.0, -12.8]}

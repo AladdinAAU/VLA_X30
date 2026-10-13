@@ -1,0 +1,18 @@
+# ROS2
+ros2_ws/build
+ros2_ws/install
+ros2_ws/log
+
+# ROS1
+ros1_ws/build
+ros1_ws/devel
+ros1_ws/install_isolated
+
+# Ignore generated docs
+.git
+
+# Optional extras
+**/__pycache__
+**/*.pyc
+.vscode
+.idea

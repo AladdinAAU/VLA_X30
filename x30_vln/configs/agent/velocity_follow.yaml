@@ -1,0 +1,65 @@
+# Policy of the instruction follower (mode velocity_follow, x30_agent.core.follower).
+version: 1
+
+prompt_files:
+  system: follow_system.md
+  planner: follow_planner.md
+  stop_check: follow_stop_check.md
+
+output_format: tool            # tool: the model calls `act` | text: free text "ACTION: move_forward 50" parsed with regex (NaVILA style)
+
+model:
+  temperature: 0.2
+  max_tokens: 160
+  tool_choice: auto
+
+limits:
+  max_steps: 40
+  time_budget_s: 300
+  format_retries: 2
+  max_noop_steps: 3
+  max_llm_errors: 2
+  min_steps_before_stop: 1
+  stop_refusals_before_accept: 2   # stop with unfinished subgoals is refused this many times, then accepted and flagged
+  max_consecutive_blocked: 5       # blocked moves in a row before the episode ends as safety
+  skill_timeout_s: 40
+
+actions:                         # clamps applied to the model's amounts (cm / degrees)
+  move_min_cm: 10
+  move_max_cm: 300
+  turn_min_deg: 5
+  turn_max_deg: 180
+  default_move_cm: 50
+  default_turn_deg: 30
+
+images:
+  history_frames: 3              # frames before the current one (first frame of the episode is always kept, NaVILA style)
+  current_frame: true
+  map: false
+  map_summary: false
+  max_side_px: 336
+  jpeg_quality: 80
+
+prompt:
+  recent_actions: 6
+  subgoals: true
+  auto_advance_metric: true      # a subgoal that names an angle or a forward distance is marked done by the harness once the measured progress reaches it
+  auto_advance_fraction: 0.85
+
+stop_check:
+  enabled: true
+  frames: 2
+  max_tokens: 60
+  accept_unsure: true            # unsure counts as yes (the model had already claimed done)
+
+loop:
+  window: 6                      # steps looked at
+  min_net_move_m: 0.25           # net displacement over the window below this, with >= 3 translations in it, is "no progress"
+  repeat_blocked: 2              # the same move blocked this many times in a row: further identical moves are refused
+  warn_limit: 3                  # consecutive loop warnings before the episode ends as no_progress
+  revisit_radius_m: 0.4
+  revisit_count: 3
+  oscillation_len: 4             # alternating left/right turns of similar size
+
+trace:
+  messages: true

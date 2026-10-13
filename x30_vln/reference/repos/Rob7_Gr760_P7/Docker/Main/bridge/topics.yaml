@@ -1,0 +1,29 @@
+topics:
+  -
+    topic: /cmd_vel
+    type: geometry_msgs/msg/Twist
+    queue_size: 10
+  -
+    topic: /livox/imu_192_168_2_202
+    type: sensor_msgs/msg/Imu
+    queue_size: 10
+  -
+    topic: /livox/imu_192_168_2_203
+    type: sensor_msgs/msg/Imu
+    queue_size: 10
+  -
+    topic: /livox/imu_192_168_2_204
+    type: sensor_msgs/msg/Imu
+    queue_size: 10
+  -
+    topic: /livox/imu_192_168_2_205
+    type: sensor_msgs/msg/Imu
+    queue_size: 10
+  -
+    topic: /lidar_points
+    type: sensor_msgs/msg/PointCloud2
+    queue_size: 10
+  -
+    topic: /tf
+    type: tf2_msgs/msg/TFMessage
+    queue_size: 10

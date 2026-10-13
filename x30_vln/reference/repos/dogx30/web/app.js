@@ -1,0 +1,2642 @@
+// X30 遥控台。协议见 docs/app-protocol.md。
+//
+// 两条时间线：WebSocket 收遥测（10 Hz，被动），定时器发控制量（20 Hz，主动）。
+// 发送必须独立于用户输入 —— 摇杆不动时也要持续发，否则网关看门狗会误判掉线。
+
+'use strict';
+
+const SEND_HZ = 20;
+const HEARTBEAT_MS = 500;
+const RECONNECT_MS = 1000;
+let meshDownSeq = 0;
+
+const $ = (id) => document.getElementById(id);
+
+// 安卓壳用 ?shell=app 打开。网页不加这个参数，布局完全不动。
+// 没 MESH 时走 file:///android_asset，WebView 常把 ?shell=app 丢掉，
+// 只认查询串会画出网页那套 2×2 / 控制权 / 摇杆。
+function detectAppShell() {
+  if (document.documentElement.classList.contains('shell-app')) return true;
+  try {
+    if (new URLSearchParams(location.search).get('shell') === 'app') return true;
+  } catch (e) { /* 无 URLSearchParams 时看地址 */ }
+  const href = String(location.href || '');
+  return location.protocol === 'file:' || href.indexOf('android_asset') !== -1;
+}
+const isAppShell = detectAppShell();
+if (isAppShell) document.documentElement.classList.add('shell-app');
+
+const RADIO_STORE = 'x30.radioPath';
+
+// 改一次网页就把这个字符串往前挪一位。界面上印出来，就能一眼看出
+// assets/web 是不是真的重拷过 —— 编包漏拷是这套壳最常见的「改了没反应」。
+const WEB_BUILD = '0928a';
+
+// 语音播报见 voice.js。按钮上的字由那边的委托监听念，这里只在「按下去之后发生的事
+// 与按钮上写的不一样」时改口：被拦下、开关类按钮的新状态、切完档之后到底走哪条路。
+// 同一拍里后念的覆盖先念的，所以不必先取消什么。
+function speak(text) {
+  if (window.X30Voice) window.X30Voice.say(text);
+}
+
+function nativeAppVersion() {
+  try {
+    return String(window.X30Native.getAppVersion() || '');
+  } catch (e) {
+    return '';
+  }
+}
+
+// 版本印在设置面板里，不占顶栏 —— 顶栏是遥控时要盯着的地方。
+// 但不能不印：装包时漏拷 assets/web，页面就是旧的，而这一点光看界面看不出来。
+function paintVerChip() {
+  const el = $('set-app-ver');
+  if (!el) return;
+  const apk = nativeAppVersion();
+  const gw = app.gwVersion ? (' · 网关 ' + app.gwVersion) : '';
+  el.textContent = (apk ? ('包 ' + apk + ' · 网页 ' + WEB_BUILD) : ('网页 ' + WEB_BUILD)) + gw;
+}
+
+function nativeRadioPath() {
+  try {
+    const v = window.X30Native.getRadioPath();
+    if (v === 'radio' || v === 'mesh') return v;
+  } catch (e) { /* 网页没有原生桥 */ }
+  return '';
+}
+
+function loadRadioPath() {
+  if (!isAppShell) return 'mesh';
+  const fromNative = nativeRadioPath();
+  if (fromNative) return fromNative;
+  try {
+    const v = window.localStorage.getItem(RADIO_STORE);
+    if (v === 'radio' || v === 'mesh') return v;
+  } catch (e) { /* 无 storage 时按上次按钮 */ }
+  return 'mesh';
+}
+
+// ---------------------------------------------------------------------------
+// 状态
+// ---------------------------------------------------------------------------
+
+const app = {
+  ws: null,
+  wsNativeOpen: false,
+  wsNativeOpening: false,
+  nativeWsFails: 0,
+  useBrowserWs: false,
+  clientId: 0,
+  holder: 0,
+  hasControl: false,
+  radioPath: loadRadioPath(),
+  radioFallback: false,   // radioPath==='radio' 的别名，手柄分支沿用
+  alive: false,
+  basicState: 0,
+  rlStanding: false,
+  emergencyLocked: false,
+  controlMode: 0,
+  posture: 'unknown',
+  motionState: 'unavailable',
+  axisMode: 'none',
+  stateValid: false,
+  stateSource: 'mesh',
+  gait: 'walk',
+  gaitPending: false,
+  lioAligning: false,
+  height: '',             // 人点的身高：'normal' | 'crawl'
+  poseCmdOurs: false,     // 这轮会话我们发过起/趴。没发过就不能信网关那份旧记忆
+  poseHandoff: null,      // 待交接给网关的姿态（切档时记下，网关认了才算完）
+  poseHintWarned: false,  // 旧网关的提示只说一次，别在遥控时反复弹
+  gwVersion: '',          // hello.version，设置里能对上板子装的是哪一版
+  gwPoseAdopt: false,     // hello.pose_adopt：这份网关认不认 claim.standing
+  radioAcquirePending: false, // 等网关确认 yield 后再启动 2.4G 心跳
+  meshAcquirePending: false,  // 等 2.4G 心跳停稳后再申请网关控制权
+  pendingCycle: null,         // MESH 下 L1/L2：要到控制权后再执行 'walk'|'pose'
+  modePick: null,         // 狗本体：manual | auto。菜单不再露这两档，默认手动。
+  workMode: 'inspect',    // 侦检 | 水炮，只管小摇杆用途
+  cannonTelem: null,      // 网关 state.cannon，有 have_pressure 才画顶栏水压
+  left: { x: 0, y: 0 },   // 左摇杆：x=平移, y=前后
+  right: { x: 0, y: 0 },  // 右摇杆：x=转向；y 仅在控布控球时为俯仰
+};
+app.radioFallback = app.radioPath === 'radio';
+try {
+  const savedWork = window.localStorage.getItem('x30.workMode');
+  if (savedWork === 'cannon' || savedWork === 'inspect') app.workMode = savedWork;
+} catch (e) { /* 隐私模式 */ }
+window.app = app;
+
+// 定时器在本脚本抛错时依然会触发，所以先把启动排进队列，再往下挂按钮。
+let booted = false;
+setTimeout(bootstrap, 0);
+
+// 只有踏步态走速度通道。当前机器未开放姿态扭身，力控/停步时摇杆禁用，
+// 免得用户对着没反应的摇杆反复推。
+const STATE_STEPPING = 4;
+const STATE_TORQUE_STANDING = 3;
+const STATE_SIT_TO_STAND = 1;
+const STATE_STAND_TO_SIT = 5;
+const STATE_INITIAL_STAND = 2;
+const STATE_EMERGENCY = 6;
+
+function jointsLocked(basic, src) {
+  if (basic === STATE_EMERGENCY) return true;
+  const n = Number(src) || 0;
+  return n === 1 || (n >= 4 && n <= 6);
+}
+
+// 趴下只露起立；站立（含 RL 起立后遥测仍报 0）才出步态/身高和力控起步。
+let poseCmdWant = null;
+let poseCmdAt = 0;
+
+function notePoseCmd(standing) {
+  poseCmdWant = standing;
+  poseCmdAt = Date.now();
+  app.poseCmdOurs = true;
+}
+
+function isStandingUi() {
+  // 切档会把 posture 清成 unknown；RL 起立后遥测常报坐下。
+  // 这两种都不能只信 posture，否则左下角退回「起立」。
+  if (app.posture === 'standing' || app.posture === 'rising' ||
+      app.posture === 'falling') return true;
+  if (app.poseHandoff !== null) return !!app.poseHandoff;
+  if (app.posture === 'prone' || app.posture === 'locked') return false;
+  return !!app.rlStanding;
+}
+app.isStandingUi = isStandingUi;
+app.notePoseCmd = notePoseCmd;
+
+function controlChannel() {
+  return app.axisMode === 'vel' ? 'vel' : null;
+}
+
+function effectiveWalk() {
+  if (app.motionState === 'walking' || app.motionState === 'starting' ||
+      app.motionState === 'stopping') return 'step';
+  if (app.motionState === 'torque') return 'torque';
+  if (app.motionState === 'stopped') return 'stopped';
+  return null;
+}
+
+function noteWalkCmd(name) {
+  // 状态由当前控制层回报；按钮点击只发意图，不在 UI 里提前翻状态。
+  void name;
+  paintWalkButtons();
+}
+app.noteWalkCmd = noteWalkCmd;
+
+function paintWalkButtons() {
+  const btn = $('btn-walk');
+  if (!btn) return;
+  const walk = effectiveWalk();
+  const starting = app.motionState === 'starting';
+  const stopping = app.motionState === 'stopping';
+  // 与 L1 同序：显示「下一拍会做什么」。
+  if (walk === 'step') {
+    btn.textContent = stopping ? '停步中' : '停步';
+  } else if (walk === 'torque' || starting) {
+    btn.textContent = starting ? '起步中' : '起步';
+  } else {
+    btn.textContent = '力控';
+  }
+  // 不用全局 .btn.on（绿底黑字看不清）；行走态用白字高亮。
+  btn.classList.remove('on');
+  btn.classList.toggle('walk-hot', walk === 'step' || walk === 'torque' || starting);
+  btn.disabled = !!app.lioAligning || starting || stopping;
+}
+
+// ---------------------------------------------------------------------------
+// 连接
+// ---------------------------------------------------------------------------
+
+function meshWsUrl() {
+  try {
+    if (isAppShell) {
+      const host = String(window.X30Native.getGatewayHost() || '').trim();
+      const port = Number(window.X30Native.getGatewayPort()) || 8080;
+      if (host) return 'ws://' + host + ':' + port + '/ws';
+    }
+  } catch (e) { /* 用当前页地址 */ }
+  if (location.protocol === 'file:') return '';
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return proto + '//' + location.host + '/ws';
+}
+
+// 2.4G 只接管运动指令（见 send 里的过滤），网关连接照旧要建：机身相机和布控球的
+// 拉流地址由网关下发（media_plan），遥测、电量、点云也都走它。曾经在 2.4G 下直接
+// 不连网关，结果控制正常但整块画面是空的 —— 视频和操控本来就是两条独立的链路。
+function hasNativeWs() {
+  try {
+    return isAppShell && window.X30Native && 'wsOpen' in window.X30Native;
+  } catch (e) { return false; }
+}
+
+function onWsOpen() {
+  meshDownSeq += 1;
+  app.wsWasOpen = true;
+  app.nativeWsFails = 0;
+  app.wsNativeOpen = hasNativeWs() && !app.useBrowserWs;
+  app.wsNativeOpening = false;
+  setLink(true);
+  // 重连后若本地点云仍在订，补发一次。App 壳以前不补，断线后点云会一直空。
+  if (window.X30Cloud && window.X30Cloud.resubscribe) {
+    window.X30Cloud.resubscribe();
+  }
+  if (window.X30Media && window.X30Media.onLinkOpen) {
+    window.X30Media.onLinkOpen();
+  }
+}
+
+function onWsClose() {
+  const dropFromLive = !!app.wsWasOpen;
+  // 不退回 WebView 通道。原生通道自己重连。
+  if (!dropFromLive && hasNativeWs() && !app.useBrowserWs) {
+    app.nativeWsFails = (app.nativeWsFails || 0) + 1;
+  }
+  app.wsWasOpen = false;
+  app.wsNativeOpen = false;
+  app.wsNativeOpening = false;
+  if (dropFromLive && !isAppShell) app.radioFallback = true;
+  app.hasControl = false;
+  app.modePick = null;
+  app.holder = 0;
+  app.gwPoseAdopt = false;
+  if (!radioDirect()) {
+    app.stateValid = false;
+    app.axisMode = 'none';
+    app.motionState = 'unavailable';
+    app.posture = 'unknown';
+  }
+  setLink(false);
+  renderControl();
+  if (dropFromLive) {
+    const seq = ++meshDownSeq;
+    // 电台重报 Network 时 TCP 会断 1–2 秒。立刻弹「MESH 已断」是误报。
+    setTimeout(() => {
+      if (seq !== meshDownSeq || linkOpen()) return;
+      showBanner(isAppShell
+        ? (app.radioPath === 'radio'
+          ? '网关已断，当前仍是 2.4G 直达'
+          : 'MESH 已断。要控狗请切 2.4G，或等网关重连')
+        : 'WiFi 已断，网关已放手。请用原厂 2.4G 手柄直达（无画面）', 8000);
+    }, 2500);
+  }
+  setTimeout(connect, RECONNECT_MS);
+}
+
+function connect() {
+  syncNativeRadioPath();
+  if (hasNativeWs() && !app.useBrowserWs) {
+    if (app.wsNativeOpen || app.wsNativeOpening) return;
+    const url = meshWsUrl();
+    if (!url) {
+      setLink(false);
+      renderControl();
+      setTimeout(connect, RECONNECT_MS);
+      return;
+    }
+    app.wsNativeOpening = true;
+    window.X30Native.wsOpen(url);
+    return;
+  }
+  if (app.ws && (app.ws.readyState === WebSocket.OPEN
+      || app.ws.readyState === WebSocket.CONNECTING)) {
+    return;
+  }
+  const url = meshWsUrl();
+  if (!url) {
+    setLink(false);
+    renderControl();
+    setTimeout(connect, RECONNECT_MS);
+    return;
+  }
+  const ws = new WebSocket(url);
+  app.ws = ws;
+
+  ws.onopen = onWsOpen;
+
+  ws.onclose = onWsClose;
+
+  ws.onerror = () => ws.close();
+
+  // 点云走二进制帧。不设这个的话浏览器给的是 Blob，还得走一次异步读取，
+  // 2 Hz 的大帧那样会平白多一次拷贝和一次事件循环往返。
+  ws.binaryType = 'arraybuffer';
+
+  ws.onmessage = (ev) => {
+    if (ev.data instanceof ArrayBuffer) {
+      if (window.X30Cloud) window.X30Cloud.onCloudFrame(ev.data);
+      return;
+    }
+    handleWsText(ev.data);
+  };
+}
+
+function handleWsText(raw) {
+  let msg;
+  try { msg = JSON.parse(raw); } catch (e) { return; }
+  switch (msg.t) {
+      case 'hello':
+        app.clientId = msg.client_id;
+        app.holder = msg.holder || 0;
+        app.hasControl = !!msg.control;
+        app.gwVersion = msg.version ? String(msg.version) : '';
+        app.gwPoseAdopt = !!msg.pose_adopt;
+        paintVerChip();
+        renderControl();
+        ensureManualMode();
+        if (window.X30Settings) window.X30Settings.onHello(msg);
+        if (isAppShell && app.radioPath === 'mesh' &&
+            !app.meshAcquirePending) requestControl();
+        else if (isAppShell && app.radioPath === 'radio' && app.hasControl) {
+          app.radioAcquirePending = true;
+          send({ t: 'yield' });
+        }
+        break;
+      case 'config':
+        if (window.X30Settings) window.X30Settings.onConfig(msg);
+        break;
+      case 'config_saved':
+        if (window.X30Settings) window.X30Settings.onConfigSaved(msg);
+        break;
+      case 'control':
+        app.holder = msg.holder || 0;
+        app.hasControl = app.holder === app.clientId;
+        renderControl();
+        ensureManualMode();
+        try {
+          if (window.X30Settings && window.X30Settings.onControl) {
+            window.X30Settings.onControl(app.hasControl);
+          }
+        } catch (e) { /* */ }
+        if (isAppShell && app.radioPath === 'radio') finishRadioAcquire();
+        if (isAppShell && app.radioPath === 'mesh' &&
+            !app.meshAcquirePending && !app.hasControl && !app.holder) {
+          setTimeout(requestControl, 100);
+        }
+        if (msg.granted === false) {
+          app.pendingCycle = null;
+          showBanner(app.holder && app.holder !== app.clientId
+            ? '控制权被 #' + app.holder + ' 占用'
+            : '申请控制权失败');
+        } else if (app.hasControl && app.pendingCycle) {
+          // L1/L2 在无控制权时先 claim，拿到后再跑与 2.4G 相同的循环。
+          const next = app.pendingCycle;
+          app.pendingCycle = null;
+          if (next === 'walk') cycleWalk();
+          else if (next === 'pose') cyclePose();
+        }
+        break;
+      case 'state':
+        renderState(msg);
+        break;
+      case 'gait_result':
+        onGaitResult(msg);
+        break;
+      case 'media_plan':
+        if (window.X30Media) window.X30Media.onMediaPlan(msg, showBanner);
+        break;
+      case 'cloud_status':
+        if (window.X30Cloud) window.X30Cloud.onCloudStatus(msg);
+        break;
+      case 'switch_result':
+        applySwitchResult(msg);
+        break;
+      case 'ptz_pip':
+        if (window.X30PtzBall && window.X30PtzBall.onPipMsg) {
+          window.X30PtzBall.onPipMsg(msg);
+        }
+        break;
+      case 'error':
+        // 配置相关的报错归设置面板显示在表单旁边，横幅四秒就没了，
+        // 而人这时正盯着表单等结果。
+        if (window.X30Settings && window.X30Settings.onError(msg)) break;
+        if (msg.code === 'no_cloud' && window.X30Cloud && window.X30Cloud.onDenied) {
+          window.X30Cloud.onDenied(msg.msg || '网关未启用点云');
+        }
+        showBanner(msg.msg);
+        break;
+    }
+}
+
+window.X30NativeWs = {
+  onWsOpen: onWsOpen,
+  onWsClose: onWsClose,
+  handleWsText: handleWsText,
+};
+
+function drainNativeWs() {
+  if (!hasNativeWs() || app.useBrowserWs) return;
+  // 安卓 WebView 里桥方法 typeof 常不是 function，用 in 判断。
+  if (!window.X30Native || !('wsPoll' in window.X30Native)) return;
+  let raw = '[]';
+  try { raw = window.X30Native.wsPoll() || '[]'; } catch (e) { return; }
+  let arr;
+  try { arr = JSON.parse(raw); } catch (e) { return; }
+  if (arr && arr.length) {
+    for (let i = 0; i < arr.length; i++) handleWsText(arr[i]);
+  }
+  // 点云走 MESH 网关的二进制帧，不是 2.4G。以前 typeof 误判把这一支整段跳过。
+  if (!('wsPollBin' in window.X30Native)) return;
+  let binRaw = '[]';
+  try { binRaw = window.X30Native.wsPollBin() || '[]'; } catch (e) { return; }
+  let bins;
+  try { bins = JSON.parse(binRaw); } catch (e) { return; }
+  if (!bins || !bins.length || !window.X30Cloud) return;
+  for (let i = 0; i < bins.length; i++) {
+    const buf = b64ToArrayBuffer(bins[i]);
+    if (buf) window.X30Cloud.onCloudFrame(buf);
+  }
+}
+
+function b64ToArrayBuffer(b64) {
+  if (!b64 || typeof b64 !== 'string') return null;
+  try {
+    const bin = atob(b64);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8.buffer;
+  } catch (e) {
+    return null;
+  }
+}
+
+// 切之前是哪一档。网关说切不成时要退回它，见 onGaitResult。
+let gaitBefore = '';
+
+// 步态切换是异步的，楼梯尤其可能要几秒。切换期间把按钮禁掉，避免操作员
+// 以为没反应而连点 —— 编排器会拒绝并发请求，连点只会刷出一堆报错。
+function setGaitPending(pending) {
+  app.gaitPending = pending;
+  document.querySelectorAll('[data-gait]').forEach((b) => {
+    b.disabled = pending;
+  });
+  paintPickers();
+}
+
+function onGaitResult(msg) {
+  setGaitPending(false);
+  if (msg.ok) {
+    // 网关回的是它真设上的那一档，以它为准（点的时候是先乐观标上的）。
+    if (msg.gait_key) markGait(msg.gait_key);
+    if (msg.msg) showBanner(msg.msg);
+    if (msg.code === 'queued') speak('已记下，起步后切换');
+    return;
+  }
+  // 切不成就把高亮退回原来那一档：亮着新档位而狗还在旧步态是最坏的一种显示。
+  if (gaitBefore) markGait(gaitBefore);
+  // 失败原因往往很长（要写清楚该去查什么），给足停留时间。
+  showBanner(msg.msg || '步态切换失败', 9000);
+  // 点的时候已经念过档位名了。切不成必须再念一句盖掉它，否则人听到「爬坡」
+  // 就以为换上了 —— 而这几秒的延迟里他多半已经把视线移回狗身上。
+  speak('步态没切成');
+}
+
+function hasNativeRadio() {
+  // 安卓 WebView 里 X30Native 的方法 typeof 常常不是 function，
+  // 用 typeof === 'function' 会误判成没有 2.4G，点了也不开数传。
+  try {
+    return !!window.X30Native;
+  } catch (e) {
+    return false;
+  }
+}
+
+function radioDirect() {
+  if (!isAppShell) return false;
+  if (app.radioPath === 'radio') return true;
+  return nativeRadioPath() === 'radio';
+}
+
+function send(obj) {
+  if (!obj) return;
+  // 运动链路跟档位互斥：2.4G 时网关不再发 claim/vel/pose/运动 cmd，避免双 0x21。
+  // 云台/开关/媒体/点云能走 MESH 仍走 MESH。水炮在 1 网，只走 2.4G，不进这条 WebSocket。
+  if (obj.t === 'cannon' || obj.t === 'cannon_spray' || obj.t === 'cannon_fire') return;
+  if (radioDirect() && hasNativeRadio()) {
+    const t = obj.t;
+    if (t === 'claim' || t === 'vel' || t === 'pose' || t === 'release') return;
+    if (t === 'cmd' && obj.name !== 'estop') return;
+  }
+  // 走网关发过起立/趴下之后，网关那份记忆就是它自己刚写的，比我们从 2.4G 带过来
+  // 的旧认知新。不在这里放手，操作员在 MESH 下按趴下之后界面还会显示站立。
+  if (obj.t === 'cmd' && POSE_CMDS[obj.name]) app.poseHandoff = null;
+  if (hasNativeWs() && !app.useBrowserWs) {
+    try { window.X30Native.wsSend(JSON.stringify(obj)); } catch (e) { /* 原生通道还没开 */ }
+    return;
+  }
+  if (app.ws && app.ws.readyState === WebSocket.OPEN) {
+    app.ws.send(JSON.stringify(obj));
+  }
+}
+
+// 会改变姿态的那几条。与 RadioLink.POSE_CMDS 同一份清单。
+const POSE_CMDS = {
+  stand: true, stand_up: true, sit: true, sit_down: true,
+  unload: true, estop: true,
+};
+
+function nativeWsLive() {
+  try {
+    if (window.X30Native && typeof window.X30Native.wsAlive === 'function') {
+      return !!window.X30Native.wsAlive();
+    }
+  } catch (e) { /* 桥还没挂上 */ }
+  return !!app.wsNativeOpen;
+}
+
+function linkOpen() {
+  if (hasNativeWs() && !app.useBrowserWs) return nativeWsLive();
+  return !!(app.ws && app.ws.readyState === WebSocket.OPEN);
+}
+app.linkOpen = linkOpen;
+
+function radioOnly() {
+  if (radioDirect()) return true;
+  return !linkOpen() || (app.radioFallback && !app.hasControl);
+}
+app.radioOnly = radioOnly;
+
+function radioHint(kind) {
+  if (radioDirect()) {
+    showBanner(kind === 'g20'
+      ? '当前 2.4G：起立/趴下/行走直达运动主机；画面与云台仍走 MESH'
+      : '2.4G 姿态没发出去。请先切回 MESH 看画面，或重装 App');
+    speak('2.4G 没发出去');
+    return;
+  }
+  showBanner(kind === 'g20'
+    ? '网关未连。要备份请切到 2.4G'
+    : '网关未连，屏幕按钮走不了。请先恢复 MESH');
+  speak('网关未连');
+}
+app.radioHint = radioHint;
+
+function nativeRadioCmd(name) {
+  try {
+    window.X30Native.radioCmd(String(name));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+app.nativeRadioCmd = nativeRadioCmd;
+
+function hasRadioStanding() {
+  return hasNativeRadio();
+}
+
+function nativeRadioLinkOk() {
+  try {
+    return !!window.X30Native.radioLinkOk();
+  } catch (e) {
+    return false;
+  }
+}
+
+function nativeRadioStatus() {
+  try {
+    return JSON.parse(window.X30Native.radioStatus() || '{}');
+  } catch (e) {
+    return null;
+  }
+}
+
+function nativeRadioStanding() {
+  try {
+    return !!window.X30Native.radioStanding();
+  } catch (e) {
+    return app.rlStanding;
+  }
+}
+
+
+// 2.4G 下狗的姿态来自它自己的 UDP 遥测（RadioLink 解 0x1009），写进的是
+// MESH 那侧同一个 app.basicState。两条链路读同一份真相，切档时状态才对得上 ——
+// 以前 2.4G 只按「我点过什么」记，切回 MESH 前的旧读数还留在 app 里，
+// 于是切一次就总显示站立。
+function syncRadioStanding(st0) {
+  if (!radioDirect()) return;
+  const st = st0 || nativeRadioStatus() || {};
+  const normalizedChanged = app.stateValid !== !!st.stateValid ||
+    app.posture !== (st.posture || 'unknown') ||
+    app.motionState !== (st.motion || 'unavailable') ||
+    app.axisMode !== (st.axisMode || 'none');
+  app.stateSource = 'radio';
+  app.stateValid = !!st.stateValid;
+  app.posture = st.posture || 'unknown';
+  app.motionState = st.motion || 'unavailable';
+  app.axisMode = st.axisMode || 'none';
+  app.alive = !!st.ready;
+  // 姿态有把握（收到遥测，或本端确实发过起立/趴下）时才让「趴着就收起菜单」生效。
+  // 没把握的时候狗可能明明站着，菜单一收就再也点不开 —— 那是当初 2.4G 不管趴没趴
+  // 都亮着菜单的原因。现在能读遥测了，就按知不知道来分。
+  document.documentElement.classList.toggle('pose-known', !!st.poseKnown);
+  const basic = typeof st.basic === 'number' ? st.basic : -1;
+  let changed = normalizedChanged;
+  if (basic >= 0 && basic !== app.basicState) {
+    app.basicState = basic;
+    // 坐下 / 初始站立：RL 起立后常停在这里。本端刚点的力控/起步不要灭，
+    // 灭了按钮暗掉，人再按一次起步就等于停步，摇杆也跟着没了。
+    changed = true;
+  }
+  if (basic < 0 && app.basicState !== 0) {
+    // 收不到遥测（狗的 network.toml 里没登记这台平板）时，不能拿 MESH 那会儿的
+    // 旧读数当真 —— 那正是「切一次档就总显示站立」的来路。退回本地记的那份。
+    app.basicState = 0;
+    changed = true;
+  }
+  // 急停常常是原生那侧收到实体红键按下的（RadioLink.handleButtons 直接发 estop，
+  // 网页并不经手）。没有遥测时 basic 一直是 -1，只有 RadioLink 自己记着这件事，
+  // 不读它的话左下角一直显示「起立」，操作员就找不到卸力 —— 而急停后不卸力
+  // 起立是发不动的。有遥测时以遥测为准：别人卸过力我们也得跟着改口。
+  // 锁不锁以 RadioLink 为准。网页再按来源字节判一次，坐下+摔倒(7)会被
+  // 误判成卸力，左下角就出不了起立。
+  const locked = !!st.emergency;
+  if (locked !== app.emergencyLocked) {
+    app.emergencyLocked = locked;
+    changed = true;
+  }
+  // statusJson 里已经带了姿态，别再多走一次桥：每次桥调用都是一趟同步 Binder，
+  // 而这个回路按发轴频率在跑。
+  const up = typeof st.standing === 'boolean' ? st.standing : nativeRadioStanding();
+  if (up !== app.rlStanding) {
+    app.rlStanding = up;
+    changed = true;
+  }
+  if (st.poseKnown) notePose(isStandingUi());
+  if (app.poseHandoff !== null && st.poseKnown
+      && typeof st.standing === 'boolean' && st.standing === app.poseHandoff) {
+    app.poseHandoff = null;
+  }
+  if (!changed) return;
+  const wrap = $('stage-wrap');
+  if (wrap) {
+    const standing = isStandingUi();
+    wrap.classList.toggle('dog-up', standing);
+    wrap.classList.toggle('dog-prone', !standing);
+  }
+  paintStandButton();
+  paintWalkButtons();
+  updateStickAvailability();
+}
+
+// 2.4G 下狗自己报的步态/身高。有它就不必靠「我这次点过什么」——
+// 刚开机或刚从 MESH 切过来时我们什么都没点过，菜单上却该显出真实档位。
+const RADIO_GAIT_KEYS = {
+  0: 'walk', 1: 'offroad', 2: 'slope', 3: 'run', 6: 'stair',
+  7: 'stairmulti', 8: 'stair45', 32: 'lwalk', 33: 'mountain', 34: 'silent',
+  36: 'lstair',
+};
+
+let radioGaitSeen = '';
+let radioHeightSeen = null;
+// 网关报来的步态读数（MESH）。和上面那个 2.4G 的一样，只用来认「读数变了」。
+let meshGaitSeen = '';
+let meshHeightSeen = null;
+let meshWalkSeen = -1;
+let heightPickAt = 0;
+
+function syncRadioPickers(st) {
+  // 这个回路按发轴频率在跑，读数没变就别重扫一遍 DOM。
+  const key = RADIO_GAIT_KEYS[st.gait] || '';
+  const height = typeof st.height === 'number' ? st.height : null;
+  radioGaitSeen = adoptGaitTelem(key, radioGaitSeen);
+  if (height === radioHeightSeen) return;
+  radioHeightSeen = adoptHeightTelem(height, radioHeightSeen);
+}
+
+// 2.4G 没有网关遥测时，本地先把起立后的步态/身高菜单亮出来。
+function applyRadioPose(name) {
+  // 2.4G 控制层会在下一轮 statusJson 回报规范状态；这里不再自行改姿态/运动状态。
+  if (name === 'manual' || name === 'auto') {
+    app.modePick = name;
+    paintModes();
+    return;
+  }
+  if (name === 'height_low' || name === 'height_normal') {
+    markHeight(name === 'height_low' ? 'crawl' : 'normal');
+    return;
+  }
+  const gaits = ['walk', 'slope', 'offroad', 'lwalk', 'mountain', 'silent',
+                 'stair', 'stairmulti', 'stair45', 'lstair'];
+  if (gaits.indexOf(name) >= 0) {
+    markGait(name);
+    if (app.motionState !== 'walking' && app.motionState !== 'starting') {
+      showBanner('已记下，起步后切换');
+      speak('已记下，起步后切换');
+    }
+  }
+}
+
+// 标「现在是哪个步态」。两个菜单里都有 [data-gait]（平地和常规是同一个步态，
+// 各有一颗），所以一起扫。
+//
+// 关键是**谁说了算**：以人点的为准，遥测只在读数真的变了的时候接管（见
+// adoptGaitTelem）。以前是每帧照遥测标一次，而狗的 gait_state 在好几种常见情况下
+// 一直报 0 —— 没在狗的 network.toml 里登记本机（收不到遥测）、切换被运动主机拒掉、
+// 楼梯步态要地形图配合 —— 于是人点了爬坡，下一帧就被顶回常规，看着像「点了没选上」。
+function markHeight(key) {
+  app.height = key || '';
+  heightPickAt = Date.now();
+  document.querySelectorAll('[data-height]').forEach((b) => {
+    b.classList.toggle('active', !!key && b.dataset.height === key);
+  });
+  paintPickers();
+}
+
+function heightKeyFromGear(gear) {
+  if (gear === null || gear === undefined) return '';
+  const n = Number(gear);
+  if (!Number.isFinite(n)) return '';
+  // 指令 0=匍匐 2=正常；遥测 −1=匍匐 0=正常。Java 无符号会把 −1 读成 4294967295。
+  if (n === 2) return 'normal';
+  if (n < 0 || n > 0x7fffffff) return 'crawl';
+  if (n === 0) return 'normal';
+  return '';
+}
+
+function adoptHeightTelem(gear, seen) {
+  if (gear === null || gear === undefined) return seen;
+  if (heightPickAt && Date.now() - heightPickAt < 2500) return seen;
+  const key = heightKeyFromGear(gear);
+  if (!key) return seen;
+  // 0 既可能是遥测「正常」也可能是指令「匍匐」。人刚点了匍匐就别拿 0 顶回去。
+  if (key === 'normal' && app.height === 'crawl' && Number(gear) === 0) return seen;
+  if (key === seen) return seen;
+  if (!seen && app.height && app.height !== key) return key;
+  markHeight(key);
+  return key;
+}
+
+function markGait(key) {
+  app.gait = key || '';
+  document.querySelectorAll('[data-gait]').forEach((b) => {
+    b.classList.toggle('active', !!key && b.dataset.gait === key);
+  });
+  paintPickers();
+}
+
+// 遥测/网关报来的步态。只有读数变了才认：它一直报同一个值时说明这条路上没有
+// 新信息，不能拿它去盖掉人刚点的那一档。
+function adoptGaitTelem(key, seen) {
+  if (!key || key === seen) return seen;
+  // 第一次读到、而且人已经点过另一档：那一档才是意图，这条多半是开机默认值
+  // （gait_state 常年报 0），盖上去就是「点了爬坡立刻被顶回常规」。
+  // 读数还是要记：狗真切过去的时候 key 变了，那时再跟。
+  if (!seen && app.gait && app.gait !== key) return key;
+  markGait(key);
+  return key;
+}
+
+// 把当前选的那一档写到收起的菜单标题上（步态|常规 ›）。三个菜单各有各的口径：
+//   步态     —— 现在跑的步态，含楼梯那几档
+//   上下楼踏面 —— 踏面材质（实心/格栅/无踢面），是个设置，跟狗当前步态无关
+//   身高     —— 当前身高档
+const PICKERS = [
+  { val: 'acc-val-gait', sel: '[data-gait].active' },
+  { val: 'acc-val-stair', sel: '[data-stair].active' },
+  { val: 'acc-val-height', sel: '[data-height].active' },
+];
+
+function paintPickers() {
+  for (const p of PICKERS) {
+    const el = $(p.val);
+    if (!el) continue;
+    const on = document.querySelector(p.sel);
+    // 有 data-short 的用短名：底栏就那么宽，长名字会把整排挤成两行。
+    // 还不知道选的是哪一档时留空，按钮上只剩菜单名和箭头。
+    let text = on ? (on.dataset.short || on.textContent) : '';
+    // 步态切换要跨运动主机与感知主机按序设置，楼梯还要等狗停稳，可达数秒。
+    // 这期间显示旧值加省略号，比直接跳到新值老实。
+    if (p.val === 'acc-val-gait' && app.gaitPending && text) text += '…';
+    if (el.textContent !== text) el.textContent = text;
+  }
+}
+app.paintPickers = paintPickers;
+app.applyRadioPose = applyRadioPose;
+app.markGait = markGait;
+
+// 这个按钮同时是档位和链路灯：字是走哪条路，颜色是那条路通不通 ——
+// 绿=通，黄=不通。以前顶栏另挂一条「2.4G通 网关通 ok/fail rx…」的状态串，
+// 遥控时那串东西既占地方又要费神读，而真正要一眼看清的只有通没通。
+// 出了问题「为什么不通」由黄条讲（见 paintRadioLink），不占顶栏。
+function paintRadioBtn(st0) {
+  const btn = $('btn-radio');
+  if (!btn) return;
+  const radio = app.radioPath === 'radio';
+  btn.textContent = radio ? '2.4G' : 'MESH';
+  const up = radio ? radioLinkUp(st0) : meshPaintUp();
+  btn.classList.toggle('link-up', up);
+  btn.classList.toggle('link-down', !up);
+}
+
+// MESH 电台重报 Network 时 TCP 会断 1 秒再连上。按钮立刻跟着黄会看起来像闪断。
+let meshPaintDownAt = 0;
+function meshPaintUp() {
+  if (linkOpen()) {
+    meshPaintDownAt = 0;
+    return true;
+  }
+  if (!meshPaintDownAt) meshPaintDownAt = Date.now();
+  return Date.now() - meshPaintDownAt < 2500;
+}
+
+// 2.4G 通的判据是「指令到得了运动主机」，不是「射频起来了」。
+function radioLinkUp(st0) {
+  if (!hasNativeRadio()) return false;
+  if (st0 && typeof st0.ready === 'boolean') return st0.ready;
+  return nativeRadioLinkOk();
+}
+
+function notifyNativeRadio() {
+  try {
+    window.X30Native.setRadioPath(app.radioPath);
+  } catch (e) { /* 网页没有原生桥 */ }
+}
+
+function setNativeRadioControl(on) {
+  try {
+    if (window.X30Native && window.X30Native.setRadioControlEnabled) {
+      window.X30Native.setRadioControlEnabled(!!on);
+    }
+  } catch (e) { /* 网页没有原生桥 */ }
+}
+
+function finishRadioAcquire() {
+  if (!app.radioAcquirePending || app.radioPath !== 'radio') return;
+  if (app.hasControl || app.holder) return;
+  app.radioAcquirePending = false;
+  setNativeRadioControl(true);
+}
+
+function waitRadioReleased(deadline) {
+  if (!app.meshAcquirePending || app.radioPath !== 'mesh') return;
+  const st = nativeRadioStatus() || {};
+  if (!st.enabled) {
+    app.meshAcquirePending = false;
+    if (linkOpen()) requestControl();
+    return;
+  }
+  if (Date.now() < deadline) {
+    setTimeout(() => waitRadioReleased(deadline), 40);
+    return;
+  }
+  showBanner('2.4G 控制链路未能释放，已停止切换以避免双链路抢控制', 8000);
+}
+
+function syncNativeRadioPath() {
+  const native = nativeRadioPath();
+  if (!native || native === app.radioPath) return;
+  adoptRadioPath(native, false);
+}
+app.syncNativeRadioPath = syncNativeRadioPath;
+
+function applyRadioPath(announce) {
+  app.radioFallback = app.radioPath === 'radio';
+  document.documentElement.classList.toggle('radio-24', radioDirect());
+  // 初次绘制不要把原生已选的 2.4G 写回 MESH。只在用户或原生真切了档时通知。
+  if (app.radioPath === 'radio') {
+    app.meshAcquirePending = false;
+    if (hasNativeRadio()) {
+      if (app.hasControl) {
+        app.radioAcquirePending = true;
+        send({ t: 'yield' });
+      } else if (app.holder) {
+        app.radioAcquirePending = true;
+        showBanner('MESH 仍由其他控制端占用，2.4G 暂不接管', 8000);
+      } else {
+        app.radioAcquirePending = false;
+        setNativeRadioControl(true);
+      }
+      if (announce) {
+        showBanner('已切到 2.4G：运动走数传；视频/云台/开关仍走 MESH');
+        speak('已切 2.4G');
+      }
+      setTimeout(() => {
+        if (!radioDirect() || !hasNativeRadio()) return;
+        if (nativeRadioLinkOk()) return;
+        const st = nativeRadioStatus() || {};
+        const why = st.status === 'no-usb-net'
+          ? 'G20 还没有 USB 网 192.168.144（射频/对频没起来）。关云卓助手和云深处后再切 2.4G'
+          : ('2.4G 还没到运动主机 192.168.1.103（' + (st.status || 'unknown') + '）');
+        showBanner(why, 10000);
+      }, 2000);
+    } else if (announce) {
+      showBanner('这台 App 还没有 2.4G 直达，控制仍走 MESH');
+      speak('没有 2.4G 直达');
+    }
+    paintRadioLink();
+    return;
+  }
+  // 切回 MESH 要把 2.4G 档留下的空文本换成网关那侧的说法，setLink 负责。
+  app.radioAcquirePending = false;
+  setNativeRadioControl(false);
+  app.meshAcquirePending = true;
+  setLink(linkOpen());
+  waitRadioReleased(Date.now() + 1500);
+  if (announce) {
+    showBanner(linkOpen()
+      ? '已切到 MESH，网关接管'
+      : '已选 MESH，等网关连上后自动接管');
+    speak(linkOpen() ? '已切 MESH' : 'MESH 还没连上');
+  }
+  paintRadioBtn();
+}
+
+function adoptRadioPath(path, announce) {
+  const next = path === 'radio' ? 'radio' : 'mesh';
+  const changed = app.radioPath !== next;
+  // 切档前先把「狗现在站没站」记下来：两侧各自只知道自己发过什么，而狗 RL 起立后
+  // 遥测仍报坐下，谁都从遥测里认不出来。不交接的表现就是切一次档姿态变回趴着，
+  // 而且轴会被接手那侧吞掉 —— 狗明明站着却推不动。
+  const upright = changed ? handoffPose() : null;
+  const walk = changed ? effectiveWalk() : null;
+  app.radioPath = next;
+  try { window.localStorage.setItem(RADIO_STORE, app.radioPath); } catch (e) { /* 记不住就当次有效 */ }
+  if (changed) {
+    // 指令已是明确 on/off，记忆可以跟着走。清掉的话 MESH 在走、切 2.4G
+    // 左下角就退回「起立」，力控/停步也对不上。
+    if (upright !== null) {
+      app.rlStanding = upright;
+      app.posture = upright ? 'standing' : 'prone';
+    }
+    if (walk === 'step') {
+      app.motionState = 'walking';
+      app.axisMode = 'vel';
+      app.stateValid = true;
+    } else if (walk === 'torque' || walk === 'stopped') {
+      app.motionState = walk;
+      app.axisMode = 'none';
+      app.stateValid = true;
+    } else if (upright !== null) {
+      app.motionState = upright ? 'stopped' : 'unavailable';
+      app.axisMode = 'none';
+      app.stateValid = true;
+    } else {
+      app.stateValid = false;
+      app.axisMode = 'none';
+      app.motionState = 'unavailable';
+    }
+    paintStandButton();
+    paintWalkButtons();
+    notifyNativeRadio();
+  }
+  if (changed && upright !== null) {
+    // 接手一侧还没回报前先信这份。2.4G 立刻写入 RadioLink；网关等 claim。
+    app.poseHandoff = upright;
+    poseHintAt = 0;
+    app.poseHintWarned = false;
+    if (next === 'radio') pushMotionToRadio(upright, walk);
+  }
+  applyRadioPath(!!announce);
+  renderControl();
+  // 切档只改指令走哪条路，不主动断网关：两条链路同时在（平板既连着 WiFi 又开着
+  // 2.4G）时，操控走 2.4G、画面和遥测仍可走网关。纯 2.4G 现场网关本来就够不到，
+  // 这里的重连会一直失败但无害，机身相机那一路由 X30DogCam 原生直拉。
+  if (changed) connect();
+  if (window.X30DogCam) window.X30DogCam.onRadioPath();
+}
+// 当前这一侧对姿态有把握吗？没把握就返回 null，宁可不交接 ——
+// 猜错的代价是按「趴下」时狗反而站起来，比多按一次起立严重得多。
+// 任一侧确定过姿态就记在这里。两侧各自只知道自己发过什么，而狗 RL 起立后遥测仍报
+// 坐下，所以谁都可能「此刻不知道」。App 是唯一一直在场的一方，切档交接的应该是这份
+// 记忆，而不是「当前这侧现在知不知道」—— 以前只交接当前侧的认知，切档那一刻正好
+// 没遥测（平板地址没登记、或网关够不着狗）就交接不出去，表现就是切档姿态有时对
+// 有时不对。App 重启后记忆为空，那才真的交不出去。
+let poseMem = null;
+
+function notePose(up) {
+  if (typeof up === 'boolean') poseMem = up;
+}
+
+function handoffPose() {
+  if (radioDirect()) {
+    // 2.4G 侧：原生发过起立/趴下，或者收到了狗的遥测，才算有依据。
+    const st = nativeRadioStatus() || {};
+    if (st.poseKnown) return isStandingUi();
+  } else if (linkOpen() && app.alive) {
+    // MESH 侧：网关连着且它够得着狗，那份记忆就是有依据的。
+    return isStandingUi();
+  }
+  return poseMem;
+}
+
+function pushPoseToRadio(upright) {
+  pushMotionToRadio(upright, null);
+}
+
+function pushMotionToRadio(upright, walk) {
+  try {
+    if (window.X30Native.radioAdoptMotion) {
+      window.X30Native.radioAdoptMotion(!!upright, walk || '');
+      return;
+    }
+    window.X30Native.radioAdoptPose(!!upright);
+    if (walk && window.X30Native.radioWalk) window.X30Native.radioWalk(walk);
+  } catch (e) { /* 网页没有原生桥 */ }
+}
+
+function setRadioPath(path) {
+  adoptRadioPath(path, true);
+}
+app.setRadioPath = setRadioPath;
+app.adoptRadioPath = adoptRadioPath;
+
+// 手持壳连上就要权：关掉原厂 App 不会把权交过来，操作员也不该再点一次。
+// 网页控制台仍是观察者，避免笔记本开着就把手柄的权抢走。
+// 菜单不再提供导航/辅助。拿到控制权后把狗身拉回手动，作业模式仍是侦检/水炮。
+function ensureManualMode() {
+  if (app.modePick === 'manual') return;
+  if (radioDirect()) {
+    if (hasNativeRadio() && app.nativeRadioCmd) {
+      app.nativeRadioCmd('manual');
+      app.modePick = 'manual';
+    }
+    return;
+  }
+  if (!app.hasControl) return;
+  app.modePick = 'manual';
+  send({ t: 'cmd', name: 'mode', value: 'manual' });
+}
+
+function requestControl() {
+  try {
+    if (window.X30Settings && window.X30Settings.blockClaim
+        && window.X30Settings.blockClaim()) {
+      return;
+    }
+  } catch (e) { /* */ }
+  // 已经有权时通常不必再发。但切回 MESH 时 poseHandoff 还在，必须再发一条带
+  // standing 的 claim，否则网关记的还是切走之前的趴着 —— 这正是「旧版」误报的来源。
+  if (app.hasControl && app.poseHandoff === null) return;
+  if (radioDirect()) return;
+  if (!linkOpen()) {
+    radioHint();
+    return;
+  }
+  if (app.holder && app.holder !== app.clientId) {
+    showBanner('控制权被 #' + app.holder + ' 占用');
+    return;
+  }
+  send(claimMsg());
+}
+// 手柄那一层也从这里要权：它自己拼 claim 的话，切档带的姿态就丢了。
+app.claimMsg = claimMsg;
+
+// 刚从 2.4G 切过来时把姿态一并告知：那段起立/趴下没经过网关，它记的是旧的。
+// 这里**不清掉** app.poseHandoff：这条 claim 可能没被授权（权在别人手上），
+// 也可能网关是旧版根本不认这个键。清早了就等于交接丢了，而丢了的表现正是
+// 「切回 MESH 左下角又变成起立」。等网关的读数真对上了再算交接完（renderState）。
+function claimMsg() {
+  const claim = { t: 'claim' };
+  if (app.poseHandoff !== null) {
+    claim.standing = app.poseHandoff;
+    if (poseHintAt === 0) poseHintAt = Date.now();
+  }
+  return claim;
+}
+
+// 旧网关不认 claim 里的 standing，会静默忽略。只更新 App 没更新板子很容易发生，
+// 而那时候界面自己知道姿态、网关不知道：按钮按我们知道的显示（见 renderState），
+// 但轴仍会被网关吞掉，所以必须说清楚该更新哪一头。
+let poseHintAt = 0;
+
+function checkPoseHint(s) {
+  if (app.poseHandoff === null) return;
+  if (!!s.rl_standing === app.poseHandoff) {
+    // 网关改口了（新网关采纳，或操作员自己按了一次起立/趴下），交接到此结束。
+    app.poseHandoff = null;
+    poseHintAt = 0;
+    return;
+  }
+  // 没拿到控制权时网关本来就不会采纳，这不算旧版，也别急着报。
+  if (!app.hasControl) return;
+  // 新网关会在 hello 里声明 pose_adopt。对不上就先等，别说成旧版 ——
+  // 以前靠 1.5 秒猜，claim 还在路上也会弹出那条吓人的横幅。
+  if (app.gwPoseAdopt) return;
+  if (poseHintAt === 0) poseHintAt = Date.now();
+  if (Date.now() - poseHintAt < 1500 || app.poseHintWarned) return;
+  app.poseHintWarned = true;
+  const ver = app.gwVersion ? ('（板子上报 ' + app.gwVersion + '）') : '';
+  showBanner('板子上的网关还不会交接姿态' + ver +
+             '。仓库里已经有了，请在 RK3588 上重跑 install.sh，只更 App 不够。', 8000);
+}
+
+// ---------------------------------------------------------------------------
+// 渲染
+// ---------------------------------------------------------------------------
+
+// 2.4G 档下顶栏不再挂状态串（通没通看按钮颜色）。不通时才需要细节，
+// 而那属于「出了事要查」，用黄条讲一次，比在顶栏常驻一行更合用。
+// 传进来的是本轮已经读过的那份原生状态：每次读都是一趟同步 Binder，
+// 而这条回路按发轴频率在跑。
+function paintRadioLink(st0) {
+  if (!radioDirect()) return;
+  const st = st0 || nativeRadioStatus() || {};
+  const text = $('link-text');
+  if (text) text.textContent = '';
+  paintRadioBtn(st);
+  if (!st.ready && hasNativeRadio()) {
+    const why = st.status === 'no-usb-net'
+      ? 'G20 还没有 USB 网 192.168.144（射频/对频没起来）。关云卓助手和云深处后再切 2.4G'
+      : ('2.4G 还没到运动主机 192.168.1.103（' + (st.status || 'unknown') + '）');
+    showBanner(why, 0, 'wait');
+  }
+}
+
+function setLink(online) {
+  const chip = $('chip-link');
+  if (radioDirect()) {
+    paintRadioLink();
+  } else {
+    if (online) meshPaintDownAt = 0;
+    else if (!meshPaintDownAt) meshPaintDownAt = Date.now();
+    online = meshPaintUp();
+    chip.classList.toggle('online', online);
+    // 布控/气体只靠网关，不靠狗。狗没上线时仍显示网关已连，别把整屏说成断了。
+    $('link-text').textContent = online
+        ? (app.alive ? '已连接' : '网关已连')
+        : (app.radioFallback ? '2.4G' : '重连中');
+    paintRadioBtn();
+  }
+  if ($('btn-settings')) $('btn-settings').classList.toggle('online', online);
+  if (!online) {
+    document.querySelector('.telemetry').classList.add('stale');
+  }
+  if (window.X30Settings) window.X30Settings.onLink(online);
+}
+
+function renderControl() {
+  const btn = $('btn-control');
+  btn.classList.toggle('held', app.hasControl);
+  btn.textContent = '控制权';
+
+  const tag = $('tag-holder');
+  tag.classList.toggle('held', app.hasControl);
+  if (app.hasControl) {
+    tag.textContent = '控制中';
+  } else if (!linkOpen()) {
+    tag.textContent = app.radioFallback ? '2.4G' : '未连接';
+  } else if (app.holder) {
+    tag.textContent = `被 #${app.holder} 占用`;
+  } else {
+    tag.textContent = '观察者';
+  }
+
+  paintRadioBtn();
+  updateStickAvailability();
+}
+
+const fmt = (v, n = 2) => (typeof v === 'number' ? v.toFixed(n) : '—');
+
+function renderState(s) {
+  // 网关 state 始终用于仪表数据；运动状态只能由当前控制链路写。
+  // 2.4G 下若再让 10Hz 网关 state 覆盖 20Hz RadioLink statusJson，
+  // 力控/起步按钮就会在两份状态之间来回闪烁。
+  if (!radioDirect()) {
+    app.alive = !!s.alive;
+    app.stateSource = s.state_source || 'mesh';
+    app.stateValid = !!s.state_valid;
+    app.posture = s.posture || 'unknown';
+    app.motionState = s.motion || 'unavailable';
+    app.axisMode = s.axis_mode || 'none';
+  }
+  setLink(linkOpen());
+  if (s.alive) app.warnedRobotDown = false;
+  // 2.4G 直达后运动遥测改回平板，网关会一直报坐下。不能再用它改口。
+  if (!radioDirect()) {
+    checkPoseHint(s);
+    app.basicState = s.basic_state;
+    // 交接还没被网关认下来时宁可信自己：这份认知来自 2.4G 那段我们亲手发出去的
+    // 起立/趴下，而网关只是「没见过任何指令」。信网关的表现就是切回 MESH 后
+    // 左下角又变成「起立」，再按一次狗会先趴下去。
+    const upright = s.basic_state === STATE_INITIAL_STAND ||
+                    s.basic_state === STATE_TORQUE_STANDING ||
+                    s.basic_state === STATE_STEPPING ||
+                    s.basic_state === STATE_SIT_TO_STAND ||
+                    s.basic_state === STATE_STAND_TO_SIT;
+    if (app.poseHandoff !== null) {
+      app.rlStanding = app.poseHandoff;
+    } else if (upright) {
+      app.rlStanding = true;
+    } else if (!app.poseCmdOurs) {
+      app.rlStanding = false;
+    } else {
+      app.rlStanding = !!s.rl_standing;
+    }
+    app.emergencyLocked = app.posture === 'locked' ||
+                          jointsLocked(s.basic_state, s.emergency_source);
+    if (app.emergencyLocked) app.rlStanding = false;
+  }
+  app.controlMode = typeof s.mode === 'number' ? s.mode : 0;
+
+  document.querySelector('.telemetry').classList.toggle('stale', !s.alive);
+
+  const chipState = $('chip-state');
+  if (app.emergencyLocked) {
+    chipState.textContent = radioDirect() ? '2.4G · 急停锁定' : (s.basic_state_text || '急停锁定');
+    chipState.classList.add('online');
+  } else if (radioDirect()) {
+    chipState.textContent = '2.4G';
+    chipState.classList.add('online');
+  } else {
+    chipState.textContent = s.basic_state_text || '—';
+    chipState.classList.toggle('online', s.alive);
+  }
+
+  if (s.cannon && typeof s.cannon === 'object'
+      && !(window.X30Native && ('radioCannonStatus' in window.X30Native))) {
+    app.cannonTelem = s.cannon;
+  }
+  paintCannonPressure();
+
+  const batt = s.battery || {};
+  const battText = batt.valid ? `${batt.level}% · ${fmt(batt.voltage, 1)}V` : '—';
+  $('chip-batt').textContent = battText;
+  $('t-batt').textContent = batt.valid ? batt.level : '—';
+
+  $('t-vx').textContent = fmt(s.vel.x);
+  $('t-vy').textContent = fmt(s.vel.y);
+  $('t-wz').textContent = fmt(s.vel.yaw);
+  $('t-ox').textContent = fmt(s.odom.x);
+  $('t-oy').textContent = fmt(s.odom.y);
+  if (window.X30Cloud && window.X30Cloud.onPose) {
+    // 腿式里程计在 RL 起立后经常 x/y 不动。把速度和 IMU 航向一并交给
+    // 点云，轨迹才能在里程计失效时靠积分画出来。
+    window.X30Cloud.onPose({
+      x: s.odom && s.odom.x,
+      y: s.odom && s.odom.y,
+      yaw: s.odom && s.odom.yaw,
+      vx: s.vel && s.vel.x,
+      vy: s.vel && s.vel.y,
+      wz: s.vel && s.vel.yaw,
+      imuYaw: s.att && s.att.yaw,
+      mile: s.mileage_cm,
+      source: s.odom_source,
+    });
+  }
+  $('t-yaw').textContent = fmt(s.att.yaw, 1);
+  $('t-rp').textContent = `${fmt(s.att.roll, 1)} / ${fmt(s.att.pitch, 1)}`;
+  $('t-cpu').textContent = fmt(s.temp.cpu, 1);
+  $('t-motor').textContent = fmt(s.temp.motor_max, 1);
+  $('t-mile').textContent = fmt(s.mileage_cm / 100, 1);
+  $('t-limit').textContent = fmt(s.limits.forward, 2);
+
+  const box = $('t-errors');
+  box.innerHTML = '';
+  (s.errors || []).forEach((e) => {
+    const el = document.createElement('span');
+    el.textContent = e;
+    box.appendChild(el);
+  });
+
+  const lio = s.lio || {};
+  app.lioAligning = radioDirect() ? false : !!lio.aligning;
+  if (app.emergencyLocked) {
+    showBanner('急停后关节已锁，请先点卸力，再起立');
+  } else if (lio.aligning && !radioDirect()) {
+    const el = $('banner');
+    el.textContent = lio.text || 'LIO 正在对准，请站稳，不要走';
+    el.className = 'banner banner-wait';
+    el.classList.remove('hidden');
+    clearTimeout(bannerTimer);
+  } else if ($('banner').classList.contains('banner-wait')) {
+    $('banner').classList.add('hidden');
+  }
+
+  if (!radioDirect()) {
+    meshGaitSeen = adoptGaitTelem(s.gait_key, meshGaitSeen);
+    meshHeightSeen = adoptHeightTelem(s.height_gear, meshHeightSeen);
+  }
+
+  // 起立/坐下走的是运动主机自己的轨迹，过渡中再点一次会打断甚至反转。
+  const standing = isStandingUi();
+  if (!radioDirect() && linkOpen() && app.alive) notePose(standing);
+  const wrap = $('stage-wrap');
+  wrap.classList.toggle('dog-up', standing);
+  wrap.classList.toggle('dog-prone', !standing);
+  paintStandButton();
+  if (!radioDirect() && s.basic_state !== meshWalkSeen) meshWalkSeen = s.basic_state;
+  paintWalkButtons();
+  if (!standing) closeAccordions();
+
+  paintModes();
+
+  renderGas(s.gas);
+  renderSwitches(s.switches);
+  if (window.X30Cloud && window.X30Cloud.setSoldiers) {
+    window.X30Cloud.setSoldiers(s.uwb);
+  }
+  updateStickAvailability();
+}
+
+let bannerTimer = null;
+function showBanner(text, holdMs, kind) {
+  const el = $('banner');
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle('banner-wait', kind === 'wait');
+  el.classList.remove('hidden');
+  clearTimeout(bannerTimer);
+  if (holdMs === 0) return;
+  bannerTimer = setTimeout(() => el.classList.add('hidden'), holdMs || 4000);
+}
+
+function paintStandButton() {
+  const btn = $('btn-stand');
+  if (!btn) return;
+  const standBusy = !radioDirect() &&
+                    (app.basicState === STATE_SIT_TO_STAND ||
+                     app.basicState === STATE_STAND_TO_SIT);
+  btn.disabled = standBusy;
+  if (app.emergencyLocked) {
+    btn.textContent = '卸力';
+    btn.classList.add('need');
+    btn.classList.remove('on');
+    return;
+  }
+  const standing = isStandingUi();
+  btn.textContent = standing ? '趴下' : '起立';
+  btn.classList.toggle('on', standing && !standBusy);
+  btn.classList.remove('need');
+}
+
+app.paintModes = paintModes;
+app.paintStandButton = paintStandButton;
+app.toggleGas = toggleGas;
+app.toggleTelem = toggleTelem;
+app.toggleSwitchPanel = toggleSwitchPanel;
+app.selectHud = selectHud;
+app.cycleView = cycleView;
+app.selectView = selectView;
+app.cycleWalk = cycleWalk;
+app.cyclePose = cyclePose;
+
+function paintModes() {
+  document.querySelectorAll('[data-work]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.work === app.workMode);
+  });
+  if ($('btn-mode')) {
+    $('btn-mode').textContent = app.workMode === 'cannon' ? '水炮' : '侦检';
+  }
+  paintLearn();
+}
+
+// 气体类型格是固定的 10 路。空槽不占格；掉线把对应类型标成「掉线」。
+function renderGas(gas) {
+  const panel = $('gas-panel');
+  const tag = $('gas-tag');
+  if (!panel) return;
+  const cells = panel.querySelectorAll('#gas-grid .cell[data-gas]');
+  for (let i = 0; i < cells.length; i++) {
+    cells[i].classList.remove('offline', 'empty');
+    const val = cells[i].querySelector('b');
+    const loc = cells[i].querySelector('.g-loc');
+    if (val) val.textContent = '—';
+    if (loc) loc.textContent = '';
+  }
+  if (!gas) {
+    if (tag) tag.textContent = '未接入';
+    panel.classList.add('stale');
+    return;
+  }
+  if (gas.alive) {
+    if (tag) tag.textContent = '在线';
+    panel.classList.remove('stale');
+  } else if (gas.heard) {
+    if (tag) tag.textContent = '超时';
+    panel.classList.add('stale');
+  } else {
+    if (tag) tag.textContent = '未接入';
+    panel.classList.add('stale');
+  }
+  const slots = gas.slots || [];
+  let painted = 0;
+  let okCount = 0;
+  for (let i = 0; i < slots.length; i++) {
+    const sl = slots[i];
+    if (!sl || sl.status === 'empty' || sl.key === 'empty' || !sl.key) continue;
+    const cell = panel.querySelector('#gas-grid .cell[data-gas="' + sl.key + '"]');
+    if (!cell) continue;
+    const val = cell.querySelector('b');
+    if (!val) continue;
+    const loc = cell.querySelector('.g-loc');
+    if (loc && sl.port) {
+      const board = sl.board || (sl.port <= 5 ? 1 : 2);
+      loc.textContent = '端口' + sl.port + '-板' + board;
+    }
+    if (sl.status === 'offline') {
+      val.textContent = '掉线';
+      cell.classList.add('offline');
+      painted++;
+    } else {
+      const num = Number(sl.value);
+      if (num === num) {
+        val.textContent = fmt(num, 1);
+        painted++;
+        okCount++;
+      }
+    }
+  }
+  if (tag && gas.alive) {
+    tag.textContent = okCount ? ('在线 · ' + okCount + '路')
+      : (painted ? '在线' : '在线 · 无读数');
+  } else if (tag && !gas.heard) {
+    tag.textContent = '未接入';
+  }
+}
+
+// 开关类的按钮上只有名字，没有「现在是开还是关」。屏幕上看一眼就知道，
+// App 上改由 SW2 三档互斥显示，人不必盯屏幕。
+const SW_TEXT = {
+  unknown: '未知',
+  on: '开',
+  off: '关',
+  busy: '发送中',
+  error: '失败',
+};
+const SW_NAME = {
+  light: '条纹灯',
+  pump: '气泵',
+  uwb: 'UWB',
+  fan: '风扇',
+  camera: '摄像头',
+};
+
+function paintSwitchCard(key, status) {
+  const card = document.querySelector('.sw-card[data-sw="' + key + '"]');
+  const el = $('sw-' + key);
+  if (!card || !el) return;
+  const st = status || 'unknown';
+  el.textContent = SW_TEXT[st] || '未知';
+  card.classList.toggle('on', st === 'on');
+  card.classList.toggle('busy', st === 'busy');
+  card.classList.toggle('err', st === 'error');
+  card.dataset.status = st;
+}
+
+function renderSwitches(sw) {
+  const items = sw && sw.items ? sw.items : [];
+  for (let i = 0; i < items.length; i++) {
+    paintSwitchCard(items[i].key, items[i].status);
+  }
+}
+
+function applySwitchResult(msg) {
+  if (!msg || !msg.name) return;
+  paintSwitchCard(msg.name, msg.status || (msg.ok ? (msg.on ? 'on' : 'off') : 'error'));
+  const title = SW_NAME[msg.name] || msg.name;
+  if (msg.ok) {
+    speak(title + (msg.on ? '已开' : '已关'));
+  } else {
+    showBanner(msg.msg || (title + '失败'));
+  }
+}
+
+function toggleSwitchPanel() {
+  const el = $('switch-panel');
+  if (!el) return;
+  el.classList.toggle('hidden');
+  const shown = !el.classList.contains('hidden');
+  speak(shown ? '开关已开' : '开关已关');
+}
+
+function clickSwitch(key) {
+  const card = document.querySelector('.sw-card[data-sw="' + key + '"]');
+  if (!card) return;
+  if (card.dataset.status === 'busy') return;
+  const turnOn = card.dataset.status !== 'on';
+  paintSwitchCard(key, 'busy');
+  send({ t: 'switch', name: key, on: turnOn });
+}
+
+function toggleGas() {
+  const el = $('gas-panel');
+  if (!el) return;
+  el.classList.toggle('hidden');
+  const shown = !el.classList.contains('hidden');
+  speak(shown ? '气体已开' : '气体已关');
+}
+
+function toggleTelem() {
+  if (!$('telemetry')) return;
+  $('telemetry').classList.toggle('hidden');
+  const shown = !$('telemetry').classList.contains('hidden');
+  speak(shown ? '指标已开' : '指标已关');
+}
+
+// SW2 三档互斥：上指标、中开关、下气体。
+function selectHud(which) {
+  const showT = which === 'telem';
+  const showS = which === 'switch';
+  const showG = which === 'gas';
+  if ($('telemetry')) $('telemetry').classList.toggle('hidden', !showT);
+  if ($('switch-panel')) $('switch-panel').classList.toggle('hidden', !showS);
+  if ($('gas-panel')) $('gas-panel').classList.toggle('hidden', !showG);
+  speak(showT ? '指标' : (showS ? '开关' : (showG ? '气体' : '')));
+}
+
+function hideHud() {
+  if ($('telemetry')) $('telemetry').classList.add('hidden');
+  if ($('switch-panel')) $('switch-panel').classList.add('hidden');
+  if ($('gas-panel')) $('gas-panel').classList.add('hidden');
+}
+
+function hudOpen() {
+  const ids = ['telemetry', 'switch-panel', 'gas-panel'];
+  for (let i = 0; i < ids.length; i++) {
+    const el = $(ids[i]);
+    if (el && !el.classList.contains('hidden')) return true;
+  }
+  return false;
+}
+
+function selectView(view) {
+  if (!view) return;
+  viewLayout.main = view === 'dual' ? 'ptz_vis' : view;
+  viewLayout.mode = '1x1';
+  applyLayout();
+  announceView(viewLayout.main);
+}
+
+// L1 / 屏幕行走键：力控 → 起步 → 停步。三级分开，不能把「未力控」直接当起步。
+// 踏步码是切换指令：本地状态一旦和狗错位，点「起步」就会变成停步。
+// MESH 与 2.4G 同一套循环；MESH 须持有网关控制权（无则自动 claim 后再跑）。
+function meshMotionGate(kind) {
+  if (radioDirect() && hasNativeRadio()) return true;
+  if (!linkOpen()) {
+    radioHint();
+    return false;
+  }
+  if (app.hasControl) return true;
+  if (app.holder && app.holder !== app.clientId) {
+    app.pendingCycle = null;
+    showBanner('控制权被 #' + app.holder + ' 占用，L1/L2 无法下发。请让对方交还或点顶栏「控制权」', 7000);
+    speak('没有控制权');
+    return false;
+  }
+  app.pendingCycle = kind;
+  send(claimMsg());
+  showBanner('正在申请控制权…', 3000);
+  return false;
+}
+
+function cycleWalk() {
+  if (!meshMotionGate('walk')) return;
+  const moving = app.motionState === 'walking' || app.motionState === 'starting';
+  if (moving) {
+    if (radioDirect() && hasNativeRadio()) {
+      if (app.nativeRadioCmd) app.nativeRadioCmd('step_off');
+    } else {
+      send({ t: 'cmd', name: 'step', value: 'off' });
+    }
+    speak('停步');
+    return;
+  }
+  // 只有已力控才起步。stopped 必须先出力控，否则一键等于力控+踏步，
+  // 本地/狗不同步时下一次切换就会整反。
+  if (app.motionState === 'torque') {
+    if (app.lioAligning) {
+      showBanner('LIO 还在对准，请站稳，不要走', 4000);
+      speak('LIO 对准中');
+      return;
+    }
+    if (radioDirect() && hasNativeRadio()) {
+      if (app.nativeRadioCmd) app.nativeRadioCmd('step_on');
+    } else {
+      send({ t: 'cmd', name: 'step', value: 'on' });
+    }
+    speak('起步');
+    return;
+  }
+  if (radioDirect() && hasNativeRadio()) {
+    if (app.nativeRadioCmd) app.nativeRadioCmd('torque');
+    if (app.applyRadioPose) app.applyRadioPose('torque');
+  } else {
+    send({ t: 'cmd', name: 'torque' });
+  }
+  speak('力控');
+}
+
+// L2：急停锁着卸力，站着趴下，趴着起立。
+function cyclePose() {
+  if (!meshMotionGate('pose')) return;
+  let cmd = 'stand_up';
+  let said = '起立';
+  if (app.emergencyLocked) {
+    cmd = 'unload';
+    said = '卸力';
+  } else if (isStandingUi()) {
+    cmd = 'sit_down';
+    said = '趴下';
+  }
+  if (radioDirect() && hasNativeRadio()) {
+    if (app.nativeRadioCmd) app.nativeRadioCmd(cmd);
+    if (app.applyRadioPose) app.applyRadioPose(cmd);
+    if (app.notePoseCmd && (cmd === 'stand_up' || cmd === 'sit_down')) {
+      app.notePoseCmd(cmd === 'stand_up');
+    }
+    speak(said);
+    return;
+  }
+  if (cmd === 'stand_up' || cmd === 'sit_down') {
+    if (app.notePoseCmd) app.notePoseCmd(cmd === 'stand_up');
+  }
+  send({ t: 'cmd', name: cmd });
+  speak(said);
+}
+
+function updateStickAvailability() {
+  // 云台不看狗有没有站起来。没拿到控制权时也让推，推杆会去申请。
+  const ptz = stickTarget() === 'ptz';
+  const usable = ptz
+    ? true
+    : radioDirect()
+      ? (app.stateValid && controlChannel() !== null)
+      : (app.hasControl && app.alive && app.stateValid &&
+         controlChannel() !== null && !app.lioAligning);
+  document.querySelectorAll('.stick').forEach((s) => {
+    s.classList.toggle('disabled', !usable);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 虚拟摇杆
+// ---------------------------------------------------------------------------
+
+function makeStick(el, onChange) {
+  const knob = el.querySelector('.knob');
+  let pointerId = null;
+
+  const radius = () => el.clientWidth / 2 - knob.clientWidth / 2;
+
+  function move(clientX, clientY) {
+    const rect = el.getBoundingClientRect();
+    let dx = clientX - (rect.left + rect.width / 2);
+    let dy = clientY - (rect.top + rect.height / 2);
+    const r = radius();
+    const dist = Math.hypot(dx, dy);
+    if (dist > r) {
+      dx = (dx / dist) * r;
+      dy = (dy / dist) * r;
+    }
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+    // 屏幕坐标 y 向下为正，控制量前进为正，所以取反。
+    onChange(dx / r, -dy / r);
+  }
+
+  function release() {
+    pointerId = null;
+    el.classList.remove('active');
+    knob.style.transform = 'translate(0px, 0px)';
+    onChange(0, 0);
+  }
+
+  el.addEventListener('pointerdown', (e) => {
+    if (el.classList.contains('disabled')) return;
+    pointerId = e.pointerId;
+    el.setPointerCapture(pointerId);
+    el.classList.add('active');
+    move(e.clientX, e.clientY);
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== pointerId) return;
+    move(e.clientX, e.clientY);
+  });
+
+  // pointercancel 同样要归零 —— 系统手势打断触摸时若不复位，摇杆会卡在最后位置。
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((type) => {
+    el.addEventListener(type, (e) => {
+      if (e.pointerId !== pointerId) return;
+      release();
+    });
+  });
+}
+
+makeStick($('stick-left'), (x, y) => { app.left.x = x; app.left.y = y; });
+makeStick($('stick-right'), (x, y) => { app.right.x = x; app.right.y = y; });
+
+// ---------------------------------------------------------------------------
+// 发送回路
+// ---------------------------------------------------------------------------
+
+// 摇杆通道的统一约定见 gamepad.js 顶部。四个通道一律「推杆方向为正」：
+// fwd 前进正、lat 左移正、turn 左转正、tilt 向上正。
+//
+// 之前触摸摇杆是直接往两种输出格式里塞值的，两处各写一套符号，
+// 结果 vel 的 vy 和 pose 的 yaw 符号都反了 —— 同一个推杆动作在踏步态
+// 和力控站立态下会往相反方向去。统一到中间层就没有这个出错的余地了。
+function touchChannels() {
+  return {
+    fwd: app.left.y,
+    lat: -app.left.x,     // 屏幕 x 向右为正，通道约定左为正
+    turn: -app.right.x,
+    tilt: app.right.y,
+  };
+}
+
+function activeChannels() {
+  // 物理手柄离开死区时优先于触摸摇杆。松开手柄就自动交还，
+  // 不需要显式切换 —— 现场戴手套点屏幕本来就不方便。
+  if (window.X30Gamepad) {
+    const gp = window.X30Gamepad.channels();
+    if (gp.source === 'g20' || gp.engaged) return gp;
+  }
+  return touchChannels();
+}
+
+let webStickTarget = 'dog';
+
+function g20Live() {
+  const gp = window.X30Gamepad && window.X30Gamepad.channels
+    ? window.X30Gamepad.channels() : null;
+  return !!(gp && gp.source === 'g20');
+}
+
+function stickTarget() {
+  if (g20Live() && window.X30Gamepad.stickTarget) {
+    return window.X30Gamepad.stickTarget();
+  }
+  return webStickTarget;
+}
+
+function updateStickHints(ptz) {
+  const left = document.querySelector('#stick-left .stick-hint');
+  const right = document.querySelector('#stick-right .stick-hint');
+  if (left) left.textContent = ptz ? '变倍' : '前后 / 平移';
+  if (right) right.textContent = ptz ? '水平 / 俯仰' : '转向';
+}
+
+function paintStickChip() {
+  const el = $('chip-stick');
+  if (!el) return;
+  const cannon = app.workMode === 'cannon';
+  el.classList.remove('hidden');
+  let label = '侦检';
+  if (cannon) {
+    if (cannonFiring) label = '水炮 · 发射';
+    else if (sprayArmed === 'fog') label = '水炮 · 雾';
+    else if (sprayArmed === 'jet') label = '水炮 · 柱';
+    else label = '水炮';
+  }
+  el.textContent = label;
+  el.classList.toggle('online', cannon);
+  updateStickHints(false);
+  updateStickAvailability();
+}
+
+// 2.4G 下屏幕上那两个摇杆也要能推。实体摇杆由原生自己读通道，这里只送触摸那份，
+// 免得同一支杆两边各读一遍、死区不一样打起来。
+// 云台走 MESH/CGI，不经 2.4G 数传；摇杆指向云台时这里不发运动轴。
+function sendRadioVel(c) {
+  const n = window.X30Native;
+  if (!n) return;
+  if (typeof n.radioVel !== 'function') return;
+  if (g20Live() || stickTarget() === 'ptz') return;
+  n.radioVel(c.fwd || 0, c.lat || 0, c.turn || 0, c.tilt || 0);
+}
+
+function paintLearn() {
+  const box = $('rc-learn');
+  if (!box) return;
+  const cannon = app.workMode === 'cannon';
+  box.classList.toggle('is-cannon', cannon);
+  box.classList.toggle('is-inspect', !cannon);
+}
+
+function learnOpen() {
+  const box = $('rc-learn');
+  return !!(box && !box.classList.contains('hidden'));
+}
+
+function setLearnOpen(on) {
+  const box = $('rc-learn');
+  if (!box) return;
+  box.classList.toggle('hidden', !on);
+  box.setAttribute('aria-hidden', on ? 'false' : 'true');
+  if ($('btn-learn')) $('btn-learn').classList.toggle('active', on);
+  if (on) {
+    closeBarPops();
+    paintLearn();
+  }
+}
+
+function setWorkMode(mode) {
+  if (mode !== 'inspect' && mode !== 'cannon') return;
+  const prev = app.workMode;
+  app.workMode = mode;
+  try { window.localStorage.setItem('x30.workMode', mode); } catch (e) { /* */ }
+  if (prev === 'cannon' && mode !== 'cannon') {
+    setCannonFire(false, true);
+    sprayArmed = '';
+    pushCannon(0, 0, '', false);
+  }
+  paintModes();
+  paintStickChip();
+  paintCannonFire();
+  paintCannonPressure();
+  speak(mode === 'cannon' ? '水炮模式' : '侦检模式');
+}
+
+let sprayArmed = '';
+let cannonFiring = false;
+let cannonPan = 0;
+let cannonTilt = 0;
+let cannonSpray = '';
+let cannonNetStatus = '';
+let pipArmed = '';
+let ptzGwLive = false;
+
+function pushCannon(pan, tilt, spray, fire) {
+  cannonPan = pan || 0;
+  cannonTilt = tilt || 0;
+  cannonSpray = spray || '';
+  const n = window.X30Native;
+  if (!n || !('radioCannon' in n)) return;
+  try { n.radioCannon(cannonPan, cannonTilt, cannonSpray, !!fire); } catch (e) { /* */ }
+}
+
+function radioReady() {
+  const st = nativeRadioStatus();
+  return !!(st && st.ready);
+}
+
+function pollCannonLink() {
+  const n = window.X30Native;
+  if (!n || !('radioCannonStatus' in n)) return;
+  let raw = '';
+  try { raw = n.radioCannonStatus() || ''; } catch (e) { return; }
+  if (!raw) return;
+  let st;
+  try { st = JSON.parse(raw); } catch (e) { return; }
+  app.cannonTelem = st;
+  // 射频还没起来时是 wait，不要开机就喊连不上。链路已经在发心跳仍失败才提示。
+  if (app.workMode === 'cannon' && st && st.status === 'tcp-fail'
+      && st.status !== cannonNetStatus && radioReady()) {
+    cannonNetStatus = st.status;
+    const from = st.via ? ('从 ' + st.via + ' ') : '';
+    const why = st.err === 'refused' ? '炮台拒绝了连接'
+      : (st.err === 'timeout' ? '炮台没有回应'
+        : (st.err === 'unreachable' ? '到不了炮台' : '水炮连不上'));
+    showBanner(from + why + ' 192.168.1.253');
+  } else if (st && st.status === 'tcp') {
+    cannonNetStatus = 'tcp';
+  }
+  paintCannonPressure();
+}
+
+function setCannonFire(on, silent) {
+  const fire = !!on;
+  if (app.workMode !== 'cannon' && fire) return;
+  const edge = cannonFiring !== fire;
+  cannonFiring = fire;
+  pushCannon(cannonPan, cannonTilt, cannonSpray, fire);
+  if (edge && !silent) {
+    speak(fire ? '发射' : '停射');
+    if (fire) showBanner('水炮：发射');
+  }
+  paintCannonFire();
+  paintStickChip();
+}
+app.onCannonFire = function (on) { setCannonFire(on, false); };
+
+function paintCannonFire() {
+  const btn = $('btn-cannon-fire');
+  if (!btn) return;
+  const show = app.workMode === 'cannon';
+  btn.classList.toggle('hidden', !show);
+  btn.classList.toggle('walk-hot', cannonFiring);
+  btn.setAttribute('aria-pressed', cannonFiring ? 'true' : 'false');
+}
+
+function paintCannonPressure() {
+  const el = $('cannon-psi');
+  if (!el) return;
+  const c = app.cannonTelem;
+  const psi = c && typeof c.pressure_mpa === 'number' ? c.pressure_mpa : NaN;
+  const has = app.workMode === 'cannon' && c && c.have_pressure && psi > 0;
+  el.classList.toggle('hidden', !has);
+  if (has) {
+    const text = psi >= 10 ? psi.toFixed(1) : psi.toFixed(2);
+    el.textContent = '当前水压：' + text + '  MPa';
+  }
+}
+
+function applyPipStick(c) {
+  try {
+    if (window.X30Native && 'rcButtonsLive' in window.X30Native
+        && window.X30Native.rcButtonsLive()) {
+      return;
+    }
+  } catch (e) { /* */ }
+  const detent = window.X30Gamepad && window.X30Gamepad.pipDetent
+    ? window.X30Gamepad.pipDetent(c.auxPip || 0)
+    : 'mid';
+  if (!pipArmed) {
+    pipArmed = detent;
+    return;
+  }
+  if (detent === pipArmed) return;
+  if (detent === 'next' || detent === 'prev') {
+    if (window.X30PtzBall && window.X30PtzBall.cyclePip) {
+      window.X30PtzBall.cyclePip(speak, showBanner, detent === 'next' ? 1 : -1);
+    }
+  }
+  pipArmed = detent;
+}
+
+function nativeBall() {
+  try {
+    return !!(window.X30Native && ('cameraGetFire' in window.X30Native));
+  } catch (e) {
+    return false;
+  }
+}
+
+function stopPtz() {
+  if (window.X30PtzBall && window.X30PtzBall.move) {
+    window.X30PtzBall.move(0, 0, 0);
+  }
+  if (app.hasControl || radioDirect()) {
+    send({ t: 'ptz', pan: 0, tilt: 0, zoom: 0 });
+  }
+  ptzGwLive = false;
+}
+
+function sendAuxPayload(c, viaGateway) {
+  const cloudMain = viewLayout.main === 'cloud';
+  const ptzMain = viewLayout.main === 'ptz_vis';
+  // 只有主图双光才切球机画中画。狗身 / 点云拨右小不能念「热像主图」。
+  if (ptzMain) applyPipStick(c);
+  const ax = c.auxX || 0;
+  const ay = c.auxY || 0;
+  const zoom = c.auxZoom || 0;
+  const moving = Math.abs(ax) > 0.08 || Math.abs(ay) > 0.08 || Math.abs(zoom) > 0.08;
+  // 2.4G 档已 yield 运动控制权；云台仍可走 MESH。水炮不在这里走网关。
+  const meshPayload = viaGateway && (app.hasControl || radioDirect());
+  if (app.workMode === 'cannon') {
+    // 炮在 1 网，平板经 2.4G 直连。雾/柱是花型，开阀才出水。
+    const detent = zoom <= -0.45 ? 'jet' : (zoom >= 0.45 ? 'fog' : 'mid');
+    const pan = Math.abs(ax) > 0.08 ? -ax : 0;
+    const tilt = Math.abs(ay) > 0.08 ? ay : 0;
+    if (!sprayArmed) sprayArmed = detent;
+    else if (detent !== sprayArmed) {
+      sprayArmed = detent;
+      if (detent === 'fog' || detent === 'jet') {
+        speak(detent === 'fog' ? '雾状' : '柱状');
+        showBanner(detent === 'fog' ? '水炮：雾状' : '水炮：柱状');
+      }
+      paintStickChip();
+    }
+    const spray = detent === 'mid' ? '' : detent;
+    pushCannon(pan, tilt, spray, cannonFiring);
+    return;
+  }
+  if (cloudMain) {
+    if (window.X30Cloud) {
+      if ((Math.abs(ax) > 0.08 || Math.abs(ay) > 0.08) && window.X30Cloud.nudgeLook) {
+        window.X30Cloud.nudgeLook(ax, ay);
+      }
+      if (Math.abs(zoom) > 0.08 && window.X30Cloud.nudgeZoom) {
+        window.X30Cloud.nudgeZoom(zoom * 0.35);
+      }
+    }
+    return;
+  }
+  // 狗身视频主图：小摇杆空着，不切画中画、不转球。
+  if (!ptzMain) return;
+  const pan = -ax;
+  const tilt = ay;
+  // 平板能直连球机就只走 CGI。再经网关发同一条时，网关的转动经常比停转晚到，球会停不住。
+  const direct = nativeBall();
+  if (window.X30PtzBall && window.X30PtzBall.move) {
+    window.X30PtzBall.move(pan, tilt, zoom);
+  }
+  if (!direct && meshPayload && (moving || ptzGwLive)) {
+    send({
+      t: 'ptz',
+      pan: moving ? pan : 0,
+      tilt: moving ? tilt : 0,
+      zoom: moving ? zoom : 0,
+    });
+    ptzGwLive = moving;
+  }
+}
+
+let ptzNeedControlAt = 0;
+let ptzClaimedAt = 0;
+
+setInterval(() => {
+  syncNativeRadioPath();
+  paintStickChip();
+  pollCannonLink();
+  const onRadio = radioDirect() && hasNativeRadio();
+  // 一轮只读一次原生状态，芯片和姿态同步共用。
+  const radioSt = onRadio ? (nativeRadioStatus() || {}) : null;
+  if (onRadio) paintRadioLink(radioSt);
+  const c = activeChannels();
+  if (onRadio) {
+    syncRadioStanding(radioSt);
+    syncRadioPickers(radioSt);
+    ensureManualMode();
+    sendRadioVel(c);
+    sendAuxPayload(c, true);
+    return;
+  }
+  if (!app.hasControl) {
+    sendAuxPayload(c, true);
+    return;
+  }
+  sendAuxPayload(c, true);
+  const channel = controlChannel();
+  if (channel === 'vel') {
+    if (app.lioAligning) {
+      send({ t: 'vel', vx: 0, vy: 0, wz: 0 });
+      return;
+    }
+    // 网关的速度接口收的是机体系：Y 左为正、偏航逆时针为正，与通道约定一致。
+    send({ t: 'vel', vx: c.fwd, vy: c.lat, wz: c.turn });
+  }
+}, 1000 / SEND_HZ);
+
+// 心跳独立于摇杆回路。狗起身、坐下的这几秒没有摇杆量可发，
+// 光靠控制量喂租约会导致操作员在动作中途莫名丢失控制权。
+let pingSeq = 0;
+setInterval(() => send({ t: 'ping', id: ++pingSeq }), HEARTBEAT_MS);
+
+// ---------------------------------------------------------------------------
+// 按钮
+// ---------------------------------------------------------------------------
+
+$('btn-control').addEventListener('click', () => {
+  if (!linkOpen()) {
+    radioHint();
+    return;
+  }
+  // 按钮上永远写着「控制权」，念它等于什么都没说。
+  if (app.hasControl) {
+    app.radioFallback = true;
+    send({ t: 'yield' });
+    speak('已交还控制权');
+  } else {
+    app.radioFallback = false;
+    send(claimMsg());
+    speak('申请控制权');
+  }
+});
+
+function toggleRadioPath() {
+  try {
+    if (window.X30Native && window.X30Native.toggleRadioPath) {
+      window.X30Native.toggleRadioPath();
+      return;
+    }
+  } catch (e) { /* 网页没有原生桥 */ }
+  setRadioPath(app.radioPath === 'radio' ? 'mesh' : 'radio');
+}
+app.toggleRadioPath = toggleRadioPath;
+if ($('btn-radio')) {
+  $('btn-radio').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleRadioPath();
+  });
+}
+
+// 急停不检查控制权，任何客户端任何时候都能按。
+$('btn-estop').addEventListener('click', () => {
+  syncNativeRadioPath();
+  if (radioDirect() && hasNativeRadio()) {
+    nativeRadioCmd('estop');
+    applyRadioPose('estop');
+  }
+  send({ t: 'cmd', name: 'estop' });
+  setCannonFire(false, true);
+  app.emergencyLocked = true;
+  app.rlStanding = false;
+  const wrap = $('stage-wrap');
+  wrap.classList.remove('dog-up');
+  wrap.classList.add('dog-prone');
+  paintStandButton();
+  showBanner('急停后关节已锁，请先点卸力，再起立');
+});
+
+function radioCmdFromEl(el) {
+  if (!el || !el.dataset) return '';
+  if (el.dataset.cmd) {
+    if (el.dataset.cmd === 'stand') {
+      if (app.emergencyLocked) return 'unload';
+      // 明确发起立或趴下。发「stand」会翻转，狗已经站着时页面按钮就把狗按趴。
+      // 2.4G 刚切回来时本机 standing 常是 false，不能信它，否则「趴下」会再发起立。
+      return isStandingUi() ? 'sit_down' : 'stand_up';
+    }
+    return el.dataset.cmd;
+  }
+  if (el.dataset.gait) return el.dataset.gait;
+  if (el.dataset.stair) {
+    return 'surface_' + el.dataset.stair;
+  }
+  if (el.dataset.height === 'crawl') return 'height_low';
+  if (el.dataset.height) return 'height_normal';
+  if (el.dataset.mode && el.dataset.mode !== 'assist') return el.dataset.mode;
+  return '';
+}
+
+function fireRadioFromEl(el) {
+  let name = radioCmdFromEl(el);
+  if (!name) return '';
+  // 与实体 L1 同一条循环：力控 → 起步 → 停步。
+  if (name === 'walk_cycle') {
+    const st = nativeRadioStatus() || {};
+    if (app.radioAcquirePending || !st.enabled || !st.ready) {
+      showBanner('2.4G 尚未完成控制权交接，请稍候', 4000);
+      speak('2.4G 尚未接管');
+      return 'blocked';
+    }
+    cycleWalk();
+    markPending(el);
+    return name;
+  }
+  if (name === 'step') {
+    const moving = app.motionState === 'walking' || app.motionState === 'starting';
+    name = moving ? 'step_off' : 'step_on';
+  }
+  const st = nativeRadioStatus() || {};
+  if (app.radioAcquirePending || !st.enabled || !st.ready) {
+    showBanner('2.4G 尚未完成控制权交接，请稍候', 4000);
+    speak('2.4G 尚未接管');
+    return 'blocked';
+  }
+  if (!nativeRadioCmd(name)) return '';
+  if (name !== 'step_on' && name !== 'step_off') applyRadioPose(name);
+  markPending(el);
+  return name;
+}
+
+function guarded(fn) {
+  return (ev) => {
+    syncNativeRadioPath();
+    if (radioDirect() && hasNativeRadio()) {
+      if (fireRadioFromEl(ev && ev.currentTarget)) return;
+      radioHint();
+      return;
+    }
+    if (radioOnly() || !linkOpen()) { radioHint(); return; }
+    if (!app.hasControl) {
+      showBanner('请先申请控制权');
+      // 盖掉刚才念的按钮名：一颗被拦下的按钮念出「起立」，比不念更容易误导。
+      speak('没有控制权');
+      return;
+    }
+    fn(ev);
+  };
+}
+
+function markPending(el) {
+  if (!el) return;
+  el.classList.add('pending');
+  clearTimeout(el._pendingTimer);
+  el._pendingTimer = setTimeout(() => el.classList.remove('pending'), 700);
+}
+
+document.querySelectorAll('[data-cmd]').forEach((b) => {
+  b.addEventListener('click', guarded(() => {
+    let name = b.dataset.cmd;
+    if (name === 'walk_cycle') {
+      cycleWalk();
+      markPending(b);
+      return;
+    }
+    if (name === 'stand' && app.emergencyLocked) name = 'unload';
+    else if (name === 'stand') {
+      name = isStandingUi() ? 'sit_down' : 'stand_up';
+      notePoseCmd(name === 'stand_up');
+    }
+    if (name === 'step' && app.lioAligning) {
+      showBanner('LIO 还在对准，请站稳，不要走', 4000);
+      speak('LIO 对准中');
+      return;
+    }
+    if (name === 'step') {
+      const moving = app.motionState === 'walking' || app.motionState === 'starting';
+      send({ t: 'cmd', name: 'step', value: moving ? 'off' : 'on' });
+    } else {
+      send({ t: 'cmd', name });
+    }
+    markPending(b);
+  }));
+});
+document.querySelectorAll('[data-gait]').forEach((b) => {
+  b.addEventListener('click', guarded(() => {
+    if (app.gaitPending) {
+      // 切换中按钮是禁用的，但实体手柄那条路进不到禁用，人也可能赶在禁用生效前点上。
+      speak('步态切换中');
+      return;
+    }
+    // 先按点的显示（乐观），网关回结果再确认或退回 —— 点完到狗真换上要好几秒，
+    // 这几秒里按钮不亮，操作员只会以为没点上而再点一次。
+    gaitBefore = app.gait;
+    markGait(b.dataset.gait);
+    setGaitPending(true);
+    send({
+      t: 'cmd',
+      name: 'gait',
+      value: b.dataset.gait,
+      stair_style: $('stair-style').value,
+      stepping: app.motionState === 'walking' || app.motionState === 'starting',
+    });
+    if (b.dataset.gait === 'lwalk') {
+      const crawl = document.querySelector('[data-height="crawl"].active');
+      if (crawl) {
+        showBanner('匍匐档下低姿步态不生效，请先把身高切回正常', 6000);
+      }
+    }
+    markPending(b);
+    // 网关最长约 5 秒给结果（含等待静止）。兜底解禁，别把按钮永久锁死。
+    setTimeout(() => { if (app.gaitPending) setGaitPending(false); }, 9000);
+  }));
+});
+document.querySelectorAll('[data-height]').forEach((b) => {
+  b.addEventListener('click', guarded(() => {
+    markHeight(b.dataset.height);
+    send({ t: 'cmd', name: 'height', value: b.dataset.height });
+    markPending(b);
+  }));
+});
+document.querySelectorAll('[data-work]').forEach((b) => {
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setWorkMode(b.dataset.work);
+    closeBarPops();
+  });
+});
+
+$('chip-stick').addEventListener('click', () => {
+  if (g20Live()) {
+    setWorkMode(app.workMode === 'cannon' ? 'inspect' : 'cannon');
+    return;
+  }
+  if (viewLayout.main === 'cloud') {
+    showBanner('主图是点云，小摇杆控点云');
+    speak('小摇杆控点云');
+    return;
+  }
+  if (viewLayout.main === 'dog_cam') {
+    showBanner('主图是狗身视频，小摇杆不控球');
+    speak('主图是狗身视频，小摇杆不控球');
+    return;
+  }
+  if (viewLayout.main !== 'ptz_vis' && webStickTarget !== 'ptz') {
+    showBanner('主图是双光时才控布控球');
+    speak('主图是双光时才控布控球');
+    return;
+  }
+  webStickTarget = webStickTarget === 'ptz' ? 'dog' : 'ptz';
+  if (webStickTarget === 'dog' && app.hasControl) {
+    send({ t: 'ptz', pan: 0, tilt: 0, zoom: 0 });
+  }
+  paintStickChip();
+  showBanner(webStickTarget === 'ptz' ? '摇杆改控布控球' : '摇杆改回控狗');
+  if (webStickTarget === 'ptz' && !app.hasControl) {
+    requestControl();
+    showBanner('正在申请控制权以转云台');
+  }
+  speak(webStickTarget === 'ptz' ? '摇杆控布控球' : '摇杆控机器狗');
+});
+
+$('btn-media').addEventListener('click', () => {
+  $('hud-layout').classList.toggle('hidden');
+  const shown = !$('hud-layout').classList.contains('hidden');
+  $('btn-media').classList.toggle('active', shown);
+  speak(shown ? '画面列表已开' : '画面列表已关');
+});
+
+if ($('switch-grid')) {
+  $('switch-grid').addEventListener('click', (ev) => {
+    let el = ev.target;
+    while (el && el !== $('switch-grid')) {
+      if (el.getAttribute && el.getAttribute('data-sw')) {
+        clickSwitch(el.getAttribute('data-sw'));
+        return;
+      }
+      el = el.parentNode;
+    }
+  });
+}
+
+$('btn-sticks').addEventListener('click', () => {
+  $('hud-sticks').classList.toggle('hidden');
+  const shown = !$('hud-sticks').classList.contains('hidden');
+  $('btn-sticks').classList.toggle('active', shown);
+  speak(shown ? '摇杆已开' : '摇杆已关');
+  if (!shown) {
+    app.left.x = 0;
+    app.left.y = 0;
+    app.right.x = 0;
+    app.right.y = 0;
+    document.querySelectorAll('.stick .knob').forEach((k) => {
+      k.style.transform = 'translate(0px, 0px)';
+    });
+    if (stickTarget() === 'ptz' && app.hasControl) {
+      send({ t: 'ptz', pan: 0, tilt: 0, zoom: 0 });
+    }
+  }
+});
+
+const viewLayout = { mode: '1x1', main: 'dog_cam' };
+
+function applyLayout() {
+  const stage = $('stage');
+  if (isAppShell) viewLayout.mode = '1x1';
+  stage.classList.toggle('layout-1x1', viewLayout.mode === '1x1');
+  stage.classList.toggle('layout-2x2', viewLayout.mode === '2x2');
+  let pip = 0;
+  stage.querySelectorAll('.pane').forEach((p) => {
+    const isMain = viewLayout.mode === '1x1' && p.dataset.view === viewLayout.main;
+    p.classList.toggle('is-main', isMain);
+    // 平板壳只要一张背景，不要一主三小。
+    p.classList.toggle('is-pip', !isAppShell && viewLayout.mode === '1x1' && !isMain);
+    if (!isAppShell && viewLayout.mode === '1x1' && !isMain) {
+      p.dataset.pip = String(pip++);
+    } else {
+      p.removeAttribute('data-pip');
+    }
+  });
+  $('btn-swap').textContent = viewLayout.mode === '1x1' ? '2×2' : '1×1';
+  const cloudMain = viewLayout.mode === '1x1' && viewLayout.main === 'cloud';
+  // 2×2 四格都在，点云格子还露着，不能按「不是主背景」退订。
+  const cloudVisible = viewLayout.mode === '2x2' || cloudMain;
+  // 点云菜单只在 1×1 点云背景时有位置。切走或进四宫格就收起来。
+  if (!cloudMain) {
+    if ($('cloud-ctl')) $('cloud-ctl').classList.add('hidden');
+    if ($('btn-cloud-settings')) $('btn-cloud-settings').classList.remove('active');
+  }
+  if (window.X30Cloud && window.X30Cloud.setWanted) {
+    window.X30Cloud.setWanted(cloudVisible);
+  }
+  syncViewPick();
+  // 只有主图是双光才把小摇杆交给布控球。切到点云必须停球，否则杆还在转云台。
+  if (!g20Live() && viewLayout.main === 'ptz_vis') {
+    webStickTarget = 'ptz';
+    if (!app.hasControl) requestControl();
+  } else if (webStickTarget === 'ptz') {
+    webStickTarget = 'dog';
+    stopPtz();
+  }
+  paintStickChip();
+  requestAnimationFrame(() => {
+    if (window.X30Cloud && window.X30Cloud.resize) window.X30Cloud.resize();
+    if (window.X30Media && window.X30Media.onLayout) window.X30Media.onLayout(viewLayout);
+    // 2.4G 的机身相机是原生画面，格子挪了要跟着挪。
+    if (window.X30DogCam) window.X30DogCam.onStageLayout();
+  });
+}
+
+$('btn-swap').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (isAppShell) return;
+  viewLayout.mode = viewLayout.mode === '1x1' ? '2x2' : '1x1';
+  applyLayout();
+  // 按钮上写的是「点了会变成什么」，与切换之后的状态正好相反，所以按结果念。
+  speak(viewLayout.mode === '2x2' ? '四宫格' : '单画面');
+});
+
+const VIEW_CYCLE = ['dog_cam', 'ptz_vis', 'cloud'];
+
+// 画面的中文名只在顶栏那几颗切背景的按钮上写着一份，不再抄第二份 ——
+// 抄了就一定会有一处忘了改。
+function viewLabel(view) {
+  const el = document.querySelector('[data-view-pick="' + view + '"]');
+  return el ? el.textContent.trim() : view;
+}
+
+function announceView(view) {
+  const name = viewLabel(view);
+  if (view === 'cloud') speak(name + '，小摇杆控点云');
+  else if (view === 'ptz_vis') speak(name + '，小摇杆控布控球');
+  else speak(name + '，小摇杆不控球');
+}
+
+function syncViewPick() {
+  const main = viewLayout.main;
+  document.querySelectorAll('[data-view-pick]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.viewPick === main);
+  });
+}
+
+function closeBarPops() {
+  if ($('hud-mode-pop')) {
+    $('hud-mode-pop').classList.add('hidden');
+    if ($('btn-mode')) $('btn-mode').classList.remove('active');
+  }
+  if ($('hud-view-pop')) {
+    $('hud-view-pop').classList.add('hidden');
+    if ($('btn-view')) $('btn-view').classList.remove('active');
+  }
+}
+
+// 只有 G20 的换画面键会走到这里，那时人正看着狗，屏幕上换了哪一路全靠念。
+function cycleView() {
+  const i = VIEW_CYCLE.indexOf(viewLayout.main);
+  viewLayout.main = VIEW_CYCLE[(i < 0 ? 0 : i + 1) % VIEW_CYCLE.length];
+  viewLayout.mode = '1x1';
+  applyLayout();
+  announceView(viewLayout.main);
+}
+
+if ($('btn-learn')) {
+  $('btn-learn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const next = !learnOpen();
+    setLearnOpen(next);
+    speak(next ? '按键学习已开' : '按键学习已关');
+  });
+}
+if ($('btn-learn-close')) {
+  $('btn-learn-close').addEventListener('click', (e) => {
+    e.stopPropagation();
+    setLearnOpen(false);
+    speak('按键学习已关');
+  });
+}
+
+$('btn-mode').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const pop = $('hud-mode-pop');
+  const open = pop.classList.contains('hidden');
+  closeBarPops();
+  if (open) {
+    pop.classList.remove('hidden');
+    $('btn-mode').classList.add('active');
+    paintModes();
+  }
+});
+
+$('btn-view').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const pop = $('hud-view-pop');
+  const open = pop.classList.contains('hidden');
+  closeBarPops();
+  if (open) {
+    pop.classList.remove('hidden');
+    $('btn-view').classList.add('active');
+    syncViewPick();
+  }
+});
+document.querySelectorAll('[data-view-pick]').forEach((b) => {
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectView(b.dataset.viewPick);
+    closeBarPops();
+  });
+});
+
+$('btn-cloud-settings').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const ctl = $('cloud-ctl');
+  const open = ctl.classList.contains('hidden');
+  ctl.classList.toggle('hidden', !open);
+  $('btn-cloud-settings').classList.toggle('active', open);
+});
+
+document.querySelectorAll('#stage .pane').forEach((pane) => {
+  pane.addEventListener('click', (e) => {
+    if (e.target.closest('button, select, a, input, #cloud-ctl')) return;
+    const view = pane.dataset.view;
+    if (viewLayout.mode === '2x2') {
+      viewLayout.mode = '1x1';
+      viewLayout.main = view;
+      applyLayout();
+      return;
+    }
+    if (pane.classList.contains('is-pip')) {
+      viewLayout.main = view;
+      applyLayout();
+    }
+  });
+});
+
+applyLayout();
+paintModes();
+paintCannonFire();
+paintCannonPressure();
+
+(function bindCannonFire() {
+  const btn = $('btn-cannon-fire');
+  if (!btn) return;
+  const down = (ev) => {
+    ev.preventDefault();
+    setCannonFire(true, false);
+  };
+  const up = (ev) => {
+    ev.preventDefault();
+    setCannonFire(false, false);
+  };
+  btn.addEventListener('pointerdown', down);
+  btn.addEventListener('pointerup', up);
+  btn.addEventListener('pointercancel', up);
+  btn.addEventListener('pointerleave', (ev) => {
+    if (cannonFiring) up(ev);
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) setCannonFire(false, true);
+  });
+})();
+
+function closeAccordions() {
+  document.querySelectorAll('.acc-pop').forEach((p) => p.classList.add('hidden'));
+  document.querySelectorAll('.acc-btn').forEach((b) => b.classList.remove('active'));
+}
+
+document.querySelectorAll('.acc-btn').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const pop = $('acc-' + btn.dataset.acc);
+    const open = !pop.classList.contains('hidden');
+    closeAccordions();
+    if (!open) {
+      pop.classList.remove('hidden');
+      btn.classList.add('active');
+    }
+    // 这三颗按钮上是当前档位（步态 · 常规），点它只是展开菜单，什么都没改。
+    // 照字念会让人以为刚把步态设成了常规。
+    speak((btn.getAttribute('aria-label') || '') + (open ? '收起' : '展开'));
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.acc')) closeAccordions();
+  if (!e.target.closest('#bar-mode, #bar-view, .bar-pop')) closeBarPops();
+  // SW2 打开的指标/开关/气体，点画面其它地方收起。点盒子本身不收，免得按开关被误关。
+  if (hudOpen() && !e.target.closest('#hud-info')) hideHud();
+});
+
+document.querySelectorAll('[data-stair]').forEach((b) => {
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    $('stair-style').value = b.dataset.stair;
+    document.querySelectorAll('[data-stair]').forEach((x) => {
+      x.classList.toggle('active', x.dataset.stair === b.dataset.stair);
+    });
+    paintPickers();
+    if (radioDirect() && hasNativeRadio()) {
+      nativeRadioCmd('surface_' + b.dataset.stair);
+    }
+    // 踏面只记材质，不发步态。以前点实心就进非手动、下发楼梯，
+    // 地形图一失败控制就乱，步态按钮还要锁好几秒。
+  });
+});
+
+// 切后台时立刻停车。平板锁屏或切 App 后定时器会被节流，
+// 指令不再按时送达，机器人可能带着最后一次速度继续走。
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && app.hasControl) {
+    send({ t: 'release' });
+    showBanner('已切至后台，运动已停止');
+  }
+  // 切去原厂 App 时心跳会被节流，3 秒租约一过权就没了。
+  // 手持壳回到前台自动再要一次，否则横幅只剩「请先发送 claim」。
+  if (!document.hidden && isAppShell && app.radioPath === 'mesh' &&
+      !app.meshAcquirePending) requestControl();
+  // 点云订阅不要跟着显隐走：切标签、缩窗口、平板分屏都会把
+  // document.hidden 置上，退订后再回来要重新点，操作员会以为订不住。
+});
+
+// 启动。挂按钮那一大段在本文件更前面，任何一处抛错都会连带把这里整段跳过 ——
+// 现场表现是界面停在 HTML 静态默认值、一条指令都发不出去，且完全看不出原因。
+// 所以本函数由文件开头的定时器排队执行，不受后面语句成败影响。
+function bootstrap() {
+  if (booted) return;
+  booted = true;
+  // 指标/开关/气体默认藏，由 SW2 打开。
+  if ($('telemetry')) $('telemetry').classList.add('hidden');
+  if ($('gas-panel')) $('gas-panel').classList.add('hidden');
+  if ($('switch-panel')) $('switch-panel').classList.add('hidden');
+  paintVerChip();
+  syncNativeRadioPath();
+  applyRadioPath(false);
+  renderControl();
+  // 踏面默认是实心（HTML 里就带 active），开机就该显出来。
+  paintPickers();
+
+  connect();
+  if (hasNativeWs()) setInterval(drainNativeWs, 50);
+
+  // 语音要第一个起来：它挂的是 document 上的委托监听，比谁都先能用，
+  // 后面几个模块初始化时若报了错，至少按键还出声，现场能听出是哪一步没起来。
+  if (window.X30Voice) window.X30Voice.initVoice();
+  if (window.X30Media) window.X30Media.initMedia(send, showBanner);
+  if (window.X30DogCam) window.X30DogCam.init();
+  if (window.X30PtzBall) {
+    window.X30PtzBallSend = send;
+    window.X30PtzBall.init(send, speak, showBanner);
+  }
+  if (window.X30Capture) window.X30Capture.initCapture(showBanner);
+  if (window.X30Cloud) window.X30Cloud.initCloud(send);
+  if (window.X30Gamepad) window.X30Gamepad.initGamepad(send, showBanner, () => app);
+  if (window.X30Settings) window.X30Settings.initSettings(send);
+}
+bootstrap();

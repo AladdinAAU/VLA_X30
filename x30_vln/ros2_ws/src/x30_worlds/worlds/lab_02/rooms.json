@@ -1,0 +1,379 @@
+{
+ "world": "lab_02",
+ "wall_height": 3.2,
+ "rooms": [
+  {
+   "id": "corridor_1",
+   "type": "corridor",
+   "name": "corridor 1",
+   "rect": [
+    0.0,
+    -1.2,
+    17.795,
+    1.2
+   ],
+   "center": [
+    8.897,
+    0.0
+   ],
+   "area": 42.71,
+   "walled": true,
+   "doors": [
+    "door_01",
+    "door_02",
+    "door_03",
+    "door_04",
+    "door_05",
+    "door_06",
+    "door_07"
+   ]
+  },
+  {
+   "id": "lab_1",
+   "type": "lab",
+   "name": "lab 1",
+   "rect": [
+    0.0,
+    1.2,
+    6.184,
+    6.2
+   ],
+   "center": [
+    3.092,
+    3.7
+   ],
+   "area": 30.92,
+   "walled": true,
+   "doors": [
+    "door_01"
+   ]
+  },
+  {
+   "id": "lab_2",
+   "type": "lab",
+   "name": "lab 2",
+   "rect": [
+    6.184,
+    1.2,
+    13.532,
+    6.2
+   ],
+   "center": [
+    9.858,
+    3.7
+   ],
+   "area": 36.74,
+   "walled": true,
+   "doors": [
+    "door_02"
+   ]
+  },
+  {
+   "id": "office_1",
+   "type": "office",
+   "name": "office 1",
+   "rect": [
+    13.532,
+    1.2,
+    17.795,
+    6.2
+   ],
+   "center": [
+    15.664,
+    3.7
+   ],
+   "area": 21.31,
+   "walled": true,
+   "doors": [
+    "door_03"
+   ]
+  },
+  {
+   "id": "lab_3",
+   "type": "lab",
+   "name": "lab 3",
+   "rect": [
+    0.0,
+    -6.0,
+    7.839,
+    -1.2
+   ],
+   "center": [
+    3.92,
+    -3.6
+   ],
+   "area": 37.63,
+   "walled": true,
+   "doors": [
+    "door_04"
+   ]
+  },
+  {
+   "id": "storage_1",
+   "type": "storage",
+   "name": "storage",
+   "rect": [
+    7.839,
+    -6.0,
+    13.182,
+    -1.2
+   ],
+   "center": [
+    10.51,
+    -3.6
+   ],
+   "area": 25.64,
+   "walled": true,
+   "doors": [
+    "door_05"
+   ]
+  },
+  {
+   "id": "server_room_1",
+   "type": "server_room",
+   "name": "server room",
+   "rect": [
+    13.182,
+    -6.0,
+    17.795,
+    -1.2
+   ],
+   "center": [
+    15.488,
+    -3.6
+   ],
+   "area": 22.14,
+   "walled": true,
+   "doors": [
+    "door_06"
+   ]
+  },
+  {
+   "id": "corridor_2",
+   "type": "corridor",
+   "name": "corridor 2",
+   "rect": [
+    17.795,
+    -6.0,
+    20.195,
+    6.2
+   ],
+   "center": [
+    18.995,
+    0.1
+   ],
+   "area": 29.28,
+   "walled": true,
+   "doors": [
+    "door_07",
+    "door_08",
+    "door_09",
+    "door_10",
+    "door_11"
+   ]
+  },
+  {
+   "id": "lab_4",
+   "type": "lab",
+   "name": "lab 4",
+   "rect": [
+    20.195,
+    -6.0,
+    25.795,
+    -2.439
+   ],
+   "center": [
+    22.995,
+    -4.22
+   ],
+   "area": 19.94,
+   "walled": true,
+   "doors": [
+    "door_08"
+   ]
+  },
+  {
+   "id": "lab_5",
+   "type": "lab",
+   "name": "lab 5",
+   "rect": [
+    20.195,
+    -2.439,
+    25.795,
+    0.686
+   ],
+   "center": [
+    22.995,
+    -0.877
+   ],
+   "area": 17.5,
+   "walled": true,
+   "doors": [
+    "door_09"
+   ]
+  },
+  {
+   "id": "office_2",
+   "type": "office",
+   "name": "office 2",
+   "rect": [
+    20.195,
+    0.686,
+    25.795,
+    3.086
+   ],
+   "center": [
+    22.995,
+    1.886
+   ],
+   "area": 13.44,
+   "walled": true,
+   "doors": [
+    "door_10"
+   ]
+  },
+  {
+   "id": "lab_6",
+   "type": "lab",
+   "name": "lab 6",
+   "rect": [
+    20.195,
+    3.086,
+    25.795,
+    6.2
+   ],
+   "center": [
+    22.995,
+    4.643
+   ],
+   "area": 17.44,
+   "walled": true,
+   "doors": [
+    "door_11"
+   ]
+  }
+ ],
+ "doors": [
+  {
+   "id": "door_01",
+   "x": 3.477,
+   "y": 1.2,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_1"
+   ]
+  },
+  {
+   "id": "door_02",
+   "x": 9.423,
+   "y": 1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_2"
+   ]
+  },
+  {
+   "id": "door_03",
+   "x": 15.557,
+   "y": 1.2,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "office_1"
+   ]
+  },
+  {
+   "id": "door_04",
+   "x": 2.125,
+   "y": -1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_3"
+   ]
+  },
+  {
+   "id": "door_05",
+   "x": 11.434,
+   "y": -1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "storage_1"
+   ]
+  },
+  {
+   "id": "door_06",
+   "x": 14.559,
+   "y": -1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "server_room_1"
+   ]
+  },
+  {
+   "id": "door_07",
+   "x": 17.795,
+   "y": 0.081,
+   "width": 2.0,
+   "orient": "v",
+   "connects": [
+    "corridor_1",
+    "corridor_2"
+   ]
+  },
+  {
+   "id": "door_08",
+   "x": 20.195,
+   "y": -4.488,
+   "width": 1.1,
+   "orient": "v",
+   "connects": [
+    "corridor_2",
+    "lab_4"
+   ]
+  },
+  {
+   "id": "door_09",
+   "x": 20.195,
+   "y": -0.64,
+   "width": 1.1,
+   "orient": "v",
+   "connects": [
+    "corridor_2",
+    "lab_5"
+   ]
+  },
+  {
+   "id": "door_10",
+   "x": 20.195,
+   "y": 1.886,
+   "width": 1.1,
+   "orient": "v",
+   "connects": [
+    "corridor_2",
+    "office_2"
+   ]
+  },
+  {
+   "id": "door_11",
+   "x": 20.195,
+   "y": 4.471,
+   "width": 1.1,
+   "orient": "v",
+   "connects": [
+    "corridor_2",
+    "lab_6"
+   ]
+  }
+ ]
+}

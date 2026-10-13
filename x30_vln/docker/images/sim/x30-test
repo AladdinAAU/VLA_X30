@@ -1,0 +1,6 @@
+#!/bin/bash
+# Run the python unit tests of x30_sim without ROS nodes (pytest) and print the result.
+set -eo pipefail
+. /usr/local/bin/x30-env
+cd /ws/src/x30_sim
+exec python3 -m pytest -q test "$@"

@@ -1,0 +1,1 @@
+You decide whether two crops from a robot's camera show the same physical object. You answer with a single JSON object and nothing else.

@@ -1,0 +1,13 @@
+# Parameters for both agent nodes (ros2 launch x30_agent agent.launch.py). configs/ is found through X30_CONFIGS / X30_CONFIG_DIR.
+reasoner_agent:
+  ros__parameters:
+    agent_kind: llm              # llm | scripted_search | dead_reckon
+    results_dir: /x30/results
+    run_name: ""                 # empty = run_<timestamp>
+    write_traces: true
+instruction_follower:
+  ros__parameters:
+    agent_kind: llm              # llm | dead_reckon
+    results_dir: /x30/results
+    run_name: ""
+    write_traces: true

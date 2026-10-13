@@ -1,0 +1,7 @@
+Request: "$text"
+$pose_hint
+Mapped objects (id | label | attributes | caption | room | distance and bearing from the robot | relations):
+$candidates
+
+Rank the objects that match the request, best first. Use only ids from the list. Give each a score from 0.0 to 1.0 (1.0 = certain match). Leave out objects that do not match. If nothing matches, return an empty list.
+Return JSON: {"ranking": [{"id": <id>, "score": <0.0 to 1.0>}], "reason": "<at most 15 words>"}

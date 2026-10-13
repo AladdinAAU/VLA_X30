@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Unicast fallback: multicast off, static peers by Docker service name (resolved by Docker's DNS on x30_net).
+  Use if multicast ever misbehaves:  X30_DDS_FILE=cyclonedds-peers.xml in .env, then recreate the containers.
+  Add every ROS 2 container name (compose service names) as a Peer. Peers that are not running only cause a DNS warning.
+-->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain id="any">
+    <General>
+      <AllowMulticast>false</AllowMulticast>
+      <MaxMessageSize>65500B</MaxMessageSize>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+      <Peers>
+        <Peer address="framework"/>
+        <Peer address="sim"/>
+        <Peer address="tools"/>
+        <Peer address="replay"/>
+        <Peer address="ros1_bridge"/>
+      </Peers>
+    </Discovery>
+    <Internal>
+      <SocketReceiveBufferSize min="2MB"/>
+      <Watermarks>
+        <WhcHigh>8MB</WhcHigh>
+      </Watermarks>
+    </Internal>
+  </Domain>
+</CycloneDDS>

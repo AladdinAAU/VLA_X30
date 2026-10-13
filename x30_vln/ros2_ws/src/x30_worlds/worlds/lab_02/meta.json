@@ -1,0 +1,54 @@
+{
+ "sdf": "worlds/lab_02/world.sdf",
+ "spawn": {
+  "x": 1.2,
+  "y": 0.0,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.5,
+  -7.5,
+  27.29,
+  7.7
+ ],
+ "objects_file": "worlds/lab_02/objects.json",
+ "rooms_file": "worlds/lab_02/rooms.json",
+ "map_file": "worlds/lab_02/map.yaml",
+ "license": "generated in this repository from SDF primitives (no third-party assets); CC0-1.0",
+ "source": "x30_datasets.procgen preset 'lab_02' seed 88",
+ "source_dataset": "procedural",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "kind": "lab",
+  "rooms": 12,
+  "objects": 135,
+  "reachable_area_m2": 152.0,
+  "models": 137,
+  "objects_by_label": {
+   "bookshelf": 2,
+   "box": 4,
+   "cabinet": 15,
+   "chair": 11,
+   "desk": 4,
+   "door": 11,
+   "filing_cabinet": 2,
+   "fire_extinguisher": 10,
+   "laptop": 5,
+   "monitor": 11,
+   "person": 5,
+   "picture": 6,
+   "plant": 3,
+   "printer": 1,
+   "radiator": 1,
+   "server_rack": 10,
+   "trash_can": 10,
+   "water_cooler": 2,
+   "whiteboard": 8,
+   "window": 7,
+   "workbench": 7
+  },
+  "robot_radius_m": 0.35,
+  "min_door_width_m": 1.0
+ }
+}

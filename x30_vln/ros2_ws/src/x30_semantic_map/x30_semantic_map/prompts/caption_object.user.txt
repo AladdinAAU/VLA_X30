@@ -1,0 +1,10 @@
+The image is a crop of one object seen by the robot's camera. The detector called it "$label" (size class: $size$room_hint).
+
+Return JSON with exactly these keys:
+{"caption": "<one short sentence, at most 15 words, what it is and how it looks>",
+ "label": "<your own best one or two word name for the object, judged from the image alone>",
+ "label_matches": <true only if your own name above means the same as "$label"; false if the object is clearly something else>,
+ "colour": "<main colour, one word>",
+ "material": "<main material, one word, or empty>",
+ "state": "<one word such as open, closed, on, off, empty, full, or empty if not applicable>"}
+Describe only what is visible. If the crop is too small or unclear, set "caption" to "unclear" and "label_matches" to true.

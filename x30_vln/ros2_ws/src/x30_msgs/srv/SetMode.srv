@@ -1,0 +1,5 @@
+string mode        # idle | teleop | velocity_follow | object_nav | goal_pose | explore
+---
+bool ok
+string message
+string previous_mode

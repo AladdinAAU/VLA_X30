@@ -1,0 +1,1887 @@
+Jueying X30 Pro Application Manual
+
+                V2.0.4-0 2025.11.29
+                                  DEEPRobotics
+
+Revision History
+
+Version Date        Note
+
+0.0.4-0 2023/10/25 First version
+
+0.0.5-0  2024/2/23  Delete command timeout, modify lidar angle and unit
+0.0.8-0  2024/6/14
+         2024/8/16  Add multi-floor map and navigation, waypoint record, LiDAR
+2.0.0-0  2025/4/7   FOV; modify lidar data rostopic
+2.0.1-0             Update the mapping procedure for slam package version
+2.0.3-0             2.1.0 and later.
+2.0.4-0
+                    Update the coordinate of sensors (401)
+
+         2025/5/8 Update usage of Navigation Recorder
+
+         2025/11/29 Update the wiring definition for the USB 2.0
+
+The final interpretation right belongs to DEEP Robotics.
+
+                                  2 / 69
+                                                                        DEEPRobotics
+
+Contents
+
+1 Overall Architecture ...........................................................................................................6
+2 Motion Host........................................................................................................................7
+
+     2.1 Remote Login ............................................................................................................7
+     2.2 Parameter Configuration ..........................................................................................8
+     2.3 Logging Function ......................................................................................................9
+     2.4 Motion Program Script ...........................................................................................10
+3 Navigation Host ...............................................................................................................11
+     3.1 Remote Login ..........................................................................................................11
+
+          3.1.1 Use VNC on Windows PC ...............................................................................11
+          3.1.2 Use VNC on Ubuntu .......................................................................................13
+     3.2 Autorun Configuration............................................................................................13
+     3.3 Map Deployment(for earlier than v2.1.0) ...............................................................14
+          3.3.1 Notice for Use ................................................................................................14
+          3.3.2 Single-Floor Mapping ....................................................................................15
+          3.3.3 Indoor Multi-Floor Mapping ..........................................................................18
+          3.3.4 View Point Cloud Map....................................................................................19
+          3.3.5 Modification of Grid Map ...............................................................................20
+          3.3.6 Map Configuration .........................................................................................22
+     3.4 Map Deployment (for v2.1.0 and later)...................................................................22
+          3.4.1 Notice for Use ................................................................................................22
+          3.4.2 Function Introduction ...................................................................................23
+
+                                                                             3 / 69
+                                                                        DEEPRobotics
+
+          3.4.3 Single-Floor Mapping ....................................................................................24
+          3.4.4 Multi-Floor Mapping ......................................................................................27
+          3.4.5 View Point Cloud Map....................................................................................31
+          3.4.6 Modification of Grid Map ...............................................................................31
+          3.4.7 Map Configuration .........................................................................................31
+          3.4.8 Record Data Packet........................................................................................31
+     3.5 Single floor navigation............................................................................................33
+          3.5.1 Start Localization and Navigation Program ..................................................33
+          3.5.2 Initialize Localization.....................................................................................34
+          3.5.3 Specify Target Point (Single Point) ................................................................35
+          3.5.4 Usage of Navigation Recorder (Multi-Point Navigation) ...............................36
+          3.5.5 Execution of Multi-point Navigation .............................................................45
+          3.5.6 Problem Identification ..................................................................................49
+     3.6 Indoor Multi-Floor Navigation ................................................................................49
+          3.6.1 Localization Initialization ..............................................................................50
+          3.6.2 Grid Map Switching........................................................................................51
+4 Payload Mounting ............................................................................................................53
+     4.1 Mounting Holes and Hardware Interfaces..............................................................53
+          4.1.1 Power Port Wiring Color Code.......................................................................54
+          4.1.2 Ethernet Port 1 Wiring Color Code ................................................................54
+          4.1.3 Ethernet Port 2 Wiring Color Code ................................................................55
+     4.2 Mounting Limit........................................................................................................55
+
+                                                                             4 / 69
+                                                                        DEEPRobotics
+
+     4.3 Motion Parameter Configuration............................................................................55
+          4.3.1 Payload Parameters.......................................................................................55
+          4.3.2 Network Parameters......................................................................................56
+
+5 Intelligent Controller........................................................................................................58
+     5.1 Removal and Installation........................................................................................58
+          5.1.1 Removal .........................................................................................................58
+          5.1.2 Installation .....................................................................................................59
+     5.2 Hardware Interface and Wiring...............................................................................61
+          5.2.1 LAN1(12V) & LAN3(12V) & LAN4(12V).............................................................61
+          5.2.2 LAN2...............................................................................................................62
+          5.2.3 24V .................................................................................................................63
+          5.2.4 USB2.0×2 ......................................................................................................63
+          5.2.4 LAN5(24V) & LAN6(24V)..................................................................................64
+
+6 Sensor Coordinate System ..............................................................................................66
+     6.1 Body Coordinate System ........................................................................................66
+     6.2 Sensor Coordinate Systems of Main Body .............................................................66
+     6.3 IMU Coordinate System of Intelligent Controller ...................................................68
+     6.4 LiDAR FOV................................................................................................................69
+
+                                                                             5 / 69
+                                                                        DEEPRobotics
+
+1 Overall Architecture
+
+Jueying X30 Pro is equipped with the motion host and the perception host internally, and
+the intelligent controller on its back has the navigation host built into it. The development
+host can be connected to each host of the robot through a wireless router. Each host has
+been configured with the relevant commonly-used software and drivers.
+
+                                                                             6 / 69
+               DEEPRobotics
+
+2 Motion Host
+
+Jueying X30 Pro motion program opens the configuration permissions of some
+parameters, and provides the logging function.
+
+2.1 Remote Login
+
+You can remotely log in to the motion host through the MobaXterm software.
+1. Connect the development host to the Debug Ethernet Port at the tail of robot by
+
+    network cable, or connect the robot through Wi-Fi:
+    Wi-Fi name: X30***** (serial number of your robot)
+    Wi-Fi password is: 12345678
+2. Open MobaXterm, and click the [Start local terminal] button.
+
+3. Enter ssh ysc@192.168.1.103, and the password is ` (a single quote).
+
+                                                                             7 / 69
+                                                                        DEEPRobotics
+
+2.2 Parameter Configuration
+
+You can open the /home/ysc/jy_exe/conf folder in the left column of MobaXterm to modify
+the profile, and the modified configuration parameters will take effect after the restart of
+motion program.
+
+motion.toml
+
+Parameter Meaning                                          Type  Range
+
+load         Load weight (kg)                              float 0.0~20.0
+
+enable_twist To enable user to control the robot to twist  bool true/false
+
+load_x       Coordinate value of load centroid on the X-axis (m) float -0.3~0.3
+
+                               8 / 69
+                                 DEEPRobotics
+
+load_y         Coordinate value of load centroid on the Y-axis (m) float  -0.1~0.1
+load_z         Coordinate value of load centroid on the Z-axis (m) float   0.0~0.3
+
+overtime.toml
+
+[Wifi]: WiFi Connection Timeout
+
+Parameter Meaning                                      Type               Range
+
+StopMotion Time from disconnection to stopping moving (sec) int           >0
+
+KeepStill Time from disconnection to stopping stepping int >StopMotion
+
+        (sec)
+
+Sitdown Time from disconnection to sitting down (sec)  int > KeepStill
+
+[Notes] When the robot is loaded, please do not turn on the enable_twist, otherwise it may cause
+the robot to fall down and damage the load.
+[Notes] The modified parameter value must comply with the specified data type.
+[Notes] If it needs to add or remove the load, please refer to "4.3 Motion Parameter Configuration"
+to modify configuration.
+
+2.3 Logging Function
+
+Jueying X30 Pro generates three types of log files during motion:
+Event log (.log): Record each event during the running process. The file is stored in
+/home/ysc/jy_exe/log directory and can be opened from the file directory in the left
+column of MobaXterm.
+Operation log (.csv): Press the [Save Data] button on the Settings page of the controller
+APP to save the motion state data recorded within the last 5 minutes, with the recording
+frequency of 200Hz. The data saved every time can be viewed directly in Microsoft Excel.
+
+                                 9 / 69
+                           DEEPRobotics
+
+The file is stored in the same folder as the fault snapshot. The specific path is
+/home/ysc/jy_exe/data/, which can also be obtained at the end of the event log.
+Fault snapshot (.snapshot.csv): Press the [Save Data] button on the Settings page of the
+APP to save the fault snapshot (that is, the data within the last 5 minutes), which takes 9
+seconds to save. The file is stored in the same folder as the operation log. The specific path
+is /home/ysc/jy_exe/data/, which can also be obtained at the end of the event log.
+
+  [Notes] The event log is stored for 7 days (that is, 168 hours). Every time the program is run, the
+  expired logs are cleaned up to prevent the hard disk space is not sufficient.
+  [Notes] When pressing the [Save Data] button, please ensure that the robot is lying down.
+
+2.4 Motion Program Script
+
+There are some scripts built into the /home/ysc/jy_exe/scripts path of Jueying X30 Pro
+
+motion host:
+
+Script Name            Function
+
+restart.sh             Restart the motion program
+
+stop.sh                Quit the motion program
+
+show_log.sh            View the real-time event log of motion program
+
+You can enter the following command line in the terminal to run the script:
+
+1 cd ~/jy_exe/scripts  # xxxxx.sh is the name of the script you want to run
+2 ./xxxxx.sh
+
+                           10 / 69
+                   DEEPRobotics
+
+3 Navigation Host
+
+Jueying X30 Pro intelligent controller has the navigation host built into it, which is
+responsible for mapping, localization, and navigation. The directory /home/ysc/jy_cog in
+navigation host contains the following algorithms, drivers, applications, logs, startup
+scripts, and profiles related to the perceptive functions, with a directory structure as
+follows(in newer versions, broker has been renamed robot_server ):
+
+Among them, the /jy_cog/system directory contains the folders named conf, scripts, and
+map. The folder conf stores the profiles which can be used to configure the system modes,
+function parameters, etc; the scripts folder stores the script file; the map folder stores the
+maps.
+
+3.1 Remote Login
+
+You can remotely log in to the navigation host through VNC.
+
+3.1.1 Use VNC on Windows PC
+
+1. Download and install MobaXterm(Installer edition) on your own Windows PC.
+
+                                                                             11 / 69
+                                                                        DEEPRobotics
+
+2. Connect the Windows PC to the Wi-Fi of robot:
+    WiFi NameX30*****(serial number of your robot)
+    WiFi Password: 12345678
+
+3. Open CMD tool, then enter ping 192.168.1.106 to confirm that the navigation host is
+    connected.
+
+4. Open MobaXterm to configure VNC session:
+
+     Click Session
+     Select VNC
+     Enter IP: 192.168.1.106
+     Click OK
+5. Click the newly created VNC session, enter the password, then remotely access the
+    navigation host desktop.
+    IP: 192.168.1.106 Password: 123456
+
+                                                                             12 / 69
+                                                                        DEEPRobotics
+
+3.1.2 Use VNC on Ubuntu
+
+1. Open a terminal on your Ubuntu host and enter the following command to install
+    Remmina:
+
+          1 sudo apt-get install remmina remmina-plugin-* -y
+
+2. Connect the Ubuntu host to the Wi-Fi of robot:
+    WiFi NameX30*****(serial number of your robot)
+    WiFi Password: 12345678
+
+3. Enter remmina on the terminal to run Remmina.
+4. Select VNC protocol, enter the IP of the navigation host and press Enter, then enter the
+
+    password in the pop-up window and click OK.
+
+5. Then the remote desktop can be seen.
+
+3.2 Autorun Configuration
+
+You can set the self-start of the localization and navigation program in the autorun_slam
+file in the jy_cog/system/conf directory. If the file content is set to false, then after the
+robot is turned on, the localization and navigation program will not automatically run,
+and you need to start it manually. This applies to the deployment of map; If the file
+content is set to true, then after the robot is turned on, the localization and navigation
+program will automatically run. After you provides the initial localization, the robot can
+automatically run according to the deployed map and navigation tasks. The autorun
+configuration takes effect after the navigation host restarts.
+
+                                                                             13 / 69
+                                                                        DEEPRobotics
+
+3.3 Map Deployment(for earlier than v2.1.0)
+
+  [Notes] Before starting mapping, please follow the remote connection procedure to connect to host
+  106 and enter: dpkg -l slam in the terminal to check the version of the slam package. The map
+  deployment method described in this section applies to slam(<2.1.0). If the version is v2.1.0 or
+  later, please refer to section 3.4 for map deployment.
+
+3.3.1 Notice for Use
+
+1. During mapping, please do not manipulate the robot for strenuous exercise and do not
+    block the laser radar, otherwise the mapping may fail.
+
+2. Before mapping, open the terminal and enter the top command to check the
+    computing resources. If any other program uses too many computing resources, enter
+    the following command line to close it: sudo kill [PID].
+
+3. Make sure the mapping program is not running. If it is running, please save the map
+    and exit the program first according to 3.3.2.1. Make sure the navigation program is not
+    running. If it is running, please enter the following command line in the terminal to kill
+    it:
+
+          1 bash ~/jy_cog/system/scripts/kill_nav.sh
+
+4. Before starting the mapping program, it needs to check if there are created maps in
+    the /jy_cog/system/map folder. After the mapping program starts, this folder will be
+    emptied. If necessary, please move the created maps to another folder in advance and
+
+                                                                             14 / 69
+                                                                        DEEPRobotics
+
+    move them back when it needs to use them again.
+5. Currently, the mapping for narrow stair, outdoor extremely open area, or ultra-large
+
+    venue is not supported.
+
+3.3.2 Single-Floor Mapping
+
+3.3.2.1 Start the Mapping Program
+  [Notes] This version of mapping program is suitable for the indoor scenes with an area not more
+  than 200m×100m.
+  [Notes] Please start the mapping program when the robot is standing.
+
+1. Open the terminal, then enter the following commands to start the script of mapping:
+
+          1 cd ~/jy_cog/system/scripts
+          2 bash start_mapping.sh
+
+2. After starting the mapping program, please first keep the robot standing still for 5-8
+    seconds, then remotely control the robot to walk at constant speed smoothly and
+    steadily in the area that needs to be mapped. During scanning, you can check whether
+    the localization of robot is normal and whether the point cloud is drifting in RViz.
+
+                                                                             15 / 69
+                                                                        DEEPRobotics
+
+3. After the robot finishes the scanning of the mapping area, press Ctrl+C in the terminal
+    which starts mapping to quit mapping. At the same time, the program automatically
+    generates a grid-based map and save it to the /jy_cog/system/map folder. If it needs
+    to preview the grid-based map during mapping, please enter the following commands
+    in a new terminal:
+
+         1 cd ~/jy_cog/system/scripts
+         2 bash pub_save_occ_map.sh
+
+        [Notes] If the mapping program cannot be successfully closed, please run the following
+        commands in the terminal to kill the mapping process:
+
+              1 cd ~/jy_cog/system/scripts
+              2 bash kill_mapping.sh
+
+3.3.2.2 Offline Gridification
+If the grid-based map cannot be obtained from the above steps, you can run the following
+commands after closing the mapping program to convert the point cloud map obtained
+by scanning to the grid-based map offline:
+
+   1 cd ~/jy_cog/system/scripts
+   2 ./trans_save_occ_map.sh
+
+                                                                             16 / 69
+                   DEEPRobotics
+
+If the obtained grid-based map is not consistent with the actual environment, you can
+
+configure the parameters of grid-based map in the params.yaml file in the
+
+jy_cog/system/conf/slam/pcd2map folder.
+
+Parameter Meaning                                                      Type
+
+minh  The height of the lowest point cloud intercepted by grid
+                                                                                                double
+
+      map(which can be negative).
+
+maxh  The height of the highest point cloud intercepted by grid
+                                                                                                double
+
+      map(which can be negative).
+
+      The resolution of point cloud. The higher it is, the faster the
+
+leaf_size grid-based map is generated and the sparser the generated double
+
+      map.
+
+The program will intercept the point clouds with height within the range of [minh, maxh]
+
+to compress into a 2D grid-based map. Observe the grid-based map in RViz, and if the
+
+generated grid-based map is incomplete, increase the height range , that is, [minh, maxh],
+
+of the intercepted point cloud; if the generated grid-based map has too many black
+
+shadow areas, reduce the height range of the intercepted point cloud. The larger the
+
+height range of the intercepted point cloud, the longer it takes to generate the grid-based
+
+map. After modifying the parameters, save the profile and re-execute the grid-based map
+
+                   17 / 69
+                                                                        DEEPRobotics
+
+command in the terminal to generate a new grid-based map.
+  [Notes] If the mapping still fails, please contact the technical support personnel.
+
+3.3.3 Indoor Multi-Floor Mapping
+
+  [Notes] Please start the mapping program while the robot stands still.
+  [Notes] The start_mapping.sh script for single-floor mapping is not used to start the multi-floor
+  mapping, because this script will start to create the point cloud map and grid map together, while
+  the multi-floor needs to start the two mapping programs separately.
+1. Open the terminal and enter the following command to open the point cloud program:
+
+         1 bash ~/jy_cog/slam/scripts/mapping.sh indoor true livox
+
+       [Notes] The parameter true at the end of the command indicates that RViz needs to be
+       enabled. If RViz does not need to be enabled, it can be changed to false.
+       [Notes] The point cloud map program started by this command must be kept until all floors
+       are completed. Do not start and stop this program at the same time as the following grid map
+       program starts and stops.
+2. Please keep the robot standing still for 5~8 seconds after starting the point cloud
+    program.
+3. Whenever you arrive a new floor, you need to open the program to generate the grid
+    map and name the map:
+
+         1 bash ~/jy_cog/slam/scripts/occupancy_mapping.sh gridmapName
+
+    A parameter is carried at the end of the command, separated by a space from the
+    command, indicating the file name of the grid map that is being generated for this new
+    floor. When you need to generate multiple grid maps, you need to specify a different
+    file name for each grid map.
+
+       [Notes] It is recommended to name the map jueying, which is the startup layer for naviagtion
+       because the grid map with the name jueying is loaded by default when the navigation starts.
+
+                                                                             18 / 69
+                                                                        DEEPRobotics
+
+       [Notes] The grid map can only be generated when the point cloud program is running.
+4. When the program to generate the grid map is running, user can control the robot to
+
+    scan the environment of the floor. When finishing scanning this floor and arriving at
+    the next floor, press Ctrl+C to quit the program of generating the grid map, and the
+    grid map of this floor will be automatically saved. Then open the grid map program
+    again in place (note that the map file name is specified and is not repeated), you can
+    start to scan the next floor.
+
+       [Notes] It is recommended to close and restart the grid map program in the area connecting
+       the two floors and ensure that the area is accessible on both two grid maps.
+5. After scanning all floors, press Ctrl+C to exit the grid map program and the point cloud
+    map program, and both the grid map of the last floor and the complete point cloud
+    map are automatically saved.
+
+3.3.4 View Point Cloud Map
+
+Open the terminal and enter the following commands to open PCD viewer to view the
+created 3D point cloud map:
+
+   1 cd ~/jy_cog/system/map
+   2 pcl_viewer jueying.pcd
+
+PCD viewer is as shown in the figure below.
+
+Basic operations of PCD viewer:
+
+                                 19 / 69
+                                                                        DEEPRobotics
+
+a. Scroll up or down to control the zoom of the point cloud model.
+b. Drag the left button to control the rotation of the point cloud model.
+c. Drag the pulley to control the translation of the point cloud model.
+d. Use the numeric keys (1-5) to select the display mode of the point cloud model.
+
+3.3.5 Modification of Grid Map
+
+If the grid-based map does not fully match the actual environment, or it needs to
+manually define the passable areas, you can use GNU Image Manipulation Program to
+modify the .pgm file: Right-click the .pgm file, select Open with Other Application, then
+select GNU Image Manipulation Program, and click Select.
+
+                                                                             20 / 69
+                                                                        DEEPRobotics
+
+If the toolbars of GNU Image Manipulation Program are not displayed, click Tab key to
+display them.
+The toolbars provide the tools of foreground color and background color, foreground
+color sets the color of the Brush tool, and background color sets the color of the Eraser
+tool. In the grid-based map, the black area represents the obstacle, that is, the impassable
+area. The white area represents the passable area, and the gray area represents the
+unknown area. You can use the Brush tool or the Eraser tool to add or erase the black
+areas. Press and hold the Shift key, then left-click to draw the straight line, or press and
+hold the Ctrl key, then left-click to suck up the color.
+
+  [Notes] If the map is multi-floor, it is important to ensure that the transition area between the
+  two connecting floors is accessible from both two grid maps. If stairs or slopes are present in the
+  map, they may be identified as obstacles and displayed as black in the map. When editing the
+  map, the accessible area of the stairs or slope should be modified to white.
+After the modification, select File - Overwrite jueying_map.pgm in the upper menu bar to
+overwrite the original file (do not choose File - Save to save the file). When the software is
+closed, the save prompt will pop up again. At this time, just click Discard Changes.
+
+                                                                             21 / 69
+                                                                        DEEPRobotics
+
+3.3.6 Map Configuration
+
+For multi-floor mapping, after editing the grid map, you need to modify the configuration
+file map.toml in ~/jy_cog/system/conf/broker (in newer versions, the folder broker has
+been renamed robot_server ): Add or subtract the map in the map list according to the
+grid map of each floor. The serial number will be used to identify the grid map of each
+floor when the navigation task is issued.
+
+3.4 Map Deployment (for v2.1.0 and later)
+
+This version's mapping function will simultaneously construct point clouds and 2D grid
+maps. For multi-floor scenarios that require multiple grid maps, you need to specify them
+manually when the floors change. The mapping program in this version supports map
+construction for single-floor small indoor scenes (50m×50m), multi-floor small indoor
+scenes (50m×50m×10 floors), and single-floor large scenes (500m×500m).
+
+3.4.1 Notice for Use
+
+1. During mapping, please do not manipulate the robot for strenuous exercise and do
+     not block the laser radar, otherwise the mapping may fail.
+
+2. Before mapping, open the terminal and enter the top command to check the
+
+                                                                             22 / 69
+                                                                        DEEPRobotics
+
+     computing resources. If any other program uses too many computing resources, enter
+     the following command line to close it: sudo kill [PID].
+
+3. Make sure the mapping program is not running. If it is running, please save the map
+     and exit the program first according to 3.4.3. Make sure the navigation program is not
+     running. If it is running, please enter the following command line in the terminal to
+     kill it:
+
+          1 bash ~/jy_cog/system/scripts/kill_nav.sh
+
+4. Currently, the mapping for mixed indoor and outdoor scenes, smooth tunnels,
+     smooth long corridors, relatively open scenes (depending on the radar model), high
+     dynamic environments, extreme vibrations or vigorous movements, and long-
+     distance scenarios without loops (or with few loops) venue is not supported.
+
+3.4.2 Function Introduction
+
+This version of the mapping program includes three mapping modes:
+1. fast: Quickly construct point clouds and grid maps (including multi-floor grid map
+
+     construction, but without loop detection and keyframe map generation).
+2. indoor: Construct point clouds and grid maps for indoor multi-floor, narrow, or small-
+
+     scale scenarios (including loop detection and keyframe map generation).
+3. outdoor: Construct point clouds and grid maps for large, relatively open outdoor
+
+                                                                             23 / 69
+                      DEEPRobotics
+
+scenarios (including loop detection and keyframe map generation).
+
+The mapping program in this version will create a new file for each 3D point cloud map
+
+corresponding to a scene under the /home/ysc/jy_cog/system/maps directory. The folder
+
+is named using the format [CustomName]-Date-Time, and it contains a complete point
+
+cloud map (jueying.pcd), the default grid map (jueying.pgm), and a parameter file
+
+( jueying.yaml). If there are multiple grid maps for the same scene, they will be named with
+
+the prefix jueying, followed by a sequential number starting from 1, such as jueying1
+
+(while still retaining jueying.pgm and jueying.yaml). Additionally, keyframe maps
+
+(including point clouds of keyframes and their pose files) may be stored in the details
+
+folder.
+
+The localization and navigation program will by default call the map located in the
+
+/home/ysc/jy_cog/system/map directory. The map folder is a symbolic link pointing to a
+
+specific map folder. If you need to change the address that the symbolic link points to,
+
+you can delete the original map folder and then follow the command below in the
+
+terminal to proceed:
+
+1 cd ~/jy_cog/system  #enter the directory (optional)
+
+2 ln -s maps/[folder name] map # Replace the [folder name] according to the actual situation. This
+
+command creates a symbolic link named map, pointing to a specific folder under the maps directory.
+
+3.4.3 Single-Floor Mapping
+
+  [Notes] This version of mapping program is suitable for the indoor scenes with an area not more
+  than 50m×50m and large scenes with an area not more than 500m×500m.
+  [Notes] Please start the mapping program when the robot is standing.
+1. Open the terminal and enter the following command to start the indoor mapping
+
+     script:
+
+                                                                             24 / 69
+                         DEEPRobotics
+
+   1 bash /home/ysc/jy_cog/system/scripts/start_mapping.sh [MapName] [ImmediateEffect] [MappingMode]
+        [OpenRViz]
+
+In this command line, four parameters can be appended at the end:
+
+Parameter      Function                                 Value&Meaning
+
+               Specify the [CustomName] part of the
+
+MapName map folder name, the default is /
+
+               "ProjectName-LocationName".
+
+               Specify whether to immediately use this
+
+               map for localization and navigation after y = take effect
+
+                         the mapping is completed. If set to take immediately
+ImmediateEffect
+
+                         effect immediately, the map symbolic link n = not take effect
+
+               will point to this map folder. The default is immediately
+
+               to take effect immediately.
+
+MappingMode    Specify the mapping mode to be used this
+                                                                            fast/indoor/outdoor
+
+               time; the default is the "fast" mode.
+
+OpenRViz       Specify whether to open the RViz interface
+                                                                            true=open RViz
+
+               when starting the mapping; the default is
+                                                                            false= not open RViz
+
+               to open it.
+
+For example:
+
+   1 # Example 1
+   2 bash /home/ysc/jy_cog/system/scripts/start_mapping.sh substationB y outdoor true
+   3 # Example 1 Execution Result: Mapping is performed using the "outdoor" mode, with the mapping
+
+        results stored in the "substationB-Date-Time" folder under the /maps directory. After mapping,
+        the results are immediately used for localization and navigation, and RViz is opened during the
+        mapping process.
+
+4 # Example 2
+
+                         25 / 69
+                                                                        DEEPRobotics
+          5 bash /home/ysc/jy_cog/system/scripts/start_mapping.sh
+          6 # Example 2 Execution Result: If the parameters at the end are omitted, the mapping will be
+
+               performed using the default "fast" mode. The mapping results will be stored in the "ProjectName-
+               LocationName-Date-Time" folder under the /maps directory. After mapping, the results will be
+               used for localization and navigation by default, and RViz will be opened during the mapping
+               process by default.
+
+        [Notes] The parameters at the end can only be omitted starting from the last one; you cannot
+        skip a parameter in the middle. The program will read the parameters in sequence.
+2. After starting the mapping program, please first keep the robot standing still for 10
+     seconds, then remotely control the robot to walk at constant speed smoothly and
+     steadily in the area that needs to be mapped. During scanning, you can check whether
+     the localization of robot is normal and whether the point cloud is drifting in RViz.
+
+3. After the robot finishes the scanning of the mapping area, press Ctrl+C in the terminal
+     which starts mapping to quit mapping. If the fast mode is used during mapping, the
+     program will automatically generate a grid map and save it to the corresponding map
+     folder. If the indoor/outdoor mode is used, only several keyframe point clouds and
+     their corresponding poses are saved in the map folder. You need to enter the following
+     command lines in the terminal to separately start the programs for constructing the
+
+                                                                             26 / 69
+                                                                        DEEPRobotics
+
+     complete point cloud map and the grid map:
+
+         1 bash /home/ysc/jy_cog/system/scripts/construct_full_map.sh # Program for constructing the complete
+               point cloud map
+
+         2 bash /home/ysc/jy_cog/system/scripts/construct_occ_map.sh # Program for constructing the grid map
+
+4. In fast mode, if you want to preview the grid map during the scanning process (not
+     supported in indoor/outdoor mode), you can enter the following command in a new
+     terminal:
+
+         1 cd ~/jy_cog/system/scripts
+         2 bash pub_save_occ_map.sh
+
+        [Notes] If the mapping program cannot be closed, please run the following command in the
+        terminal to kill the mapping process:
+
+              1 cd ~/jy_cog/system/scripts
+              2 bash kill_mapping.sh
+
+3.4.4 Multi-Floor Mapping
+
+3.4.4.1 fast mode
+  [Notes] Please start the mapping program while the robot stands still.
+  [Notes] Multi-floor mapping will generate multiple grid maps corresponding to different floors
+  based on the point cloud data of each floor. While controlling the robot to scan the environment, as
+
+                                                                             27 / 69
+                                                                        DEEPRobotics
+
+  you switch floors, you need to use the save_and_restart_occ_mapping.sh script to convert the
+  scanned floor's point cloud data into a grid map and restart the grid mapping program.
+1. Open the terminal and enter the following command to start the point cloud mapping
+
+     program:
+
+         1 bash /home/ysc/jy_cog/system/scripts/start_mapping.sh [MapName] [ImmediateEffect] [MappingMode]
+              [OpenRViz] # For an explanation of the parameters at the end, please refer to section 3.4.3.
+
+        [Notes] This command starts the point cloud mapping program, which must remain running
+        until the mapping of all floors is complete. Do not start and stop the process initiated by this
+        command along with the restarts of the grid mapping program that follow.
+2. After starting the mapping program, please keep the robot standing still for 10
+     seconds, and then remotely control the robot to walk smoothly and at a steady speed
+     in the area where mapping is required.
+3. Each time you start scanning a new floor, you need to manually run the following
+     command line at the starting position of that floor (you need to terminate the process
+     first by pressing Ctrl+C if the save_and_restart_occ_mapping.sh script is already
+     running in the terminal) to save the grid map of the previous floor and restart the grid
+     mapping program to begin constructing a new grid map:
+
+         1 bash /home/ysc/jy_cog/system/scripts/save_and_restart_occ_mapping.sh
+
+     The grid map and parameter file for the initial floor where mapping starts are saved
+     by default as jueying.pgm and jueying.yaml. Each subsequent time the
+     save_and_restart_occ_mapping.sh script is run, the new grid map will be named with
+     the prefix jueying followed by a sequential number, starting from 1, such as
+     jueying1.pgm.
+
+        [Notes] The grid map can only be constructed when the point cloud mapping program is
+        already running.
+
+                                                                             28 / 69
+                                                                        DEEPRobotics
+
+        [Notes] It is recommended to stop and restart the grid mapping program on the stair landing
+        connecting two floors, and ensure that the stair landing is accessible on both grid maps.
+4. After restarting the grid mapping program, you can remotely control the robot to scan
+     the environment of the new floor. Once all scanning is complete, press Ctrl+C to stop
+     the mapping program, and it will automatically save the point cloud and grid maps.
+        [Notes] Press Ctrl+C in the terminal only once; pressing it multiple times will send a signal
+        to kill the program, which may prevent the map from being saved.
+
+3.4.4.2 indoor/outdoor mode
+
+   [Notes] Please start the mapping program while the robot stands still.
+   [Notes] Multi-floor mapping will generate multiple grid maps corresponding to different floors
+   based on the point cloud data of each floor. While controlling the robot dog to scan the
+   environment, as you switch floors, you need to use the save_and_restart_occ_mapping.sh script
+   to convert the scanned floor's point cloud data into a grid map and restart the grid mapping
+   program.
+1. Open the terminal and enter the following command to start the point cloud mapping
+
+     program:
+
+         1 bash /home/ysc/jy_cog/system/scripts/start_mapping.sh [MapName] [ImmediateEffect] [MappingMode]
+              [OpenRViz] # For an explanation of the parameters at the end, please refer to section 3.4.3
+
+        [Notes] This command starts the point cloud mapping program, which must remain running
+        until the mapping of all floors is complete.
+2. After starting the mapping program, please keep the robot standing still for 10
+     seconds, and then remotely control the robot to walk smoothly and at a steady speed
+     in the area where mapping is required.
+3. When constructing multi-floor grid maps in indoor/outdoor mode, you need to specify
+     the new floor's number when reach the starting position of the new floor:
+
+         1 bash /home/ysc/jy_cog/system/scripts/set_floor_label.sh [FloorNumber]
+
+                                                                             29 / 69
+                                                                        DEEPRobotics
+
+     The above command includes a parameter [FloorNumber], with the following
+     meanings for the parameter:
+     1) Omitting this parameter: This indicates using the default floor number value of 0.
+     2) Values such as 0, 1, 2, etc: Specify the new floor's number.
+     3) Value of -1: Indicates that no grid map will be constructed for this new floor.
+     4) Value of -2: Indicates that the new floor's number will be incremented by 1 based
+
+           on the previous floor's number.
+     The resulting grid map will be named "jueying+FloorNumber," such as jueying1.pgm.
+     The grid map with a floor number of 0 will be named jueying.pgm.
+
+        [Notes] The floor numbers in the map files do not necessarily correspond one-to-one with the
+        actual floor numbers.
+        [Notes] It is recommended to name the grid map file of the floor where the robot 's navigation
+        is initiated as "jueying," since the navigation system will, by default, load the map named
+        "jueying" at startup.
+        [Notes] The grid map can only be constructed when the point cloud mapping program is
+        already running.
+        [Notes] It is recommended to stop and restart the grid mapping program on the stair landing
+        connecting two floors, and ensure that the landing is accessible on both grid maps.
+4. After specifying the new floor number, you can remotely control the robot to scan the
+     environment of the new floor. Once all scanning is complete, press Ctrl+C in the
+     terminal where the mapping was initiated, to stop the mapping program. At this point,
+     only several keyframe point clouds and their corresponding poses are saved in the
+     map folder. You will still need to separately start the program to construct the
+     complete point cloud map and the grid map:
+
+          1 bash /home/ysc/jy_cog/system/scripts/construct_full_map.sh # Program for constructing the complete
+                                                                             30 / 69
+                                                                        DEEPRobotics
+               point cloud map
+         2 bash /home/ysc/jy_cog/system/scripts/construct_occ_map.sh # Program for constructing the grid map
+
+3.4.5 View Point Cloud Map
+
+Users can navigate to the target map folder they wish to view and use the PCD viewer to
+display the constructed 3D point cloud map, following the steps outlined in section 3.3.4.
+
+3.4.6 Modification of Grid Map
+
+Users can navigate to the target map folder they wish to view and follow the steps outlined
+in section 3.3.5 to modify the grid map.
+
+3.4.7 Map Configuration
+
+For multi-floor mapping, after constructing the grid map, you need to go to the
+~/jy_cog/system/conf directory and enter the /broker or /robot_server folder to modify
+the map.toml configuration file. Please refer to section 3.3.6 for detailed steps.
+
+3.4.8 Record Data Packet
+
+For larger scenes, this version of the mapping program cannot guarantee that the map
+will be completed in a single attempt. It is necessary to record data packets and repeatedly
+adjust parameters and reconstruct the map to achieve the best quality.
+1. Start recording the data packet:
+
+         1 bash ~/jy_cog/rosbag_recorder/scripts/start_record.sh
+
+     After executing the above command, wait approximately 5 seconds for the frequency
+     check. If the frequency is normal, recording will automatically start (as shown in the
+     left image below). If there is an issue with the frequency, recording will not begin (as
+
+                                                                             31 / 69
+                                                                        DEEPRobotics
+
+     shown in the right image below, a [Warn] for sensor data and an [Error] are printed).
+
+2. Control the robot to scan the recording area. After completing the scan, execute the
+     following command to stop the recording:
+
+         1 bash ~/jy_cog/rosbag_recorder/scripts/stop_record.sh
+
+     The recorded point cloud data is stored in the ~/jy_cog/system/record/bags/mapping
+     directory.
+
+        [Notes] If you need to perform multi-floor mapping, please pause for a while at the initial
+        position of each new floor to allow sufficient time for running the floor-splitting script in the
+        subsequent mapping steps.
+3. Before using the recorded data packet for mapping, you need to kill the sensor driver:
+
+         1 rosnode kill /livox_lidar_publisher2
+         2 rosnode kill /yesense_imu_node
+
+4. Then, following the previously described mapping procedures, start the mapping
+     program.
+
+5. After starting the mapping, open a new terminal, navigate to the data packet storage
+     path, and play the data packet:
+
+         1 rosbag play ~/jy_cog/system/record/bags/mapping/ DataPacketName
+
+       [Notes] If performing multi-floor mapping, you can run the set_floor_label.sh script when the
+       data packet playback reaches the entrance of the new floor.
+6. After the data packet playback is complete (as shown in the figure below), you can
+     follow the previously described mapping procedures to finish and save the map.
+
+                                                                             32 / 69
+                                                                        DEEPRobotics
+
+3.5 Single floor navigation
+
+Jueying X30 Pro adopts the ROS/navigation framework.
+ [Notes] The navigation methods described in this section and Section 3.6 should be used with
+ localization(2.0.5), nav(2.1.9), player(1.0.6), broker/robot_server(1.1.6), and app(2.3.2).
+ [Notes] When using the autonomous navigation function, you should avoid turning on sharp terrain,
+ and pay attention to temporary obstacles that suddenly appear in the blind area of the robot's field
+ of vision.
+ [Notes] Before using the navigation, ensure that the mapping program is not running.
+ [Notes] After finishing the map deployment, you can refer to 3.2 to change the contents of the file
+ autorun_slam to true, and restart the robot, so that the localization and navigation program will start
+ automatically after each startup.
+
+3.5.1 Start Localization and Navigation Program
+
+Open the terminal and enter the following commands to start the localization and
+navigation program:
+
+ 1 cd ~/jy_cog/system/scripts
+ 2 bash start_nav.sh
+
+                                                                             33 / 69
+                                                                        DEEPRobotics
+
+After completing the above steps, RViz will pop up automatically, as shown in the figure
+below. RViz will display the map, and point cloud data collected by the robot in real time
+(in color).
+If localization and navigation program is running (or set to be auto-started), you can open
+Rviz directly:
+
+ 1 bash ~/jy_cog/system/scripts/start_rviz.sh
+
+3.5.2 Initialize Localization
+
+After starting the navigation, if the point cloud does not completely coincide with the grid-
+based map (as shown in the figure above), it needs to manually initialize the localization
+of robot.
+1. Click [2D Pose Estimate] in the top toolbar.
+2. Determine the actual position and orientation of the robot, move the mouse to the
+
+    corresponding position in the map, press and hold the left mouse button and drag out
+
+                                                                             34 / 69
+                                                                        DEEPRobotics
+
+    the arrow according to the actual orientation, then release the left mouse button.
+3. If it succeeds to initialize the localization, the laser point cloud will coincide with the
+
+    grid-based map, as shown in the figure below. If it fails to initialize the localization, just
+    restart the operation from step 1.
+
+ [Notes] If it is unable to locate, please refer to "3.5.6 Problem Identification".
+
+3.5.3 Specify Target Point (Single Point)
+
+After initializing the localization, you can specify a navigation target point for the robot on
+the map:
+1. Click [2D Nav Goal] in the toolbar above.
+2. Move the mouse to the target position in the map, press and hold the left mouse
+
+    button and drag out the arrow according to the target orientation, then release the left
+    mouse button.
+3. If it succeeds to specify the target point, the planned motion path of the robot will
+
+                                                                             35 / 69
+                                                                        DEEPRobotics
+
+    appear in the interface; If it fails to specify the target point, just restart the operation
+    from step 1.
+
+4. Finally, switch the robot from manual mode to navigation mode on the controller, and
+    operate the robot to start stepping, so as to make the robot to travel to the target point
+    by itself. During navigation, the robot can autonomously avoid the obstacles outside a
+    certain range.
+
+  [Notes] In autonomous navigation, all personnel must maintain a distance of more than 2m from
+  the robot!
+  [Notes] If the robot is out of control during autonomous navigation, please switch it back from
+  navigation mode to manual mode in time, or press the stop button (or toggle up SW1 and SW4
+  simultaneously).
+
+3.5.4 Usage of Navigation Recorder (Multi-Point Navigation)
+
+The Controller APP provides a navigation recorder tool for recording navigation
+
+                                                                             36 / 69
+                                                                        DEEPRobotics
+
+waypoints and route, which enables the robot to reach a series of waypoints in sequence
+and complete tasks autonomously at the waypoints.
+3.5.4.1 Preparations
+1. Open the Settings and enter Jueying Lab to activate Navigation Recorder.
+
+2. Plan the path for the robot in advance, and allocate the locations of waypoints
+    reasonably.
+
+3.5.4.2 Create Navigation Route
+1. Firstly, ensure that the robot is in manual mode or assist mode currently, and click the
+
+    "+New Route" button on the interface to create a new route.
+
+                                                                             37 / 69
+                                                                        DEEPRobotics
+
+2. Then you can begin to record some waypoints of this route.
+
+                                                                             38 / 69
+             DEEPRobotics
+
+ Add         Add a new waypoint to the end of the waypoint list and set
+             the waypoint properties
+
+ Clear       Clear all waypoints in the current waypoint list
+
+ Expand/Collapse Expand or collapse the waypoint list
+
+ Edit        Modifies the properties of currently selected waypoint
+             (except location and orientation information)
+
+ Insert      Insert a new waypoint in front of the currently selected
+             waypoint
+
+ Delete      Delete the currently selected waypoint from the list
+
+ Save Route  Save and name the current route and exit
+
+ Exit        Exit directly without saving the current route
+
+3. Control the robot to the waypoint that needs to be recorded in sequence, then make
+
+             39 / 69
+                                                                  DEEPRobotics
+
+the robot stop stepping, click [Add], and set the waypoint properties. The current
+location information of the robot is automatically obtained and user can update it.
+
+                                                      
+
+                                                        
+
+
+
+                
+
+ Change MapID     Select the grid map where the waypoint is located
+
+ Update Location  Update the real-time robot location and orientation
+
+ Save Waypoint    Save the current waypoint and return
+
+ Waypoint Properties Set waypoint properties. For details, see 3.5.4.3
+
+                                     Select whether you want to save video stream photo
+ Save the camera view
+
+                                     taken at the current waypoint
+
+4. After marking all waypoints, you can click the [Save Route] button to save and name
+
+    the route.
+ [Notes] When the navigation route includes climbing stairs, the waypoint before going upstairs must
+ be at least 0.8m away from the stair edge.
+ [Notes] When add the entry of the Charge Waypoint, do not use L-Walk , Mountain or Silent Gait.
+
+                  40 / 69
+                                   DEEPRobotics
+
+ It's recommended to use Walk Gait or Slope Gait.
+ [Notes] When using a remote controller to deploy a navigation route, the distance between the first
+ and last waypoint must not be too far away, or the navigation task cannot be cyclically executed.
+
+3.5.4.3 Waypoint Properties
+
+The properties of a waypoint are divided into line properties and point properties, where
+
+line properties represent the properties that take effect on the route to the waypoint.
+
+Waypoint Type, Waypoint No., MapID, and Waypoint Location are point properties, while
+
+Body Height, Terrain, Direction, Gait, Speed, Navigation Mode, Collisions Avoidance
+
+Switch belong to path properties.
+
+                                   Waypoint Property
+
+MapID[1]  MapID is the serial number of grid map where the waypoint is located
+          according to map.toml.
+
+Location The location and orientation of waypoint in the map coordinate system.
+
+                      Transition point is used only to overcome terrains and
+
+          Transition  constrain paths. Robot will keep stepping when it
+                      reaches a transition point and then move on to the next
+
+Waypoint              point.
+   Type               When the robot arrives at the task point, it will make an
+                      accurate adjustment of the body, and then stop
+          Task        stepping, stay in place to perform inspection tasks such
+
+                      as meter identification, and then go to the next point.
+
+          Charge This type of waypoints should be recorded in front of the
+
+                                   41 / 69
+                       DEEPRobotics
+
+                       Waypoint Property
+
+                       charging dock so that the robot can locate the charging
+
+                       dock and enter to charge, and it will exit the charging
+
+                       dock immediately and go to the next point (if the charge
+
+                       point is the last point, the robot will keep charging)
+
+             Standard  During the process of reaching this waypoint, the robot
+                       maintains its normal posture.
+
+Body Height            During the process of reaching this waypoint, the robot
+
+             Low       lowers its body (only supported when using walk or
+
+                       slope gait).
+
+                       On the way to this waypoint, the ground on which the
+
+             Solid     robot places its feet is a solid surface, such as concrete
+
+                       floors or concrete stairs
+
+                       On the way to this waypoint, the ground on which the
+
+Terrain                    robot places its feet is a grid-like pattern with gaps in
+             Grid
+
+                           between, such as industrial stairs or platforms made of
+
+                           steel grating panels
+
+                       On the way to this waypoint, the ground on which the
+
+                       robot places its feet includes multiple types of ground
+
+             Composite surfaces. For example, the robot moves from solid
+
+                       ground to grid ground, or from grid ground to solid
+
+                       ground (collisions avoidance based on the local
+
+                                     42 / 69
+                      DEEPRobotics
+
+                      Waypoint Property
+
+                      elevation map is not supported on composite ground,
+
+                      and only stair gait and 45° stair gait are applicable on
+
+                      composite ground).
+
+           Move       The direction of speed is the same as the body's
+
+           Forward orientation upon reaching this waypoint.
+
+Direction     Move    The direction of speed is opposite to the body's
+  Gait[2]  Backward   orientation upon reaching this waypoint (used when
+ Speed                going down the stairs).
+
+           Walk       Use Walk gait to reach this waypoint
+
+           Slope Use Slope gait to reach this waypoint
+
+           Off-Road Use Off-Road gait to reach this waypoint
+
+           Stair      Use Stair gait to reach this waypoint
+
+           45° Stair  Use 45° Stair gait to reach this waypoint (only supported
+                      in Composite Mode)
+
+           L-Walk Use L-Walk gait to reach this waypoint
+
+           Mountain Use Mountain gait to reach this waypoint
+
+                         Reach this waypoint at low speed (not supported in
+           Low
+
+                         Composite Mode)
+
+           Medium     Reach this waypoint at medium speed (some gaits not
+                      supported)
+
+           High       Reach this waypoint at high speed (some gaits not
+
+                      43 / 69
+                          DEEPRobotics
+
+                          Waypoint Property
+
+                          supported)
+
+                Straight  The route to this waypoint is planned globally in a
+                          straight line.
+Navigation
+
+Mode[3]                   Consider the terrain on the map when planning globally
+                          and calculate a route to bypass obstacles.
+                Auto
+
+Collisions      ON        Collision avoidance is enabled when navigation.
+
+Avoidance                     Collision avoidance is disabled when navigation, to try to
+ Switch[4]      OFF
+
+                              pass the narrow areas full of obstacles.
+
+[1] MapID is used to identify the grid map of multi-floor navigation. For single floor
+
+navigation, MapID is generally 0 by default. If you want to check the MapID, go into
+
+~/jy_cog/system/conf/broker or ~/jy_cog/system/conf/robot_server, and open the file
+
+map.toml, and view the serial number of the grid map (see 3.3.6).
+
+[2] When using RL gaits (L-Walk and Mountain), body height and terrain adjustment are
+
+not supported.
+
+[3] When using the Straight navigation, if two points cannot be planned globally in a
+
+straight line, the navigation task will fail. When using the Auto navigation, the path points
+
+should be set based on terrain complexity. The higher the terrain complexity, the higher
+
+the execution risk of the navigation path, and in this case, the more intensive target points
+
+should be set. Try to use multi-segment Straight navigation instead of Auto navigation.
+
+                                      44 / 69
+                                                                        DEEPRobotics
+
+[4] Whether the obstacle avoidance function of the navigation module is enabled or not,
+the obstacle avoidance function based on the local elevation map, as a safety module of
+the robot itself, will always remain enabled (Excluding composite ground sections, this
+obstacle avoidance function will remain disabled on composite ground segments). When
+the obstacle avoidance function of the navigation is enabled, for Straight navigation, the
+robot will decelerate and stop at an obstacle, and for Auto navigation, it will detour to
+avoid collisions.
+
+3.5.5 Execution of Multi-point Navigation
+
+Multi-point navigation can be started in two ways: using remote controller or using player.
+The remote controller can only perform navigation tasks with a total number of points
+(number of waypoints included in the route × the number of times the route is looped)
+of no more than 100.
+
+  [Notes] Before performing navigation, ensure that the localization and navigation program is
+  started and that the localization is initialized.
+3.5.5.1 Using Controller for Navigation Execution
+1. Click [Route List], select the navigation route to be executed from the list, click the
+
+                                                                             45 / 69
+                                                                        DEEPRobotics
+
+    triangle button to execute the navigation route.
+
+2. Set the number of times the route is looped and click [Start].
+
+     [Notes] The total number of waypoints executed on the controller (the number of waypoints
+     included in the route × navigation loop times) cannot exceed 100.
+3. During the execution of the navigation route, you can click [Exit Navigation] to exit the
+    navigation.
+
+                                                                             46 / 69
+                                                                        DEEPRobotics
+
+3.5.5.2 Using player for Navigation Execution
+If the total number of waypoints to execute exceeds 100, you can use player to perform.
+1. Select the route you want to execute and click [Upload] to upload the route to the
+
+    navigation host.
+
+                                                                             47 / 69
+                                 DEEPRobotics
+
+2. Refer to 3.1 to connect to the navigation Host and go to the ~/jy_cog/system/data
+
+    folder, and check whether the route file (.json) is uploaded from controller.
+     [Notes] The name of the route file in navigation host is Controller ID+ route name.
+
+3. Go to the ~/jy_cog/system/conf/player folder, open the config.toml file, and update the
+
+path of route file:
+
+1 points_path = "/home/ysc/jy_cog/system/data/routefile.json" #the path of route file you want
+
+executed
+
+2 End_wait_time = 1              #stop time after reaching the last waypoint(s)
+
+3 times = 3                      #route loop times
+
+4 charger_time = 500             #charging duration time of charge point(s)
+
+5 server_ip = "192.168.1.106"
+
+4. Modify other parameters in config.toml as needed.
+
+5. Save and close the modified config.toml file.
+
+6. Open a new terminal, enter the following command to run the player, and the robot
+
+will begin the navigation task:
+
+   1 cd ~/jy_cog/player/scripts
+   2 bash player.sh
+
+                                 48 / 69
+                                                                        DEEPRobotics
+
+7. To end the navigation, press ctrl+c in the terminal where the player is running.
+
+3.5.6 Problem Identification
+
+When there is no point cloud or the localization is not accurate, run the following
+command line to check whether the topic is normal:
+Check the ROS topic of LiDAR data:
+
+ 1 rostopic hz /lidar_points
+ 2 #It is normal if the information can be printed and the average rate is close to 10Hz.
+
+Check the ROS topic of IMU data:
+
+ 1 rostopic hz /imu/data
+ 2 #It is normal if the information can be printed and the average rate is close to 200Hz
+
+Check the ROS topic of leg odometry data:
+
+   1 rostopic hz /leg_odom
+   2 #It is normal if the information can be printed and the average rate is close to 200Hz.
+
+If all of the above information is normal but there are localization abnormalities, check
+whether the 3D point cloud map matches the actual environment by the instructions in
+"3.3.4 View Point Cloud Map". If not, please rebuild the map.
+
+3.6 Indoor Multi-Floor Navigation
+
+  [Notes] Please read this section based on your understanding of single-floor navigation.
+The main differences between multi-floor navigation and single-floor navigation are:
+1. Multi-floor navigation requires initializing localization in the 3D point cloud map;
+2. During multi-floor navigation deployment, you need to change the MapID to match the
+
+    waypoint with the correct grid map.
+
+                                                                             49 / 69
+                                                                        DEEPRobotics
+
+3.6.1 Localization Initialization
+
+After navigation is started, if the point cloud does not fully coincide with the grid map, the
+robot location needs to be initialized.
+1. Check that the Type under the Views bar on the right of the Rviz window is Orbit.
+
+2. Adjust the perspective to a top-down view of the map.
+
+3. Select the [3D Pose Estimate] tool on the upper toolbar.
+4. Based on the grid map, find the corresponding position and orientation of the robot
+
+                                                                             50 / 69
+                                                                        DEEPRobotics
+
+    on the grid map according to its position and orientation in the actual environment,
+    move the mouse to the corresponding position in the map, press and hold the left
+    mouse button and drag out the arrow according to the actual orientation, then release
+    the left mouse button.
+5. Continue to adjust the perspective: press and hold the left mouse button to adjust the
+    perspective to a horizontal view to observe the floor positions on the point cloud map.
+
+       [Notes] Do not use right mouse button to change the perspective. Press the right mouse button
+       will change the robot location in the map.
+6. Press and hold the right mouse button to drag the robot position arrow to the height
+    of the correct floor, release the right button, and the localization is initialized.
+
+3.6.2 Grid Map Switching
+
+When recording navigation waypoints, you need to click the button to change MapID and
+input the corresponding serial number in map.toml of the grid map where the new
+waypoints are located.
+
+                                                                             51 / 69
+                                                                      DEEPRobotics
+
+[Notes] When creating the first waypoint, make sure that the default MapID matches the actual grid
+map.
+[Notes] When you reach the platform connecting the two floors and mark the waypoint of switching
+grid map, click the button to change MapID corresponding to the grid map of the next floor.
+[Notes] Make sure that the waypoint of switching grid map is reachable on the both two grid maps.
+
+                                                                           52 / 69
+                                                                        DEEPRobotics
+
+4 Payload Mounting
+
+4.1 Mounting Holes and Hardware Interfaces
+
+                                                                                             Unit: mm
+
+               A Power Port (72V, 600W)
+
+            B  B Ethernet Port 1 (192.168.1.*)
+
+A           C  C Ethernet Port 2 (192.168.2.*)
+
+   53 / 69
+                                                                        DEEPRobotics
+
+4.1.1 Power Port Wiring Color Code
+
+ [Notes] The power of this power port should not exceed 600W.
+
+P1  Color                                                                               P2
+                                                                                      72V (+)
+1   Red
+                                                                                       GND
+2   Black
+
+4.1.2 Ethernet Port 1 Wiring Color Code
+
+P1  Color                                                                             P2
+
+1   Orange White                                                                      TX+
+
+2   Orange                                                                            TX-
+
+3   Green White                                                                       RX+
+
+4   Blue                                                                              TX2+
+
+5   Blue White                                                                        TX2-
+
+6   Green                                                                             RX-
+
+7   Brown White                                                                       RX2+
+
+8   Brown                                                                             RX2-
+
+    54 / 69
+                                                                        DEEPRobotics
+
+4.1.3 Ethernet Port 2 Wiring Color Code
+
+P1  Color                                                                             P2
+
+1   Orange White                                                                      TX+
+
+2   Orange                                                                            TX-
+
+3   Green White                                                                       RX+
+
+4   Blue                                                                              TX2+
+
+5   Blue White                                                                        TX2-
+
+6   Green                                                                             RX-
+
+7   Brown White                                                                       RX2+
+
+8   Brown                                                                             RX2-
+
+4.2 Mounting Limit
+
+The load must be fixed on the holes of the two mounting rails, and the height of the load
+should not exceed 500mm.
+ [Notes] Please ensure that the load does not move, shake or rotate when fixing it.
+ [Notes] Please do not fix the load only on the holes of the same rail.
+
+4.3 Motion Parameter Configuration
+
+4.3.1 Payload Parameters
+
+If the payload needs to be increased or decreased, the user needs to access the motion
+
+    55 / 69
+                                                                        DEEPRobotics
+
+host /home/ysc/jy_exe/conf, open the configuration file motion.toml, and configure the
+parameters for the payload weight and the position of the center of mass of payload. This
+can refer to 2.2 Parameter Configuration for operation. The new motion parameter
+configuration will take effect after the motion program is restarted.
+
+4.3.2 Network Parameters
+
+4.3.2.1 Add Load
+
+If it needs to increase the load, and the new load needs to communicate with the motion
+
+host (for example, it needs to obtain the UDP messages reported by the motion host or
+
+issue UDP commands to the motion host), you need to configure the network parameters
+
+of the motion host after the load is installed.
+
+1. Go to the /home/ysc/jy_exe/conf folder of motion host, and open the profile
+
+    network.toml:
+
+       1 ip = `192.168.1.105'
+       2 target_port = 43897
+       3 local_port = 43893
+       4 ips = ["192.168.1.105","192.168.1.106"]
+       5 ports = [43897,43897]
+
+2. In the square brackets of the last two line, add the IP address and port number for the
+
+new load receiving UDP messages according to the format, and the IP address and port
+
+number correspond one by one in order:
+
+1 ip = `192.168.1.105'
+
+2 target_port = 43897
+
+3 local_port = 43893
+
+4 ips = ["192.168.1.105","192.168.1.106","xx.xx.xx.xx"] # xx.xx.xx.xx is the IP address for the new
+
+load receiving messages
+
+5 ports = [43897,43897,xxxxx]                    # xxxxx is the port number for the new load
+
+receiving UDP messages
+
+                               56 / 69
+                                         DEEPRobotics
+
+3. After configuring the network parameters, please restart the motion program, then
+    you can communicate with the motion host according to the API Documentation. The
+    IP address for the motion host receiving UDP messages is 192.168.1.103, and the port
+    number is 43893.
+
+4.3.2.2 Remove Load
+
+If it needs to remove the load, and this load communicates with the motion host (for
+
+example, it needs to obtain the UDP messages reported by the motion host or issue UDP
+
+commands to the motion host), you need to configure the network parameters of the
+
+motion host after the load is removed.
+
+1. Go to the /home/ysc/jy_exe/conf folder of motion host, and open the profile
+
+network.toml:
+
+1 ip = `192.168.1.105'                      # xx.xx.xx.xx is the IP address for the removed load
+2 target_port = 43897                    # xxxxx is the port number for the removed load receiving
+3 local_port = 43893
+4 ips = ["192.168.1.105","xx.xx.xx.xx"]
+
+     receiving UDP messages
+5 ports = [43897,xxxxx]
+
+     UDP messages
+
+2. Remove the IP address and port number corresponding to the removed load in the
+
+    square brackets:
+
+       1 ip = `192.168.1.105'
+       2 target_port = 43897
+       3 local_port = 43893
+       4 ips = ["192.168.1.105"]
+       5 ports = [43897]
+
+3. Save and close the file. New paramters will take effect after the motion program is
+
+restarted.
+
+                                         57 / 69
+                                                                        DEEPRobotics
+
+5 Intelligent Controller
+
+5.1 Removal and Installation
+
+5.1.1 Removal
+
+If you want to remove intelligent controller:
+1. First make sure that the robot is powered off.
+2. Unscrew the four M5 screws from the mounting holes.
+
+3. Pull out the three aviation plug from two sides of the robot with tool, and then remove
+    the intelligent controller.
+
+4. Start the robot and configure the motion parameters of the motion host according to
+    4.3 Motion Parameter Configuration. If the robot has no load, the following
+    configuration parameters can be used:
+    a) network.toml
+
+          1 ip = `192.168.1.105'
+          2 target_port = 43897
+          3 local_port = 43893
+          4 ips = ["192.168.1.105"]
+          5 ports = [43897]
+
+    b) motion.toml
+
+                                                                             58 / 69
+                                                                        DEEPRobotics
+
+          1 load = 0.0
+          2 ......
+          3 load_x = 0.0
+          4 load_y = 0.0
+          5 load_z = 0.0
+
+5. Run the script restart.sh to restart motion program. Then the robot can be used
+    normally.
+
+5.1.2 Installation
+
+Intelligent controller can be installed in the following three positions to adjust the front
+and rear installation space and meet different installation requirement.
+Position A
+
+Position B
+
+Position C
+
+            59 / 69
+                                                                        DEEPRobotics
+
+Please follow the steps below for installation:
+1. Make sure the robot is powered off.
+2. Place the intelligent controller in a suitable position on the back of the robot. Insert
+
+    the three aviation plugs on the intelligent controller into the corresponding aviation
+    plug ports on both sides of the body, and tighten the four M5 screws to fix the
+    intelligent controller on the two mounting rails.
+3. Start the robot and configure the motion parameters according to the 4.3 Motion
+    Parameter Configuration. If the robot only has the intelligent controller installed on
+    its back, you can use the following configuration parameters:
+    a) network.toml
+
+          1 ip = `192.168.1.105'
+          2 target_port = 43897
+          3 local_port = 43893
+          4 ips = ["192.168.1.105","192.168.1.106"]
+          5 ports = [43897,43897]
+
+    b) motion.toml
+
+          1 load = 3.0
+          2 ......
+          3 load_x = 0.05
+          4 load_y = 0.0
+          5 load_z = 0.10
+
+4. Run the script restart.sh to restart motion program. Then the robot can be used
+
+                                                                             60 / 69
+                                                                        DEEPRobotics
+
+    normally and the intelligent controller can be powered on.
+
+5.2 Hardware Interface and Wiring
+
+ [Notes] The maximum power of LAN(12V) is 36W, and the maximum power of LAN(24V) is 72W
+ and the maximum power of DC 24V is 480W. The total power supplied to the payload should not
+ exceed 600W.
+
+5.2.1 LAN1(12V) & LAN3(12V) & LAN4(12V)
+
+P1  Color                P2
+
+1
+
+    Red+Light Green      12V (+)
+
+2
+
+3
+
+    Black+Pink           GND
+
+4
+
+                61 / 69
+  P1                        DEEPRobotics  P2
+  5                                       TX+
+  6         Color                         TX-
+  7         Orange                        RX+
+  8         Yellow                        TX2+
+  9         White                         TX2-
+  10        Blue                          RX-
+  11        Purple                        RX2+
+  12        Green                         RX2-
+            Grey
+5.2.2 LAN2  Brown
+
+P1          Color                         P2
+
+1
+
+            Red+Light Green               +
+
+2
+
+3
+
+            Black+Pink                    -
+
+4
+
+5           Orange                        TX+
+
+6           Yellow                        TX-
+
+7           White                         RX+
+
+                        62 / 69
+  P1                            DEEPRobotics  P2
+  8                                           TX2+
+  9             Color                         TX2-
+  10            Blue                          RX-
+  11            Purple                        RX2+
+  12            Green                         RX2-
+                Grey
+5.2.3 24V       Brown
+
+  P1            Color                         P2
+  1             Brown                         24V (+)
+  2             Blue                          GND
+
+5.2.4 USB2.0×2
+
+P1              Color                         P2
+
+1
+
+                Red+Light Green               5V-USB
+
+2
+
+                       63 / 69
+                             DEEPRobotics
+
+P1  Color                                                    P2
+
+3                                                            GND
+                                        Black+Pink
+                                                             D+
+4                                                            D-
+                                                             /
+5   Orange                                                   D2-
+                                                             D2+
+6   Yellow                                                   /
+                                                             /
+7   White                                                    /
+
+8   Blue
+
+9   Purple
+
+10  Green
+
+11  Grey
+
+12  Brown
+
+5.2.4 LAN5(24V) & LAN6(24V)
+
+P1  Color                                                    P2
+
+1
+
+    Red+Light Green                                          24V (+)
+
+2
+
+3
+
+    Black+Pink                                               GND
+
+4
+
+5   Orange                                                   TX+
+
+                                                    64 / 69
+            DEEPRobotics
+
+P1  Color                 P2
+
+6   Yellow                TX-
+
+7   White                 RX+
+
+8   Blue                  TX2+
+
+9   Purple                TX2-
+
+10  Green                 RX-
+
+11  Grey                  RX2+
+
+12  Brown                 RX2-
+
+            65 / 69
+                                                                        DEEPRobotics
+
+6 Sensor Coordinate System
+
+6.1 Body Coordinate System
+
+The origin of the body coordinate system is located at the geometric center of the robot
+(the curved arrow represents the positive rotation direction).
+
+6.2 Sensor Coordinate Systems of Main Body
+
+The sensors of main body include a built-in IMU and four LiDARs. The orientation of the
+
+                                                                             66 / 69
+                                                                        DEEPRobotics
+
+axes in the IMU coordinate system is consistent with that of the body coordinate system.
+The installation angles of the LiDARs and the orientation of the IMU coordinate system are
+shown below:
+
+The locations of the origin of each sensor coordinate system are shown in the following
+
+table:
+
+                             Coordinates of origin of sensor coordinate system
+
+        Sensor               (with respect to the body coordinate system)
+
+                             X(mm)    Y(mm)  Z(mm)
+
+        Built-in IMU         130.45   -1     14.9
+
+Front-facing upward LiDAR    443.67   0      54.15
+
+Front-facing downward LiDAR  432.97   0      -55.19
+
+Rear-facing upward LiDAR     -465.76  0      34.84
+
+Rear-facing downward LiDAR   -410.74  0      -56.01
+
+                             67 / 69
+                                                                        DEEPRobotics
+
+6.3 IMU Coordinate System of Intelligent Controller
+
+The orientation of IMU coordinate system embedded in the intelligent controller is
+aligned with the body coordinate system, as shown in the following diagram.
+
+Depending on the installation position of the intelligent controller, there may be
+
+differences in the location of the origin of the embedded IMU coordinate system.
+
+Intelligent  Coordinates of origin of IMU coordinate system
+
+Controller   (with respect to the body coordinate system)
+
+Position     X(mm)           Y(mm)  Z(mm)
+
+Position A   87.15           -1     117
+
+Position B   47.15           -1     117
+
+Position C   7.15            -1     117
+
+                    68 / 69
+               DEEPRobotics
+
+6.4 LiDAR FOV
+
+               69 / 69
+

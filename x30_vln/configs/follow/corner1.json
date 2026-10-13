@@ -1,0 +1,7 @@
+{
+  "world": "aws_hospital",
+  "_comment": "Corner test: the nurse walks down the east corridor and turns fast into the cross-corridor at its south end (no door to retrace, nobody else). The straight line from the robot to her crosses the wall corner after the turn.",
+  "people": [
+    {"name": "target", "model": "person_07", "path": "corner1/target.json", "target": true, "outfit": "navy scrubs"}
+  ]
+}

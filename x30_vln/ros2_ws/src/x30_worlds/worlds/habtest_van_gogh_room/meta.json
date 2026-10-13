@@ -1,0 +1,66 @@
+{
+ "sdf": "worlds/habtest_van_gogh_room/world.sdf",
+ "spawn": {
+  "x": 3.29,
+  "y": -0.5,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.78,
+  -2.87,
+  6.99,
+  2.67
+ ],
+ "objects_file": "worlds/habtest_van_gogh_room/objects.json",
+ "map_file": "worlds/habtest_van_gogh_room/map.yaml",
+ "robot_radius_m": 0.25,
+ "license": "Habitat test scenes: Hugging Face card cc-by-nc-4.0 (no licence file in the archive); apartment_1 derives from Replica (research terms)",
+ "source": "habitat-test-scenes.zip (dl.fbaipublicfiles.com/habitat)",
+ "source_dataset": "habitat-test-scenes",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   0.001202
+  ]
+ },
+ "stats": {
+  "source_file": "van-gogh-room.glb",
+  "up_axis": "z",
+  "scale": 1.0,
+  "floor_z_source": -0.001,
+  "extent_m": [
+   6.77,
+   3.54,
+   3.86
+  ],
+  "triangles": 11272,
+  "triangles_visual": 11272,
+  "triangles_ceiling": 98,
+  "collision_boxes": 164,
+  "collision_pitch_m": 0.1,
+  "navigable_area_m2": 5.7,
+  "objects": 0,
+  "visual_mesh_mb": 13.4
+ },
+ "source_scene_id": "van-gogh-room.glb"
+}

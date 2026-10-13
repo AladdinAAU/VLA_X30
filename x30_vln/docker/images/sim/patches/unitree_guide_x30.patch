@@ -1,0 +1,180 @@
+diff --git a/controllers/unitree_guide_controller/include/unitree_guide_controller/control/Estimator.h b/controllers/unitree_guide_controller/include/unitree_guide_controller/control/Estimator.h
+index 60112df..f7ece76 100644
+--- a/controllers/unitree_guide_controller/include/unitree_guide_controller/control/Estimator.h
++++ b/controllers/unitree_guide_controller/include/unitree_guide_controller/control/Estimator.h
+@@ -66,7 +66,8 @@ public:
+         const std::vector<KDL::Vector> feet_vel = robot_model_->getFeet2BVelocities();
+         Vec34 result;
+         for (int i(0); i < 4; ++i) {
+-            result.col(i) = Vec3(feet_vel[i].data) + getVelocity();
++            const Vec3 foot_p_b(foot_poses_[i].p.data);
++            result.col(i) = rotation_ * (Vec3(feet_vel[i].data) + gyro_.cross(foot_p_b)) + getVelocity();
+         }
+         return result;
+     }
+diff --git a/controllers/unitree_guide_controller/include/unitree_guide_controller/gait/WaveGenerator.h b/controllers/unitree_guide_controller/include/unitree_guide_controller/gait/WaveGenerator.h
+index 562f8b0..d4d9ca0 100644
+--- a/controllers/unitree_guide_controller/include/unitree_guide_controller/gait/WaveGenerator.h
++++ b/controllers/unitree_guide_controller/include/unitree_guide_controller/gait/WaveGenerator.h
+@@ -21,6 +21,19 @@ public:
+ 
+     ~WaveGenerator() = default;
+ 
++    /**
++     * Advance the gait using the controller clock (sim time in Gazebo). The
++     * gait phase used to follow the wall clock, which desyncs it from physics
++     * whenever the simulation does not run at exactly real time.
++     */
++    void setTime(const double now_s) {
++        if (!started_) {
++            start_s_ = now_s;
++            started_ = true;
++        }
++        now_s_ = now_s;
++    }
++
+     void update();
+ 
+     [[nodiscard]] double get_t_stance() const { return period_ * st_ratio_; }
+@@ -50,7 +63,9 @@ private:
+     VecInt4 switch_status_;
+     WaveStatus status_past_;
+ 
+-    long start_t_{};
++    double start_s_{};
++    double now_s_{};
++    bool started_{false};
+ };
+ 
+ 
+diff --git a/controllers/unitree_guide_controller/src/FSM/StateTrotting.cpp b/controllers/unitree_guide_controller/src/FSM/StateTrotting.cpp
+index cee96b0..5e3e6a1 100644
+--- a/controllers/unitree_guide_controller/src/FSM/StateTrotting.cpp
++++ b/controllers/unitree_guide_controller/src/FSM/StateTrotting.cpp
+@@ -18,7 +18,9 @@ StateTrotting::StateTrotting(CtrlInterfaces &ctrl_interfaces,
+                                                               wave_generator_(ctrl_component.wave_generator_),
+                                                               gait_generator_(ctrl_component) {
+     gait_height_ = 0.08;
+-    Kpp = Vec3(70, 70, 70).asDiagonal();
++    // X30: position-hold gain lowered from upstream (70); at 70 the hold loop goes
++    // unstable after the robot has turned.
++    Kpp = Vec3(20, 20, 20).asDiagonal();
+     Kdp = Vec3(10, 10, 10).asDiagonal();
+     kp_w_ = 780;
+     Kd_w_ = Vec3(70, 70, 70).asDiagonal();
+diff --git a/controllers/unitree_guide_controller/src/UnitreeGuideController.cpp b/controllers/unitree_guide_controller/src/UnitreeGuideController.cpp
+index d942831..7699ce7 100644
+--- a/controllers/unitree_guide_controller/src/UnitreeGuideController.cpp
++++ b/controllers/unitree_guide_controller/src/UnitreeGuideController.cpp
+@@ -71,6 +71,7 @@ namespace unitree_guide_controller
+         }
+ 
+         ctrl_component_.robot_model_->update();
++        ctrl_component_.wave_generator_->setTime(time.seconds());
+         ctrl_component_.wave_generator_->update();
+         ctrl_component_.estimator_->update();
+ 
+@@ -159,7 +160,8 @@ namespace unitree_guide_controller
+                 ctrl_component_.balance_ctrl_ = std::make_shared<BalanceCtrl>(ctrl_component_.robot_model_);
+             });
+ 
+-        ctrl_component_.wave_generator_ = std::make_shared<WaveGenerator>(0.45, 0.5, Vec4(0, 0.5, 0.5, 0));
++        ctrl_component_.wave_generator_ = std::make_shared<WaveGenerator>(
++            0.25, 0.5, Vec4(0, 0.5, 0.5, 0)); // X30: upstream's 0.45 s period is unstable
+ 
+         return CallbackReturn::SUCCESS;
+     }
+diff --git a/controllers/unitree_guide_controller/src/control/BalanceCtrl.cpp b/controllers/unitree_guide_controller/src/control/BalanceCtrl.cpp
+index 5565f5d..3797e28 100644
+--- a/controllers/unitree_guide_controller/src/control/BalanceCtrl.cpp
++++ b/controllers/unitree_guide_controller/src/control/BalanceCtrl.cpp
+@@ -21,6 +21,9 @@ BalanceCtrl::BalanceCtrl(const std::shared_ptr<QuadrupedRobot> &robot) {
+ 
+     pcb_ = Vec3(0.0, 0.0, 0.0);
+     Ib_ = Vec3(0.0792, 0.2085, 0.2265).asDiagonal();
++    // X30: body inertia above is for a Go1-size robot; the X30 is much heavier.
++    // x10 keeps attitude control stable while walking and turning.
++    Ib_ *= 10.0;
+ 
+     Vec6 s;
+     Vec12 w, u;
+diff --git a/controllers/unitree_guide_controller/src/control/Estimator.cpp b/controllers/unitree_guide_controller/src/control/Estimator.cpp
+index 8c9ffea..0dffaa2 100644
+--- a/controllers/unitree_guide_controller/src/control/Estimator.cpp
++++ b/controllers/unitree_guide_controller/src/control/Estimator.cpp
+@@ -154,6 +154,21 @@ void Estimator::update() {
+     Q = QInit_;
+     R = RInit_;
+ 
++    Quat quat;
++    quat << ctrl_interfaces_.imu_state_interface_[0].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[1].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[2].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[3].get().get_optional().value();
++    rotation_ = quatToRotMat(quat);
++
++    gyro_ << ctrl_interfaces_.imu_state_interface_[4].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[5].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[6].get().get_optional().value();
++
++    acceleration_ << ctrl_interfaces_.imu_state_interface_[7].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[8].get().get_optional().value(),
++            ctrl_interfaces_.imu_state_interface_[9].get().get_optional().value();
++
+     foot_poses_ = robot_model_->getFeet2BPositions();
+     foot_vels_ = robot_model_->getFeet2BVelocities();
+     feet_h_.setZero();
+@@ -177,25 +192,15 @@ void Estimator::update() {
+             R(24 + i, 24 + i) =
+                     (1 + (1 - trust) * large_variance_) * RInit_(24 + i, 24 + i);
+         }
+-        feet_pos_body_.segment(3 * i, 3) = Vec3(foot_poses_[i].p.data);
+-        feet_vel_body_.segment(3 * i, 3) = Vec3(foot_vels_[i].data);
++        // The filter state is in the world frame, so the foot measurements must be too:
++        // rotate by the IMU attitude and add the body-rotation term (omega x r).
++        // (Feeding body-frame values only works while the robot faces +x, i.e. never after turning.)
++        const Vec3 foot_p_b(foot_poses_[i].p.data);
++        const Vec3 foot_v_b(foot_vels_[i].data);
++        feet_pos_body_.segment(3 * i, 3) = rotation_ * foot_p_b;
++        feet_vel_body_.segment(3 * i, 3) = rotation_ * (foot_v_b + gyro_.cross(foot_p_b));
+     }
+ 
+-    Quat quat;
+-    quat << ctrl_interfaces_.imu_state_interface_[0].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[1].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[2].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[3].get().get_optional().value();
+-    rotation_ = quatToRotMat(quat);
+-
+-    gyro_ << ctrl_interfaces_.imu_state_interface_[4].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[5].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[6].get().get_optional().value();
+-
+-    acceleration_ << ctrl_interfaces_.imu_state_interface_[7].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[8].get().get_optional().value(),
+-            ctrl_interfaces_.imu_state_interface_[9].get().get_optional().value();
+-
+     u_ = rotation_ * acceleration_ + g_;
+     x_hat_ = A * x_hat_ + B * u_;
+     y_hat_ = C * x_hat_;
+diff --git a/controllers/unitree_guide_controller/src/gait/WaveGenerator.cpp b/controllers/unitree_guide_controller/src/gait/WaveGenerator.cpp
+index 2dfb224..5bdbcc8 100644
+--- a/controllers/unitree_guide_controller/src/gait/WaveGenerator.cpp
++++ b/controllers/unitree_guide_controller/src/gait/WaveGenerator.cpp
+@@ -30,7 +30,6 @@ WaveGenerator::WaveGenerator(const double period, const double st_ratio, const V
+             exit(-1);
+         }
+     }
+-    start_t_ = getSystemTime();
+ }
+ 
+ auto WaveGenerator::update() -> void {
+@@ -67,7 +66,7 @@ auto WaveGenerator::update() -> void {
+ void WaveGenerator::calcWave(Vec4 &phase, VecInt4 &contact, const WaveStatus status) {
+     switch (status) {
+         case WaveStatus::WAVE_ALL: {
+-            const double past_t = static_cast<double>(getSystemTime() - start_t_) * 1e-6;
++            const double past_t = now_s_ - start_s_;
+             for (int i(0); i < 4; ++i) {
+                 normal_t_(i) =
+                         fmod(past_t + period_ - period_ * bias_(i), period_) / period_;

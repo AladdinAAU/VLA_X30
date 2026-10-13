@@ -1,0 +1,1177 @@
+                                       MapNav: A Novel Memory Representation via Annotated Semantic Maps
+                                                               for Vision-and-Language Navigation
+
+                                       Lingfeng Zhang1,2,3,* Xiaoshuai Hao2,, Qinwen Xu2,6                      Qiang Zhang1,4
+
+                                       Xinyao Zhang1 Pengwei Wang2 Jing Zhang5 Zhongyuan Wang2
+
+                                       Shanghang Zhang2,6, Renjing Xu1,
+
+                                       1The Hong Kong University of Science and Technology (Guangzhou)
+                                        2 Beijing Academy of Artificial Intelligence, 3 Tsinghua University
+                                            4Beijing Innovation Center of Humanoid Robotics Co., Ltd.
+                                                   5 School of Computer Science, Wuhan University
+                                           6 State Key Laboratory of Multimedia Information Processing,
+
+                                                    School of Computer Science, Peking University
+
+arXiv:2502.13451v5 [cs.RO] 9 May 2026                        Abstract                           User  Instruction: "Go past the white chairs on the left and into the
+                                                                                                      kitchen. Right before you get to the fridge turn right and then
+                                            Vision-and-language navigation (VLN) is a key             turn left and wait right by the door on the left. "
+                                            task in Embodied AI, requiring agents to nav-
+                                            igate diverse and unseen environments while               Start
+                                            following natural language instructions. Tradi-
+                                            tional approaches rely heavily on historical ob-                    Kitchen
+                                            servations as spatio-temporal contexts for deci-                                                   End
+                                            sion making, leading to significant storage and
+                                            computational overhead. In this paper, we intro-    Timestep = 0    Timestep = 35   Timestep = 63
+                                            duce MapNav, a novel end-to-end VLN model             MapNav Agent      Trajectory     Observations
+                                            that leverages Annotated Semantic Map (ASM)
+                                            to replace historical frames. Specifically, our     Figure 1: Illustration of our Annotated Semantic
+                                            approach constructs a top-down semantic map         Map (ASM). At each timestep, MapNav agent lever-
+                                            at the start of each episode and update it at each  ages egocentric observations to capture semantic objects
+                                            timestep, allowing for precise object mapping       and assign explicit textual labels to key regions, creating
+                                            and structured navigation information. Then,        the ASM for the current moment. ASM provides infor-
+                                            we enhance this map with explicit textual la-       mation such as physical obstacles, explored regions, the
+                                            bels for key regions, transforming abstract se-     agent's current position, trajectory and semantic objects.
+                                            mantics into clear navigation cues and gener-
+                                            ate our ASM. MapNav agent using the con-            tion of embodied AI and multimodal understand-
+                                            structed ASM as input, and use the powerful         ing (Hao et al., 2025b; Ji et al., 2025; Tang et al.,
+                                            end-to-end capabilities of VLM to empower           2025), empowering autonomous agents to interpret
+                                            VLN. Extensive experiments demonstrate that         natural language instructions and navigate complex,
+                                            MapNav achieves state-of-the-art (SOTA) per-        unseen environments. Unlike traditional navigation
+                                            formance in both simulated and real-world en-       tasks that rely solely on visual input or predeter-
+                                            vironments, validating the effectiveness of our     mined waypoints, VLN requires a complex blend
+                                            method. Moreover, we will release our ASM           of language understanding and visual perception.
+                                            generation source code and dataset to ensure        For example, agents must interpret subtle instruc-
+                                            reproducibility, contributing valuable resources    tions (Vasudevan et al., 2021; An et al., 2024; Chen
+                                            to the field. We believe that our proposed Map-
+                                            Nav can be used as a new memory representa-
+                                            tion method in VLN, paving the way for future
+                                            research in this field.
+
+                                       1 Introduction
+
+                                       Vision-and-language Navigation (VLN) (Gu et al.,
+                                       2022; Park and Kim, 2023) is a crucial integra-
+
+                                           * Co-first Authors.
+                                          lfzhang715@gmail.com, xshao@baai.ac.cn
+                                           Project Leader.
+
+                                             Corresponding Authors.
+                                          renjingxu@hkust-gz.edu.cn, shanghang@pku.edu.cn
+et al., 2024) such as "walk past the potted plants     powerful end-to-end capabilities of VLM to en-
+and turn left in front of the wooden cabinet", while   hance vision-and-language navigation. Extensive
+also processing dynamic visual scenes and making       experiments highlight the pivotal role of ASM in
+real-time navigation decisions.                        VLN tasks, showcasing memory representation ca-
+                                                       pabilities that are comparable to traditional histor-
+   Existing VLN methods can be classified into         ical frame-based approaches. Additionally, ASM
+discrete and continuous navigation paradigms, pri-     enables VLMs to develop structured spatial under-
+marily distinguished by their representations of ac-   standing and optimize path selection effectively.
+tion space. Discrete environment navigation meth-      These advantages make ASM a promising method
+ods leverage MP3D (Chang et al., 2017) and ab-         for enhancing navigation performance in various
+stract the navigation space into a connected graph     environments. We will release a dataset contain-
+structure for waypoint selection. While these meth-    ing 1 Million step-wise samples, featuring RGB
+ods have demonstrated impressive performance on        frames, corresponding ASMs, VLN instructions,
+benchmark datasets (Shah et al., 2023; Zhou et al.,    and frame-specific actions to promote this field.
+2024; Long et al., 2024b), they fail to reflect the    We believe that our proposed MapNav can serve
+continuity of real-world navigation. To address        as an innovative memory representation method in
+this gap, the Habitat simulator (Savva et al., 2019)   VLN, paving the way for future advancements in
+and benchmarks like R2R-CE (Krantz et al., 2020)       this field. Our main contributions are summarized
+and RxR-CE (Ku et al., 2020a) have enabled re-         as follows:
+search in continuous navigation. Moreover, to mini-
+mize the sim-to-real gap, Habitat implements a low-       · We propose a novel end-to-end VLM-based
+level action space with forward movement and ro-             vision-and-language navigation model, Map-
+tational actions. Existing continuous environment            Nav, which leverages Annotated Seman-
+navigation methods (Zhang et al., 2024a; Zheng               tic Maps for innovative memory representa-
+et al., 2024) heavily rely on historical robot obser-        tion, effectively replacing traditional historical
+vations as spatio-temporal contexts for decision-            frames.
+making and instruction following. However, these
+approaches significantly increase storage require-        · We introduce a top-down Annotated Semantic
+ments and lack a structured understanding of past            Map (ASM) that we update at each timestep,
+trajectories. Therefore, designing a novel mem-              enabling precise object mapping and struc-
+ory representation to effectively replace traditional        tured navigation, while enhancing it with ex-
+historical frames is of great significance and thus          plicit textual labels for key regions to provide
+becomes the motivation for our work.                         clear navigation cues.
+
+   To fill this gap, we propose a novel end-to-           · MapNav outperforms state-of-the-art (SOTA)
+end VLM-based VLN model, MapNav, which                       methods in both simulated and real-world en-
+leverages Annotated Semantic Maps for innova-                vironments, offering a new memory represen-
+tive memory representation, effectively replacing            tation in VLN and paving the way for future
+traditional historical frames. Specifically, we first        research in the field.
+transform RGB-D and pose data into point cloud
+representations to generate precise top-down visu-        · We will release our ASM generation source
+alizations. Then, we align semantic segmentation             code and dataset, allowing for the repro-
+to construct a base semantic map, which is fur-              ducibility of the results presented in this study,
+ther enhanced into an Annotated Semantic Map                 which will serve as a valuable contribution to
+(ASM) by integrating explicit textual annotations            the field.
+for salient regions and abstract semantic concepts.
+As shown in Fig. 1, the ASM is initialized at the      2 Related Work
+beginning of each episode and updated at each
+timestep for real-time operation. It encapsulates      Vision-and-Language Navigation Vision-and-
+crucial environmental information for navigation,      Language Navigation (VLN) (Gu et al., 2022; Park
+including physical obstacle distributions, explored    and Kim, 2023) in embodied AI (Li et al., 2024b;
+areas, agent position, historical trajectories, and    Zhang et al., 2025; Hao et al., 2025a) focuses on
+semantic object locations. The MapNav agent uti-       navigating unseen environments by following hu-
+lizes the constructed ASM as input, harnessing the     man instructions, primarily in discretized simulated
+                                                       scenarios (Ku et al., 2020b; Thomason et al., 2020).
+                                                       Agents navigate between predefined nodes on a
+                                              Visual                                    Multi-Modal          Image Tokens
+                                             Encoder                                      Projector
+
+                          Observation at t                        Image Feature
+
+                          semantic              Map                                     Multi-Modal          Map Tokens
+                                              Encoder                                     Projector
+
+Map Construction          ASM at t           Tokenizer            Map Feature
+
+"You are standing in a             User's                                        ...    Text Tokens
+room ... On your left           Instruction
+there is an bed, on your                     . . . </TASK> <OBS>          </OBS> <MAP>               </MAP>
+right there is an table   <TASK>
+with a flower vase, in-
+front of you there is an                                          MapNav
+close door. Now walk
+to the door, that's your
+end point. "
+
+                          Output      Move   Turn                 Turn                    Trainable
+                          Actions   Forward  Left                 Right   Stop
+
+                                                                                         Frozen in Training
+
+Figure 2: An overview of MapNav framework. We present a top-down Annotated Semantic Map (ASM), updated
+at each timestep for precise object mapping and structured navigation. It features explicit textual labels for key
+regions, providing clear navigation cues. The current RGB observation, ASM, and instruction are used as inputs to
+an end-to-end VLM framework, which generates navigation actions in natural language.
+
+graph by integrating language and visual input (Qi       This paper introduces a novel memory representa-
+et al., 2020; Liu et al., 2024), but this reliance com-  tion using Annotated Semantic Maps (ASMs) to
+plicates real-world deployment. To address this,         effectively replace traditional historical frames.
+VLNs for Continuous Environments (VLN-CE)
+(Krantz et al., 2020; Savva et al., 2019) enable un-     Map Representations for VLN Structured maps
+restricted navigation through low-level control or       in VLN enhance navigation performance by im-
+waypoint-based methods (Hong et al., 2022; Krantz        proving environmental understanding (Wang et al.,
+et al., 2021), improving sim-to-real transferability     2023; Hong et al., 2023; Hao et al., 2024a, 2025c,
+despite added complexity. Recent advancements            2024b). Methods like MC-GPT (Zhan et al., 2024)
+in vision-language models have significantly in-         and VoroNav (Wu et al., 2024) utilize topological
+fluenced VLN development, utilizing large-scale          maps to capture viewpoints and spatial relation-
+pre-trained models (Zhang et al., 2024a; Zheng           ships, while InstructNav (Long et al., 2024a) and
+et al., 2024; Wu et al., 2025) and VLN-specific pre-     VLFM (Yokoyama et al., 2024) create value maps
+training (Hao et al., 2020; Wu et al., 2022). For in-    for waypoint selection. Semantic maps (Zhang
+stance, NavGPT (Zhou et al., 2024) autonomously          et al., 2024c,b; Hong et al., 2023; Yu et al., 2023) re-
+generates actions using GPT-4o, while DiscussNav         tain object-level information for navigation. How-
+(Long et al., 2024b) employs VLN experts to re-          ever, these maps are often not interpretable by
+duce human involvement. InstructNav (Long et al.,        VLMs. To address this, we propose Annotated
+2024a) decomposes navigation into subtasks, and          Semantic Map (ASM), a novel semantic map repre-
+Nav-CoT (Lin et al., 2024) uses Chain of Thoughts        sentation that allows VLMs to explicitly understand
+(CoT) (Wei et al., 2022) for environmental simula-       rich map information, including obstacle distribu-
+tion. Some methods (Zheng et al., 2024; Zhang            tions, explored areas, agent positions, historical
+et al., 2024a) fine-tune VLMs for specific nav-          trajectories, and semantic object locations. ASM
+igation tasks, highlighting flexibility. However,        aims to establish a new memory representation for
+existing approaches often depend on hierarchical         VLN.
+prompts or historical frames, leading to high mem-
+ory demands and limited understanding of past data.
+                          Semantic                             Plant   Align                            Label
+                       Segmentation                                   Project                          Annotate
+                                                                Sofa
+RGB Image at t                                                  Bed
+                                     Masked Objects at t
+                          Depth to
+                        Point Cloud
+
+                                                                               Plant  Sofa Bed
+
+Depth Image at t                     3D Point Cloud at t                       Semantic Map at t                  Annotated Semantic Map at t
+
+Figure 3: ASM Generation Process. Semantic map generation starts with episode initialization. At each timestep,
+the RGB image is processed by a semantic segmentation module to create a semantic mask aligned with the
+depth-converted 3D point cloud. By combining this with the previous pose transformation, we project the 3D point
+cloud onto a 2D plane to update the semantic map. Finally, we convert the semantic map into the ASM through
+region clustering and text annotation, yielding a comprehensive memory representation with labeled objects.
+
+3 Methodology                                                                  struction to directly generate executable navigation
+                                                                               actions. Specifically, we first extract the object
+MapNav pursues a novel end-to-end vision-and-                                  mask from the current observation Xt using a se-
+language navigation model based on VLM, lever-                                 mantic segmentation module, then construct the
+aging Annotated Semantic Maps (ASM) to replace                                 semantic map by integrating the depth image and
+traditional historical frames. We introduce a top-                             pose. To enhance readability for the VLM, we
+down annotated semantic map at the start of each                               generate Annotated Semantic Maps. We then em-
+episode, updating it at each timestep for precise                              ploy a two-stream encoder to process the observa-
+object mapping and structured navigation informa-                              tion and ASM features separately, followed by a
+tion, while enhancing it with textual labels for key                           multi-modal projector to align these modalities in
+regions to clarify navigation cues. The MapNav                                 a shared embedding space. Finally, we concatenate
+agent uses the constructed ASM as input, harness-                              the instruction tokens with the aligned features and
+ing VLM's powerful end-to-end capabilities to en-                              input them into the VLM, which outputs executable
+hance vision-and-language navigation (VLN). The                                navigation actions in text format. The detailed ar-
+framework overview of MapNav is shown in Fig. 2.                               chitectural designs are described as follows.
+
+3.1 Task Definition                                                            Annotated Semantic Maps (ASM) Generation.
+
+Vision-and-language Navigation in continuous en-                               The generation process of our ASM is shown in
+vironments (VLN-CE) refers to a task in which an
+agent navigates continuous 3D environments us-                                 Fig. 3. We employ a semantic mapping system to
+ing natural language instructions as guidance. The
+input to a VLN-CE agent comprises two key com-                                 create a rich environmental representation using a
+ponents: (1) a natural language instruction I that
+specifies the desired navigation path (e.g., "Walk                             multi-channel tensor M of dimensions C ×W ×H,
+down the hallway, turn right at the plant, and stop
+at the third door on your left"), and (2) a sequence                           where C = Cn + 4 and n represents distinct object
+of first-person RGB observations Xt collected as
+the agent navigates through the environment. At                                categories. The foundational channels (1-4) encode
+each timestep t, the agent must predict a continuous
+action at+1  A that defines its next movement,                                 navigational information: physical obstacles, ex-
+where A denotes the low-level action repertoire.
+The agent must execute these actions sequentially                              plored regions, the agent's current position, and
+until it determines that it has reached the target
+destination specified in the instruction.                                      historical locations, while the remaining n chan-
+
+3.2 Our MapNav Agent                                                           nels store object-specific semantic information. At
+
+Our MapNav agent uses the current RGB obser-                                   the start of each navigation episode, we initialize a
+vation, Annotated Semantic Maps (ASM), and in-
+                                                                               new  semantic      map  with  the  agent  at  (  W  ,  H  ).    The
+                                                                                                                                2     2
+
+                                                                               map is constructed by transforming RGB-D data
+
+                                                                               into point clouds, which are projected onto a 2D
+
+                                                                               plane for a top-down view. By aligning seman-
+
+                                                                               tic segmentation masks with point cloud data, we
+
+                                                                               achieve accurate object-wise mapping in the dedi-
+
+                                                                               cated channels.
+
+                                                                               Remarks: A key innovation in our approach is
+                                                                               the generation of ASM following semantic map
+                                                                               construction, enhancing traditional representations
+with explicit natural language annotations. The        User: Please describe this map such as what objects you can see, and tell me where you are and what
+ASM generation pipeline involves two main stages:      direction you are facing and the nearest object.
+(1) semantic region identification via connected
+component analysis on each object-specific chan-                                     Assistant: This map appears to be a simplified layout of a space, possibly a
+nel, and (2) centroid computation for these re-                                      building or an area with walls or boundaries (depicted in dark gray) and open
+gions to determine optimal text placement. For                                       spaces or pathways (in lighter gray). Location: You are represented by the
+each semantic region exceeding the minimum area                                      triangle icon on the map, currently on the blue path. Direction: You are facing
+threshold  , we compute its geometric centroid                                       northeast, as the triangle is pointing in that direction. The nearest object is
+to establish a text anchor point, ensuring optimal                                   likely the boundary or wall directly to your left as per the map.
+annotation placement and readability while pre-
+serving visual clarity. As shown in Fig. 3, the        Original Top-Down Map   Assistant: The image is a map with a blue line running through it. The line
+resulting ASM transforms abstract semantic repre-                              appears to be a path or route, possibly a road or a train track. The map is not
+sentations into linguistically grounded spatial in-                            detailed enough to identify specific locations or landmarks. However, the blue
+formation (e.g., "chair", "plant", "bed"), bridging                            arrow on the map indicates the direction of travel or movement along this route.
+spatial understanding and natural language com-
+prehension. This explicit textual grounding allows                             Assistant: This appears to be a simplified map, possibly representing a
+the VLM to leverage its pre-trained knowledge of                               navigation or pathfinding layout with a red path traced on it. Your position is
+object-language relationships, facilitating intuitive                          marked near the starting point of the red path (bottom left of the image). Based
+spatial reasoning and improved navigation decision-                            on the direction of the red path, you appear to be facing toward the top-right
+making. As shown in Fig. 4, we conducted a com-                                direction. The nearest object to your current position appears to be a pink
+parative analysis of the proposed ASM against con-                             region (possibly a landmark or significant point) to your left.
+ventional top-down and semantic maps in simulator.
+To evaluate comprehension, we input these three        Semantic Map            Assistant: The image appears to be a map, possibly a topographical or satellite
+map representations into both GPT-4o and Map-                                  image. The main focus is on the path of an orange arrow that seems to be
+Nav. The results clearly demonstrate that the VLM                              pointing in one direction. The arrow is located near the center of the image and
+exhibits superior understanding when processing                                extends from the middle to the right side. There are also some green and pink
+ASM compared to traditional mapping approaches,                                areas visible on the map, which could represent different types of terrain or
+validating our linguistic augmentation strategy. The                           land use. However, without more specific details, it is difficult to determine the
+ASM generation process fundamentally transforms                                exact location or purpose of this map.
+the traditional semantic mapping paradigm by in-
+troducing a novel layer of linguistic information                              Assistant: This map appears to represent a layout of a space with labeled
+that aligns with the VLM's pre-trained capabilities,                           objects. Two beds are labeled, one on the left and another on the right side of
+enabling more effective multi-modal reasoning in                               the map. Two potted plants are marked, one near the center and another closer
+navigation tasks. Appendix H demonstrates that                                 to the bottom left. A toilet is labeled on the right side of the map. A red line
+our ASM successfully directs the attention of the                              seems to indicate a path connecting the objects. Based on the map, you are
+VLM towards the textual labels.                                                currently located near the bottom-center of the map, next to one of the potted
+Inputs Encoding. MapNav utilizes an advanced                                   plants. The nearest object to your position is the potted plant.
+vision-language architecture based on LLaVA-
+Onevision (Li et al., 2024a). At each timestep t,      Annotated Semantic Map  Assistant: The map is a simple drawing of a scene with various objects. There
+we process two primary visual inputs: the observa-                 (Ours)      are two beds, one located towards the left side and another towards the right side
+tion frame Xt and the ASM Mt. These inputs are                                 of the map. A toilet is also present in the scene, situated near the right edge of
+concurrently handled by a shared vision encoder,                               the map. An arrow is drawn on the map, pointing to the left side of the map,
+followed by modality-specific projectors for opti-                             possibly indicating a direction. I am closest to the potted plant.
+mal feature alignment. Employing a SigLIP (Zhai
+et al., 2023) vision encoder, we derive initial vi-    Figure 4: Comparison of different VLM's understanding
+sual embeddings for both inputs. The observation       of different map formats includes top-down, semantic
+frame produces Xt  RN×D, where N represents            map and our ASM.
+the number of image patches and D is the model's
+hidden dimension. Similarly, the ASM generates                                 Ft = spatial(Xt, G),
+XtM  RN×D. Both visual features undergo paral-
+lel spatial-aware transformations through a patch                              FM t = spatial(XtM , G),  (1)
+merge operation:
+                                                       where spatial denotes our spatial unpadding patch
+                                                       merge function and G defines the grid pinpoints for
+                                                       feature extraction. The features are subsequently
+                                                       projected into the language model's embedding
+                                                       space using modality-specific MLP projector:
+
+                                                       Et = Pmoblsp(Ft), EM t = Pmmlapp(FtM ), (2)
+
+                                                       where Et, EM t  RN×C , with C as the language
+                                                       model's hidden dimension. The projections Pmoblsp
+                                                       and Pmmlapp are two-layer MLPs with GELU activa-
+                                                       tion. The final multimodal representation is formed
+                                                       by concatenating the encoded observations and
+                                                       map features, along with special tokens for task
+                                                       structuring:
+
+                                                               Vt = [TASK; Et; OBS; EtM ; MAP]. (3)
+                                                       This unified representation seamlessly integrates
+                                                       multiple input modalities while preserving essential
+                                                       spatial relationships for navigation. By employing
+                                                       efficient token management and precision optimiza-
+                                                       tion, the encoding process ensures computational
+                                                       efficiency while maximizing the model's capacity
+                                                       to represent complex navigation scenarios.
+                                                       Action Prediction. Our framework implements
+                                                       a fully end-to-end Action Prediction strategy that
+                                                       directly generates navigation commands in natu-
+                                                       ral language form. Unlike traditional approaches
+Table 1: Comparison with state-of-the-art methods on the Val-Unseen split of R2R-CE and RxR-CE.  indicates
+methods using the waypoint predictor. Cur. RGB and His. RGB refer to methods utilize current and historical
+RGB frames, respectively.  indicates that we reproduced the results using the open-source code. Pano. represents
+methods utilize panoramic views.
+
+                                         Observation                  R2R Val-Unseen         RxR Val-Unseen
+
+Method                          Cur. RGB Pano. Depth Odo. His. RGB NE  OS  SR  SPL  NE  SR  SPL  nDTW 
+
+HPN+DN                                                                6.31 40.0 36.0 34.0 -  --              -
+CMA
+VLNBERT                                                               6.20 52.0 41.0 36.0 8.76 26.5 22.1 47.0
+Sim2Sim
+GridMM                                                                5.74 53.0 44.0 39.0 8.98 27.0 22.6 46.7
+Ego2-Map
+DreamWalker                                                           6.07 52.0 43.0 36.0 -  --              -
+Reborn
+ETPNav                                                                5.11 61.0 49.0 41.0 -  --              -
+HNR
+BEVBert                                                               5.54 56.0 47.0 41.0 -  --              -
+HAMT+ScaleVLN
+                                                                      5.53 59.0 49.0 44.0 -  --              -
+
+                                                                      5.40 57.0 50.0 46.0 5.98 48.6 42.0 63.3
+
+                                                                      4.71 65.0 57.0 49.0 5.64 54.7 44.8 61.9
+
+                                                                      4.42 67.0 61.0 51.0 5.50 56.3 46.7 63.5
+
+                                                                      4.57 67.0 59.0 50.0 4.00 68.5 - 69.6
+
+                                                                      4.80 - 55.0 51.0 -     --              -
+
+AG-CMTP                                                               7.90 39.0 23.0 19.0 -  --              -
+R2R-CMTP
+LAW                                                                   7.90 38.0 26.0 22.0 -  --              -
+CM2
+WS-MGMap                                                              6.83 44.0 35.0 31.0 10.90 8.0 8.0 38.0
+AO-Planner
+Seq2Seq                                                               7.02 41.0 34.0 27.0 -  --              -
+CMA
+RGB-Seq2Seq                                                           6.28 47.0 38.0 34.0 -  --              -
+RGB-CMA
+                                                                      5.55 59.0 47.0 33.0 7.06 43.3 30.5 50.1
+
+                                                                      7.77 37.0 25.0 22.0 12.10 13.9 11.9 30.8
+
+                                                                      7.37 40.0 32.0 30.0 -  --              -
+
+                                                         10.10 8.0 0.0 0.0 -                 --              -
+
+                                                                      9.55 10.0 5.0 4.0 -    --              -
+
+NaVid (All RGB Frames)                                                5.47 49.1 37.4 35.9 8.41 23.8 21.2 -
+
+NaVid (Cur. RGB)                                                      8.10 24.9 13.0 7.8 11.33 8.7 6.8       -
+
+MapNav(w/o ASM + Cur. RGB)                                            7.26 41.2 27.1 23.5 9.31 15.6 12.2 30.9
+
+MapNav(w/ ASM + Cur. RGB)                                             5.92 50.3 36.5 34.3 8.95 22.1 20.2 35.6
+
+MapNav(w/ ASM + Cur. RGB + 2 His. RGB)                                5.43 53.0 39.7 37.2 7.62 32.6 27.7 43.5
+
+Table 2: Comparison in diverse real-world environments scenes (Meeting Room, Office, Lecture Hall, Tea Room, and
+Living Room). Simple I.F. and Semantic I.F. indicate simple and semantic instruction following tasks, respectively.
+Our MapNav outperforms all the baselines in both simple instructions and semantic instructions.
+
+                  Meeting Room   Office                 Lecture Hall  Tea Room               Living Room
+
+             Simple I.F. Semantic I.F. Simple I.F. Semantic I.F. Simple I.F. Semantic I.F. Simple I.F. Semantic I.F. Simple I.F. Semantic I.F.
+
+Method       SR NE SR NE SR NE SR NE SR NE SR NE SR NE SR NE SR NE SR NE
+
+WS-MGMap 50% 1.62 20% 2.83 60% 1.21 30% 3.11 60% 0.95 20% 3.63 50% 1.11 20% 2.93 70% 0.62 40% 2.86
+
+Navid        70% 0.86 50% 1.93 70% 1.59 60% 1.99 60% 0.75 40% 2.94 80% 0.35 50% 1.61 60% 2.13 30% 3.83
+
+MapNav(Ours) 70% 0.73 60% 1.32 80% 0.96 60% 1.38 80% 0.82 70% 1.15 90% 0.31 70% 0.66 80% 1.03 60% 0.85
+
+that require separate action decoders, we leverage      PFORWARD = {"move forward", "proceed", ...},
+the VLM's inherent language understanding capa-         PTURN-LEFT = {"turn left", "rotate left", ...},
+bilities to directly parse navigation intentions into   PTURN-RIGHT = {"turn right", "rotate right", ...},
+discrete actions.                                       PSTOP = {"stop", "halt", "wait", ...}.
+
+   To robustly interpret the model's natural lan-       This natural language interpretation approach
+guage outputs, we employ a comprehensive pattern        presents several advantages. First, it eliminates
+matching system capable of recognizing various          the need for additional decoder networks, thereby
+linguistic expressions of the same navigational in-     simplifying the architecture. Second, it preserves
+tent:                                                   the end-to-end nature of the system, enhancing ef-
+                                                        ficiency. Finally, it offers robustness against varia-
+             A(t) = (T (t), P),          (4)            tions in language expression. Pattern matching
+                                                        is achieved through case-insensitive regular ex-
+where T (t) denotes the model's text output at time     pressions that accommodate various word arrange-
+t, P represents our pattern matching ruleset, and       ments, which enhances the system's resilience to
+is the action parsing function that translates natural  the inherent variations in VLM's output formatting.
+language into discrete actions. For each action
+type, we maintain a comprehensive collection of
+synonymous expressions:
+4 Experiments                                          Table 3: Memory consumption and average process-
+                                                       ing time comparison between Navid and MapNav (our
+4.1 Experimental Details                               method) across different numbers of navigation steps.
+
+Dataset. We constructed a comprehensive dataset        Method          1 Step  Memory Consumption            Avg. Time
+of approximately 1 Million training pairs using a                              10 Steps 100 Steps 300 Steps
+hybrid collection strategy, which includes ground      Navid          0.92MB                                     1.22s
+truth trajectories from the R2R and RxR datasets       MapNav (Ours)  0.17MB    9.2 MB 92 MB 276 MB              0.25s
+(300k pairs from both), DAgger-collected data                                  0.17MB 0.17MB 0.17MB
+(200k pairs from both), and specialized collision
+recovery samples (25k pairs from both). This           For detailed experimental details, see Appendix B.
+approach ensures diverse coverage of navigation
+scenarios and incorporates samples from general        4.2 Comparisons with SOTA Methods
+vision-language tasks for co-training.
+                                                       Results in Simulated Environment. To evaluate
+   For fair comparison, we trained on 500k pairs       cross-dataset performance, we firstly train solely
+from R2R and evaluated Zero-Shot capability on         on R2R samples and then assess its zero-shot per-
+RxR, in addition to conducting separate training       formance on the RxR Val-Unseen split. To ensure
+and evaluation on the RxR dataset. Detailed strate-    fairness and consistency in our comparison, we
+gies for dataset construction are provided in Ap-      first conducted experiments on single-frame RGB,
+pendix A.                                              where MapNav (w/o ASM + Cur. RGB) denotes
+Simulated Environments. We evaluate our Map-           MapNav without ASM, and NaVid (Cur. RGB)
+Nav agent using the VLN-CE benchmark in Habi-          refers to NaVid without historical frames. As
+tat, which offers a continuous environment for         shown in Tab. 1, we achieved improvements of
+navigation in reconstructed, photo-realistic indoor    14.1% in SR and 15.7% in SPL for R2R, and 6.9%
+scenes. We focus on the val-unseen split of the R2R    in SR and 5.4% in SPL for RxR. After incorporat-
+and RxR datasets in VLN-CE, which are two of the       ing ASM, MapNav (w/ ASM + Cur. RGB), which
+most recognized benchmarks in VLN, comprising          uses single-frame RGB images and ASM as input,
+1,839 and 1,517 episodes, respectively.                shows improvements of 23.5% in SR and 26.5% in
+Real-world environments. To evaluate the sim-          SPL for R2R compared to Navid (Cur. RGB).
+to-real performance of our model, we designed
+diverse real-world experiments featuring 50 instruc-      Furthermore, our performance is competitive
+tions across five environments: office, conference     with Navid (All Frames), demonstrating that ASM
+room, lecture hall, living room, and tea room. Sim-    effectively serves as a new historical representa-
+ple instructions require basic actions like moving     tion method for large models, replacing traditional
+forward and turning, while semantic instructions       historical frames.
+involve navigating to specific objects (e.g., "move
+forward to the refrigerator and then turn right").        After incorporating just two historical RGB
+Metrics. We utilize several widely used evalua-        frames and training on both R2R and RxR, Map-
+tion metrics for VLN tasks: Navigation Error (NE),     Nav (w/ ASM + Cur. RGB + 2 His.RGB) outper-
+Oracle Success rate (OS), Success Rate (SR), Suc-      forms state-of-the-art methods that use all histor-
+cess weighted Path Length (SPL), and normalized        ical frames. Specifically, compared to the previ-
+Dynamic Temporal Wrapping (nDTW). SPL is the           ous SOTA method, Navid (All RGB Frames), we
+primary metric, as it effectively reflects both navi-  achieved improvements of 2.5% in SR and 1.3% in
+gation accuracy and efficiency.                        SPL for R2R, as well as 8.8% in SR and 6.5% in
+Implementation Details. Our model is trained           SPL for RxR.
+on a cluster server with 8 NVIDIA A100 GPUs            Results in Real-World Environment. We utilize
+for about 30 hours, totaling 240 GPU hours. We         two metrics (SR and NE) to compare MapNav(w/
+employ the LLaVA-Onevision (Li et al., 2024a) ar-      ASM + Cur. RGB) with WS-MGMAP (Chen et al.,
+chitecture, using Google's SigLIP-so400M (Zhai         2022) and Navid (Zhang et al., 2024a), which
+et al., 2023) as the vision encoder, Qwen2-7B-         both use all the historical frames. As shown in
+Instruct (Wang et al., 2024) as the language model     Tab. 2, MapNav significantly outperforms both WS-
+backbone, and Mask2Former (Cheng et al., 2022)         MGMAP and Navid in SR and NE across simple
+for semantic segmentation during ASM generation.       and semantic instructions. Specifically, our method
+                                                       surpasses Navid under the semantic instruction set-
+                                                       tings in the lecture hall and living room, where
+                                                       we improve the SR by 30% in each setting. These
+                                                       results highlight the exceptional performance of
+Table 4: Comparison of different map representation     60                                                   7.5
+methods.                                                55
+                                                        50                                  56           57 7.0
+                                                        45
+                                                        40                                                   6.5
+                                                        35
+                        VLN-CE R2R Val-Unseen           30                                                   6.0
+                       NE OS SR SPL                     25                                               41
+Method                                                  20                                  39                 5.5
+                       7.26 41.2 27.3 23.2              15
+MapNav (w/o Map)       8.93 35.1 26.4 21.9                                                  37           38 5.0
+MapNav (Original Map)  6.56 43.2 29.1 24.5                w/o ASM +
+MapNav (Semantic Map)  5.22 50.3 36.5 34.3                 Cur.RGB                                              4.3 4.5
+MapNav (ASM)                                                                                4.5
+
+                                                                                                                       4.0
+
+                                                                                                SPL      SR 3.5
+
+                                                                                                OS       NE
+
+Table 5: Comparison of different training dataset com-                                                       3.0
+position.                                                            w/ ASM +  w/ ASM + Cur.RGB w/ ASM + Cur.RGB w/ ASM + Cur.RGB
+                                                                     Cur.RGB   + 1 His.RGB  + 2 His.RGB  + 4 His.RGB
+
+Method                           VLN-CE R2R Val-Unseen  Figure 5: Comparison of MapNav using different num-
+                                NE OS SR SPL            bers of historical RGB frames. Cur. RGB and His. RGB
+MapNav (300k)                                           refer to methods using the current and historical RGB
+MapNav (300k+DAgger)            6.38 38.2 23.9 19.5     frames, respectively.
+MapNav (300k+DAgger+RxR)        6.02 46.1 33.5 30.7
+MapNav (300k+DAgger+Collision)  5.89 48.2 34.4 31.7     tion. To evaluate the impact of different training
+                                5.22 50.3 36.5 34.3     data compositions, we conducted a dataset ablation
+                                                        study with five configurations: (1) MapNav trained
+MapNav in real-world scenarios and validate the         on 100K R2R samples (baseline), (2) 300K R2R
+effectiveness of our proposed ASM.                      samples, (3) DAgger-generated samples on R2R,
+                                                        (4) integration of DAgger and RxR datasets, and
+4.3 Ablation Studies                                    (5) all previous components plus collision-aware
+                                                        training. As shown in Tab. 5, increasing from 100K
+Efficiency Analysis. For the efficiency analysis,       to 300K R2R samples resulted in substantial per-
+we compare memory consumption and inference             formance improvements. The integration of DAg-
+time between MapNav and Navid. As shown in              ger samples yielded the most significant gains, un-
+Tab. 3, MapNav demonstrates significant improve-        derscoring the importance of interactive learning.
+ments in both areas. Specifically, our semantic         The RxR dataset provided modest improvements,
+map-based method maintains a constant memory            particularly in diverse linguistic instructions. Our
+footprint of 0.17MB, regardless of trajectory length,   final configuration, with collision-aware training,
+while Navid's frame-based approach scales linearly,     achieved marginally better performance across met-
+reaching 276MB at 300 steps. This is because            rics, setting a new performance benchmark. These
+MapNav only stores and updates a compact ASM,           results highlight that data diversity and interac-
+whereas Navid accumulates all historical RGB ob-        tive learning enhance model performance, with
+servations. In terms of inference speed, MapNav         the greatest benefits stemming from ample base
+reduces average processing time by 79.5% (from          training data and DAgger augmentation.
+1.22 seconds per step to 0.25 seconds). This im-
+provement arises because MapNav only calculates         Effect of Varying Numbers of Historical RGB
+features from the current RGB frame and ASM,            Frames. We conducted a systematic ablation study
+avoiding the need to process all historical frames.     to evaluate the effect of varying historical RGB
+Effect of ASM. To validate the efficacy of our pro-     frames. As shown in Fig. 5, the most significant
+posed ASM, we conducted a comparative analysis          improvement occurs with ASM in the single cur-
+using multiple map variants. We evaluated three         rent RGB frame setting, enhancing SR from 27%
+conditions: (1) the original top-down map from the      to 36%, SPL from 23% to 34%, OS from 41% to
+simulator, (2) a semantic map with categorical in-      50%, and NE from 7.2m to 5.2m. This highlights
+formation but no textual annotations, and (3) com-      the effectiveness of our ASM-based approach in
+plete removal of map-based features. Quantitative       capturing spatial information. While adding his-
+results in Tab. 4 show a clear performance hierar-      torical RGB frames (1, 2, and 4 His.RGB) results
+chy: the RGB-only baseline performed the worst,         in gradual improvements, these gains are modest
+with moderate improvements from the original and        compared to the initial ASM integration. Notably,
+semantic map variants. The ASM outperformed             with just two historical RGB frames, our model
+all evaluated metrics, highlighting the benefits of     achieves state-of-the-art performance (SR: 39%,
+semantic enrichment and the importance of textual       SPL: 37%) compared to the baseline NaVid (Zhang
+annotations for spatial reasoning tasks.                et al., 2024a). The final configuration with four his-
+Impact of different training dataset composi-
+torical RGB frames shows only slight gains (SR:          Evolving topological planning for vision-language
+41%, SPL: 38%), indicating that the core advantage       navigation in continuous environments. IEEE Trans-
+lies in the ASM-based representation rather than         actions on Pattern Analysis and Machine Intelli-
+temporal accumulation. These findings validate           gence.
+our choice of ASM as a more efficient alternative
+to extensive historical RGB frame sequences, de-      Angel Chang, Angela Dai, Thomas Funkhouser, Maciej
+livering superior performance while maintaining          Halber, Matthias Niebner, Manolis Savva, Shuran
+computational efficiency.                                Song, Andy Zeng, and Yinda Zhang. 2017. Matter-
+                                                         port3d: Learning from rgb-d data in indoor environ-
+5 Conclusion                                             ments. In International Conference on 3D Vision,
+                                                         pages 667­676.
+In this paper, we introduce MapNav, a novel
+method using Annotated Semantic Maps (ASMs)           Jiaqi Chen, Bingqian Lin, Xinmin Liu, Lin Ma, Xiaodan
+for Vision-and-Language Navigation. It achieves          Liang, and Kwan-Yee K Wong. 2024. Affordances-
+state-of-the-art performance while significantly re-     oriented planning using foundation models for con-
+ducing memory usage compared to traditional ap-          tinuous vision-language navigation. arXiv preprint
+proaches. By converting RGB-D and pose data into         arXiv:2407.05890.
+enriched top-down maps with annotations, Map-
+Nav integrates efficiently with Vision-Language       Peihao Chen, Dongyu Ji, Kunyang Lin, Runhao
+Models. Experiments show it delivers superior nav-       Zeng, Thomas Li, Mingkui Tan, and Chuang Gan.
+igation while maintaining a constant memory foot-        2022. Weakly-supervised multi-granularity map
+print of 0.17MB, regardless of trajectory length.        learning for vision-and-language navigation. Ad-
+                                                         vances in Neural Information Processing Systems,
+Limitations                                              pages 38149­38161.
+
+While MapNav demonstrates promising results, the      Bowen Cheng, Ishan Misra, Alexander G. Schwing,
+semantic segmentation module may occasionally            Alexander Kirillov, and Rohit Girdhar. 2022.
+produce imprecise object labels under challeng-          Masked-attention mask transformer for universal im-
+ing conditions like occlusions or varying lighting.      age segmentation. In Proceedings of the IEEE/CVF
+To address this aspect, we have identified several       Conference on Computer Vision and Pattern Recog-
+promising directions for future research. First, we      nition.
+aim to explore more advanced semantic understand-
+ing approaches that can effectively handle dynamic    Jing Gu, Eliana Stefani, Qi Wu, Jesse Thomason, and
+scenes and partial observations through multi-view       Xin Wang. 2022. Vision-and-language navigation: A
+scene understanding. Second, we plan to investi-         survey of tasks, methods, and future directions. In
+gate methods to enhance real-world generalization        Proceedings of the Annual Meeting of the Association
+by leveraging the extensive real-world image data        for Computational Linguistics, pages 7606­7623.
+in VLM pre-training. Additionally, we intend to
+extend MapNav to tackle more complex embodied         Peng Hao, Chaofan Zhang, Dingzhe Li, Xiaoge Cao,
+AI tasks, such as interactive navigation and ma-         Xiaoshuai Hao, Shaowei Cui, and Shuo Wang. 2025a.
+nipulation, which will require integrating object        Tla: Tactile-language-action model for contact-rich
+affordances and physical interaction capabilities        manipulation. arXiv preprint arXiv:2503.08548.
+into the ASM representation.
+                                                      Weituo Hao, Chunyuan Li, Xiujun Li, Lawrence Carin,
+Acknowledgement                                          and Jianfeng Gao. 2020. Towards learning a generic
+                                                         agent for vision-and-language navigation via pre-
+This work was supported by the National                  training. In Proceedings of the IEEE/CVF Confer-
+Science and Technology Major Project (No.                ence on Computer Vision and Pattern Recognition,
+2022ZD0117800).                                          pages 13137­13146.
+
+References                                            Xiaoshuai Hao, Yunfeng Diao, Mengchuan Wei, Yifan
+                                                         Yang, Peng Hao, Rong Yin, Hui Zhang, Weiming
+Dong An, Hanqing Wang, Wenguan Wang, Zun Wang,           Li, Shu Zhao, and Yu Liu. 2025b. Mapfusion: A
+   Yan Huang, Keji He, and Liang Wang. 2024. Etpnav:     novel bev feature fusion network for multi-modal
+                                                         map construction. Information Fusion, 119:103018.
+
+                                                      Xiaoshuai Hao, Ruikai Li, Hui Zhang, Dingzhe Li,
+                                                         Rong Yin, Sangil Jung, Seung-In Park, ByungIn Yoo,
+                                                         Haimei Zhao, and Jing Zhang. 2024a. Mapdistill:
+                                                         Boosting efficient camera-based hd map construc-
+                                                         tion via camera-lidar fusion model distillation. In
+                                                         European Conference on Computer Vision, pages
+                                                         166­183. Springer.
+
+                                                      Xiaoshuai Hao, Guanqun Liu, Yuting Zhao, Yuheng
+                                                         Ji, Mengchuan Wei, Haimei Zhao, Lingdong
+   Kong, Rong Yin, and Yu Liu. 2025c. Msc-                Dingzhe Li, Yixiang Jin, Yuhao Sun, Hongze Yu, Jun
+   bench: Benchmarking and analyzing multi-sensor            Shi, Xiaoshuai Hao, Peng Hao, Huaping Liu, Fuchun
+   corruption for driving perception. arXiv preprint         Sun, Jianwei Zhang, et al. 2024b. What foundation
+   arXiv:2501.01037.                                         models can bring for robot learning in manipulation:
+                                                             A survey. arXiv preprint arXiv:2404.18201.
+Xiaoshuai Hao, Hui Zhang, Yifan Yang, Yi Zhou, Sangil
+   Jung, Seung-In Park, and ByungIn Yoo. 2024b. Mb-       Bingqian Lin, Yunshuang Nie, Ziming Wei, Jiaqi
+   fusion: A new multi-modal bev feature fusion method       Chen, Shikui Ma, Jianhua Han, Hang Xu, Xiaojun
+   for hd map construction. In 2024 IEEE International       Chang, and Xiaodan Liang. 2024. Navcot: Boost-
+   Conference on Robotics and Automation (ICRA),             ing llm-based vision-and-language navigation via
+   pages 15922­15928. IEEE.                                  learning disentangled reasoning. arXiv preprint
+                                                             arXiv:2403.07376.
+Yicong Hong, Zun Wang, Qi Wu, and Stephen Gould.
+   2022. Bridging the gap between learning in             Rui Liu, Wenguan Wang, and Yi Yang. 2024. Volumet-
+   discrete and continuous environments for vision-          ric environment representation for vision-language
+   and-language navigation. In Proceedings of the            navigation. In Proceedings of the IEEE/CVF Confer-
+   IEEE/CVF Conference on Computer Vision and Pat-           ence on Computer Vision and Pattern Recognition,
+   tern Recognition, pages 15439­15449.                      pages 16317­16328.
+
+Yicong Hong, Yang Zhou, Ruiyi Zhang, Franck Der-          Yuxing Long, Wenzhe Cai, Hongcheng Wang, Guanqi
+   noncourt, Trung Bui, Stephen Gould, and Hao Tan.          Zhan, and Hao Dong. 2024a. Instructnav:
+   2023. Learning navigational visual representations        Zero-shot system for generic instruction naviga-
+   with semantic map supervision. In Proceedings of the      tion in unexplored environment. arXiv preprint
+   IEEE/CVF International Conference on Computer             arXiv:2406.04882.
+   Vision, pages 3055­3067.
+                                                          Yuxing Long, Xiaoqi Li, Wenzhe Cai, and Hao Dong.
+Yuheng Ji, Huajie Tan, Jiayu Shi, Xiaoshuai Hao, Yuan        2024b. Discuss before moving: Visual language
+   Zhang, Hengyuan Zhang, Pengwei Wang, Mengdi               navigation via multi-expert discussions. In IEEE In-
+   Zhao, Yao Mu, Pengju An, et al. 2025. Robobrain: A        ternational Conference on Robotics and Automation,
+   unified brain model for robotic manipulation from ab-     pages 17380­17387.
+   stract to concrete. arXiv preprint arXiv:2502.21257.
+                                                          Sang-Min Park and Young-Gab Kim. 2023. Visual
+Glenn Jocher, Jing Qiu, and Ayush Chaurasia. 2023.           language navigation: A survey and open challenges.
+   Ultralytics YOLO.                                         Artificial Intelligence Review, pages 365­427.
+
+Jacob Krantz, Aaron Gokaslan, Dhruv Batra, Stefan         Yuankai Qi, Zizheng Pan, Shengping Zhang, Anton
+   Lee, and Oleksandr Maksymets. 2021. Waypoint              van den Hengel, and Qi Wu. 2020. Object-and-action
+   models for instruction-guided navigation in continu-      aware model for visual language navigation. In Eu-
+   ous environments. In Proceedings of the IEEE/CVF          ropean Conference on Computer Vision, pages 303­
+   International Conference on Computer Vision, pages        317.
+   15162­15171.
+                                                          Stéphane Ross, Geoffrey Gordon, and Drew Bagnell.
+Jacob Krantz, Erik Wijmans, Arjun Majumdar, Dhruv            2011. A reduction of imitation learning and struc-
+   Batra, and Stefan Lee. 2020. Beyond the nav-graph:        tured prediction to no-regret online learning. In Pro-
+   Vision-and-language navigation in continuous envi-        ceedings of the international conference on artificial
+   ronments. In European Conference on Computer              intelligence and statistics, pages 627­635.
+   Vision, pages 104­120.
+                                                          Manolis Savva, Abhishek Kadian, Oleksandr
+Alexander Ku, Peter Anderson, Roma Patel, Eugene             Maksymets, Yili Zhao, Erik Wijmans, Bhavana
+   Ie, and Jason Baldridge. 2020a. Room-across-room:         Jain, Julian Straub, Jia Liu, Vladlen Koltun, Jitendra
+   Multilingual vision-and-language navigation with          Malik, et al. 2019. Habitat: A platform for embodied
+   dense spatiotemporal grounding. In Proceedings of         ai research. In Proceedings of the IEEE/CVF
+   the Conference on Empirical Methods in Natural            International Conference on Computer Vision, pages
+   Language Processing, pages 4392­4412.                     9339­9347.
+
+Alexander Ku, Peter Anderson, Roma Patel, Eugene Ie,      Dhruv Shah, Blazej Osin´ski, Sergey Levine, et al. 2023.
+   and Jason Baldridge. 2020b. Room-across-room:             Lm-nav: Robotic navigation with large pre-trained
+   Multilingual vision-and-language navigation with          models of language, vision, and action. In Confer-
+   dense spatiotemporal grounding. In Proceedings of         ence on Robot Learning, pages 492­504.
+   the Conference on Empirical Methods in Natural
+   Language Processing, pages 4392­4412.                  Yingbo Tang, Shuaike Zhang, Xiaoshuai Hao, Pengwei
+                                                             Wang, Jianlong Wu, Zhongyuan Wang, and Shang-
+Bo Li, Yuanhan Zhang, Dong Guo, Renrui Zhang,                hang Zhang. 2025. Affordgrasp: In-context affor-
+   Feng Li, Hao Zhang, Kaichen Zhang, Peiyuan                dance reasoning for open-vocabulary task-oriented
+   Zhang, Yanwei Li, Ziwei Liu, et al. 2024a. Llava-         grasping in clutter. arXiv preprint arXiv:2503.00778.
+   onevision: Easy visual task transfer. arXiv preprint
+   arXiv:2408.03326.
+Jesse Thomason, Michael Murray, Maya Cakmak, and          Zhaohuan Zhan, Lisha Yu, Sijie Yu, and Guang Tan.
+   Luke Zettlemoyer. 2020. Vision-and-dialog navi-           2024. Mc-gpt: Empowering vision-and-language
+   gation. In Conference on Robot Learning, pages            navigation with memory map and reasoning chains.
+   394­406.                                                  arXiv preprint arXiv:2405.10620.
+
+Arun Balajee Vasudevan, Dengxin Dai, and Luc              Chaofan Zhang, Peng Hao, Xiaoge Cao, Xiaoshuai
+   Van Gool. 2021. Talk2nav: Long-range vision-and-          Hao, Shaowei Cui, and Shuo Wang. 2025. Vtla:
+   language navigation with dual attention and spatial       Vision-tactile-language-action model with preference
+   memory. International Journal of Computer Vision,         learning for insertion manipulation. arXiv preprint
+   pages 246­266.                                            arXiv:2505.09577.
+
+Peng Wang, Shuai Bai, Sinan Tan, Shijie Wang, Zhi-        Chaoning Zhang, Dongshen Han, Yu Qiao, Jung Uk
+   hao Fan, Jinze Bai, Keqin Chen, Xuejing Liu, Jialin       Kim, Sung-Ho Bae, Seungkyu Lee, and Choong Seon
+   Wang, Wenbin Ge, et al. 2024. Qwen2-vl: Enhanc-           Hong. 2023. Faster segment anything: Towards
+   ing vision-language model's perception of the world       lightweight sam for mobile applications. arXiv
+   at any resolution. arXiv preprint arXiv:2409.12191.       preprint arXiv:2306.14289.
+
+Zihan Wang, Xiangyang Li, Jiahao Yang, Yeqi Liu, and      Jiazhao Zhang, Kunyu Wang, Rongtao Xu, Gengze
+   Shuqiang Jiang. 2023. Gridmm: Grid memory map             Zhou, Yicong Hong, Xiaomeng Fang, Qi Wu,
+   for vision-and-language navigation. In Proceedings        Zhizheng Zhang, and He Wang. 2024a. Navid:
+   of the IEEE/CVF International Conference on Com-          Video-based vlm plans the next step for vision-and-
+   puter Vision, pages 15625­15636.                          language navigation. In Proceedings of Robotics:
+                                                             Science and Systems.
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten
+   Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou,         Lingfeng Zhang, Hao Wang, Erjia Xiao, Xinyao Zhang,
+   et al. 2022. Chain-of-thought prompting elicits rea-      Qiang Zhang, Zixuan Jiang, and Renjing Xu. 2024b.
+   soning in large language models. Advances in Neu-         Multi-floor zero-shot object navigation policy. arXiv
+   ral Information Processing Systems, pages 24824­          preprint arXiv:2409.10906.
+   24837.
+                                                          Lingfeng Zhang, Qiang Zhang, Hao Wang, Erjia Xiao,
+Pengying Wu, Yao Mu, Bingxian Wu, Yi Hou, Ji Ma,             Zixuan Jiang, Honglei Chen, and Renjing Xu. 2024c.
+   Shanghang Zhang, and Chang Liu. 2024. Voronav:            Trihelper: Zero-shot object navigation with dynamic
+   Voronoi-based zero-shot object navigation with large      assistance. arXiv preprint arXiv:2403.15223.
+   language model. arXiv preprint arXiv:2401.02695.
+                                                          Duo Zheng, Shijia Huang, Lin Zhao, Yiwu Zhong, and
+Siying Wu, Xueyang Fu, Feng Wu, and Zheng-Jun Zha.           Liwei Wang. 2024. Towards learning a generalist
+   2022. Cross-modal semantic alignment pre-training         model for embodied navigation. In Proceedings of
+   for vision-and-language navigation. In Proceedings        the IEEE/CVF Conference on Computer Vision and
+   of the ACM International Conference on Multimedia,        Pattern Recognition, pages 13624­13634.
+   pages 4233­4241.
+                                                          Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan
+Yujie Wu, Huaihai Lyu, Yingbo Tang, Lingfeng Zhang,          Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin,
+   Zhihui Zhang, Wei Zhou, and Siqi Hao. 2025.               Zhuohan Li, Dacheng Li, Eric Xing, et al. 2023.
+   Evaluating gpt-4o's embodied intelligence: A com-         Judging llm-as-a-judge with mt-bench and chatbot
+   prehensive empirical study. TechRxiv preprint             arena. Advances in Neural Information Processing
+   techrxiv.174495686.69962588/v1.                           Systems, pages 46595­46623.
+
+Naoki Yokoyama, Sehoon Ha, Dhruv Batra, Jiuguang          Gengze Zhou, Yicong Hong, and Qi Wu. 2024. Navgpt:
+   Wang, and Bernadette Bucher. 2024. Vlfm: Vision-          Explicit reasoning in vision-and-language navigation
+   language frontier maps for zero-shot semantic naviga-     with large language models. In Proceedings of the
+   tion. In IEEE International Conference on Robotics        AAAI Conference on Artificial Intelligence, pages
+   and Automation, pages 42­48.                              7641­7649.
+
+Bangguo Yu, Hamidreza Kasaei, and Ming Cao. 2023.
+   L3mvn: Leveraging large language models for vi-
+   sual target navigation. In IEEE/RSJ International
+   Conference on Intelligent Robots and Systems, pages
+   3554­3560.
+
+Xiaohua Zhai, Basil Mustafa, Alexander Kolesnikov,
+   and Lucas Beyer. 2023. Sigmoid loss for language
+   image pre-training. In Proceedings of the IEEE/CVF
+   International Conference on Computer Vision, pages
+   11975­11986.
+Appendix                                                 VLM, providing the model with expert demonstra-
+                                                         tion data from diverse indoor environments.
+This supplementary material provides additional          Phase II: Interactive Learning via DAgger. Fol-
+details on the proposed method and experimen-            lowing the Dataset Aggregation (DAgger) method-
+tal results that could not be included in the main       ology (Ross et al., 2011), we deployed our pre-
+manuscript due to page limitations.                      trained model to collect additional trajectory data,
+                                                         amassing approximately 200k new training pairs
+   Specifically, this appendix is organized as fol-      from both R2R and RxR environments. This phase
+lows:                                                    was crucial for two reasons: First, combining ex-
+                                                         pert trajectories with DAgger-collected data cre-
+   · Sec. A provides a comprehensive overview of         ates a more robust training dataset that reflects both
+      the dataset construction process.                  ideal navigation behavior and realistic agent inter-
+                                                         actions, including potential navigation errors and
+   · Sec. B outlines the detailed training proce-        recovery strategies. Second, this hybrid approach
+      dures used for our models.                         bridges the gap between training and deployment
+                                                         conditions, enhancing the model's ability to tackle
+   · Sec. C describes our real-world MapNav robot        novel scenarios and unexpected situations during
+      setup along with implementation specifics.         navigation.
+                                                         Phase III: Specialized Collision Recovery Data.
+   · Sec. D presents the qualitative results in both     To overcome the limitation of expert trajectories
+      the simulator and real-world environments.         rarely including collision scenarios, we supple-
+                                                         mented our dataset with specialized collision re-
+   · Sec. E showcases additional experimental re-        covery data. During the DAgger collection strat-
+      sults that further validate our findings.          egy, we specifically gathered instances where the
+                                                         agent encountered obstacles and needed recovery
+   · Sec. F offers further qualitative results specifi-  actions. This additional dataset, consisting of ap-
+      cally from the simulator.                          proximately 25k step-wise training pairs from both
+                                                         R2R and RxR, captures the agent's collision re-
+   · Sec. G provides additional qualitative results      covery behavior through rotational movements and
+      obtained from real-world scenarios.                obstacle avoidance strategies. This collision recov-
+                                                         ery subset was crucial for enhancing the model's
+   · Sec. H analyzes VLM attention visualization         robustness in deployment scenarios. While ground
+      across different map representations.              truth trajectories provide optimal navigation pat-
+                                                         terns and DAgger data captures general interaction
+A Dataset Construction                                   scenarios, the collision recovery dataset specifically
+                                                         addresses edge cases where the agent must navigate
+Motivation and Overview. Training data for VLN           obstacles. During the final fine-tuning phase, we
+tasks faces two primary challenges: limited diver-       integrated this collision recovery data with the pri-
+sity and insufficient scale. To address these chal-      mary dataset, enabling the model to learn effective
+lenges, we propose a comprehensive data collection       obstacle avoidance and recovery strategies.
+strategy that combines three complementary ap-           Overall Dataset Structure and Scale. The com-
+proaches: expert demonstrations based on ground          plete dataset composition can be formalized as:
+truth trajectories, interactive learning through DAg-
+ger, and specialized collision recovery data. This       Dtotal_R2R = Dtotal_RxR      (5)
+hybrid strategy maximizes the utility of the avail-
+able training data and significantly enhances the        = DGT  DDAgger  DCollision,
+model's generalization capabilities across diverse
+scenarios.                                               where |DGT |  |DDAgger|  200k, and
+Phase I: Expert Demonstration Collection. Ini-           |Dcollision_R2R|  |Dcollision_RxR|  25k for both
+tially, we collected around 300k high-quality train-     R2R and RxR environments respectively.
+ing pairs from both R2R and RxR datasets. Each
+step-wise pair consists of three components: the            This comprehensive dataset collection strategy
+current RGB observation frame, the corresponding         significantly improves the agent's ability to han-
+Annotated Semanti Map (ASM), and the associated          dle unforeseen obstacles and navigate challenging
+action. These pairs serve as the foundation for our
+initial supervised fine-tuning (SFT) process for the
+situations autonomously. The enhanced training                    40 cm   RealSense
+dataset, now totaling approximately 1 Million train-                         D435i
+ing pairs, offers a more complete representation of                                    MapNav on
+navigation scenarios, encompassing both optimal                           Semantic         A100
+pathfinding and practical recovery strategies. This                      Instructions
+hybrid data collection strategy substantially con-
+tributes to the model's resilience and adaptability   Real-World                       Executable
+across diverse indoor environments and navigation        Robot                           Actions
+challenges.
+Incorporating General Vision-Language                 Figure 6: The real-world MapNav robot setup.
+Datasets. To enhance our model's visual under-
+standing and general reasoning capabilities, we       to 32,768 tokens and incorporates sliding window
+implement a co-training strategy that leverages       attention with a window size of 131,072 tokens.
+both navigation-specific data and general-purpose     Training Setting. We conducted our training on 8
+vision-language datasets. Following the approach      NVIDIA A100 GPUs for approximately 30 hours,
+similar to LLaVA-OneVision (Li et al., 2024a),        totaling 240 GPU hours (500k step-wise sam-
+we incorporate a diverse set of high-quality visual   ples). During the fine-tuning process, we froze
+understanding datasets alongside our navigation       the vision encoder and only fine-tuned the multi-
+training data. Specifically, for R2R task, the        modal projector and language model components
+co-training process utilizes approximately 600k       for one epoch with a learning rate of 1e-6. We
+samples from general vision-language tasks,           utilized bfloat16 precision for training efficiency.
+which complement our 500k navigation training         The model processes images using bilinear spatial
+samples. The auxiliary dataset encompasses            pooling and selects features from the penultimate
+diverse visual understanding tasks including Visual   layer of the vision tower. For multi-modal integra-
+Question Answering (VQA) samples for enhanced         tion, we employed patch-level features without us-
+visual reasoning, multi-image reasoning tasks         ing image patch tokens or explicit image start/end
+for improved cross-image understanding and            tokens. The projector adopts a spatial unpadded
+relationship inference, and video-based tasks for     patch merge strategy to handle varying image sizes
+strengthening temporal reasoning and dynamic          effectively.
+scene comprehension. For more details, please
+refer to (Li et al., 2024a).                          C Real-World Robot Setup
+
+B Details of Training                                 As shown in Fig. 6, our real-world experi-
+                                                      ments were conducted using a Unitree Go2 Edu
+Model Setting. Our model builds upon the LLaVA-       quadrupedal robot equipped with an Intel Re-
+Onevision (Li et al., 2024a) framework and con-       alSense D435i depth camera mounted 40cm above
+sists of three main components: the visual encoder,   the robot. The system streams RGB-D images from
+projector, and large language model (LLM). For        a D435i camera to a server powered by NVIDIA
+the visual encoder, we employed Google's SigLIP-      A100 GPUs, where our MapNav agent processes
+so400m-patch14-384 (Zhai et al., 2023), which         the observations to generate our ASMs. Based on
+processes input images at a resolution of 384x384     the generated ASM, the system infers executable
+using patches of size 14x14. The SigLIP model         actions which are then transmitted back to the Go2
+serves as our vision backbone, converting input       for execution. Notably, our system demonstrated
+images into visual embeddings with a hidden di-       robust sim-to-real transfer capabilities, maintain-
+mension of 1152. The projector is implemented         ing accurate ASM generation and high task perfor-
+as a two-layer MLP with GELU activation, which        mance despite real-world challenges such as depth
+maps the visual features to the language model's      measurement uncertainties, pose estimation errors,
+embedding space. For the language model, we uti-      and environmental variations.
+lized Qwen2-7B-Instruct (Wang et al., 2024) as
+our backbone, which features 28 transformer lay-      D Qualitative Results.
+ers with 28 attention heads and a hidden size of
+3584. The model supports a context length of up       Fig. 7 and Fig. 8 illustrate the performance of our
+                                                      MapNav agent in simulated and real-world envi-
+                                                      ronments. In the simulator, the agent with ASM
+                                   "Walk up stairs. Turn right and walk straight to bedroom. Turn left and walk to bed lamp. Turn
+                                   left and enter closet. Stop at rug. "
+
+                                                 With Annotated Semantic Maps                                    W/o Annotated Semantic Maps
+
+RGB Frames
+
+ASMs
+
+                                   Timestep = 0  Timestep = 25  Timestep = 94                      Timestep = 0  Timestep = 25  Timestep = 101
+
+                                                 Figure 7: Visualization results of MapNav in the simulator.
+
+                                                           Simple Instruction                                               Semantic Instruction
+                                   "Walk forward, turn right and go straight, stop at the door. "  "Walk forward, turn right at the refrigerator, go straight, stop at the wall."
+
+Egocentric View Third Perspective
+
+ASMs
+
+                                   Timestep = 0  Timestep = 17  Timestep = 23                      Timestep = 0  Timestep = 17  Timestep = 23
+
+                                                 Figure 8: Visualization results of MapNav in the real-world.
+
+successfully identifies the shortest path while fol-                                               line condition, (2) RGB augmented with depth
+lowing complex instructions involving multiple                                                     information (RGB+Depth), and (3) our complete
+waypoints. In contrast, without ASM, the agent                                                     model utilizing the ASM alongside RGB inputs.
+struggles to find the correct path, underscoring                                                   Quantitative results, as presented in Tab . 6, re-
+ASM's importance in semantic understanding and                                                     veal an interesting pattern across these configu-
+path planning. In real-world tests, the agent ef-                                                  rations. While the RGB-only baseline achieved
+fectively executes simple navigation instructions                                                  moderate performance, the addition of depth infor-
+and excels at complex tasks involving semantic                                                     mation (RGB+Depth) led to a notable performance
+landmarks. The ASM visualization reveals its abil-                                                 degradation. This counterintuitive result can be
+ity to adapt paths in real-time, confirming robust                                                 attributed to the Vision-Language Model's inherent
+sim-to-real transfer. These results demonstrate that                                               limitations in processing depth modalities, as these
+our approach maintains strong performance across                                                   models are primarily trained on RGB images and
+both environments, particularly in tasks requiring                                                 natural language. In contrast, the integration of
+semantic understanding and adaptive navigation.                                                    our proposed ASM demonstrated substantial per-
+                                                                                                   formance gains across all evaluation metrics, signif-
+E More Experiments                                                                                 icantly outperforming both baseline configurations.
+                                                                                                   These results not only validate the effectiveness of
+Ablation on Different Input Modals. To sys-                                                        our ASM approach but also highlight the impor-
+tematically investigate the contribution of each                                                   tance of selecting input modalities that align with
+input modality, we conducted an extensive abla-                                                    the pre-trained model's capabilities.
+tion study on the input representations. The ex-
+perimental configurations encompassed three vari-                                                  Ablation Experiment on Different Semantic Seg-
+ants: (1) RGB-only input, serving as the base-                                                     mentation Modules. We conducted another ab-
+Table 6: Comparison of different input modals.                      demonstrated cases showcase a variety of room
+                                                                    layouts, navigation objectives, and complex multi-
+Method                            VLN-CE R2R Val-Unseen             step instructions, all of which our agent success-
+                                 NE OS SR SPL                       fully interpreted and executed. This performance
+MapNav (Only RGB)                                                   across diverse scenarios validates our approach's
+MapNav (RGB+Depth)               7.26 41.2 27.1 23.5                spatial understanding capabilities, as reflected in
+MapNav (Annotated Semantic Map)  8.82 35.6 23.1 19.9                the agent's ability to generate accurate ASMs and
+                                 5.22 50.3 36.5 34.3                perform appropriate navigation actions. Addition-
+                                                                    ally, these examples highlight our ASMs' strong
+Table 7: Comparison of different semantic segmentation              memory representation abilities, illustrating how
+modules' performance on R2R Val-Unseen split.                       the agent maintains and updates its understand-
+                                                                    ing of the environment throughout the navigation
+VLMs                                         VLN-CE R2R Val-Unseen  process. By integrating new observations with pre-
+                                            NE OS SR SPL            viously stored spatial information, the agent can
+YOLOv8 (Jocher et al., 2023)                                        make informed navigation decisions.
+MobileSAM (Zhang et al., 2023)              6.43 45.2 31.5 29.6
+Mask2Former (Our Use) (Cheng et al., 2022)  6.02 48.9 34.8 31.6     G More Real-World Demos
+                                            5.22 50.3 36.5 34.3
+                                                                    To extensively validate our approach in real-world
+lation study to evaluate the impact of different se-                settings, we conducted comprehensive experiments
+mantic segmentation modules on our ASM genera-                      and selected six representative episodes for visu-
+tion process, with results presented in Tab. 7. We                  alization as shown in Fig. 17 and Fig. 18. These
+compared three state-of-the-art semantic segmen-                    episodes span five distinct real-world environments:
+tation approaches: YOLOv8 (Jocher et al., 2023),                    office, meeting room, lecture hall, tea room, and
+MobileSAM (Zhang et al., 2023), and our chosen                      living room, encompassing both simple and se-
+Mask2Former (Cheng et al., 2022). The experi-                       mantic instructions. The successful generation of
+ments were conducted on the R2R Val-Unseen split                    ASMs in these diverse real-world scenarios and the
+to assess generalization capability. Results show                   agent's ability to complete assigned tasks demon-
+that Mask2Former achieves the best performance                      strate our system's effective sim-to-real transfer ca-
+across all metrics, with a Navigation Error (NE)                    pabilities and the practical applicability of ASM in
+of 5.22m, Success Rate (SR) of 36.5%, and SPL                       real-world navigation. Additionally, we conducted
+of 34%, outperforming both YOLOv8 and Mobile-                       an experiment in a living room setting to test our
+SAM. The superior performance of Mask2Former                        VLM's semantic understanding capabilities. When
+can be attributed to its more precise segmenta-                     presented with sofas of different colors, the agent
+tion boundaries and better handling of complex                      was instructed to locate and navigate to the gray
+indoor scenes. While MobileSAM shows moder-                         sofa. The successful execution of this task validates
+ate performance with an SR of 34.8% and SPL of                      our model's advanced semantic understanding and
+31.6%, YOLOv8 exhibits relatively lower perfor-                     its ability to differentiate between visually similar
+mance with an SR of 31.5% and SPL of 29.6%.                         objects based on specific attributes.
+These results suggest that the quality of semantic
+segmentation significantly impacts the overall nav-
+igation performance, highlighting the importance
+of accurate semantic objects segmentation in ASM
+generation.
+
+F More Simulated Demos                                              H VLM Attention Visualization Analysis
+
+We conducted extensive visualization experiments                    To quantitatively evaluate our Annotated Seman-
+to demonstrate the effectiveness of our approach,                   tic Map (ASM) representation, we conducted at-
+selecting representative successful cases from both                 tention visualization analysis using VLM Visual-
+R2R and RxR datasets. Specifically, as shown in                     izer1 across different map representations. Using
+Fig. 11­Fig. 16, we visualized 24 distinct naviga-                  Vicuna-13B (Zheng et al., 2023) as our base model,
+tion trajectories across six pages, with each case                  we generated attention heatmaps to examine how
+highlighting the agent's navigation process and cor-                the model attends to different regions of the in-
+responding Abstract Semantic Maps (ASM). These                      put maps. As shown in Fig.9 and Fig.10, the at-
+visualizations showcase the robust generalization                   tention visualization reveals that when processing
+capability of our ASM-based approach across di-                     ASMs, the model exhibits significantly stronger
+verse environments and navigation scenarios. The
+                                                                        1https://github.com/zjysteven/VLM-Visualizer
+VLM Attention Visualization for Maps                      User: Please describe this map.
+
+     Original                                           Assistant: The image is a black and white map of a city,
+Top-Down Map                                            featuring a blue line that represents a subway or train
+                                                        route. The line is drawn from the top left corner of the
+                                      Attention Map     map to the bottom right corner, indicating the direction
+                                                        and length of the subway line. The map also includes a
+                                                        few buildings and streets, providing a clear
+                                                        representation of the urban landscape.
+
+    Semantic Map    Attention Map                       Assistant: The image is a white background with a red
+                    Attention Map                       line drawn on it. The red line appears to be a path or a
+Annotated Semantic                                      route, possibly indicating a direction or a specific route
+     Map (Ours)                                         to follow. The simplicity of the image allows the viewer
+                                                        to focus on the red line as the main subject.
+
+                                                        Assistant: The image is a white background with a map
+                                                        of a bedroom layout. The map is labeled with various
+                                                        items, including a bed, toilet, and potted plant. The
+                                                        bed is located in the upper left part of the map, while the
+                                                        toilet is situated in the lower right area. The potted plant
+                                                        is placed in the middle of the room. The labels on the
+                                                        map provide a clear understanding of the room's layout
+                                                        and the placement of the different items. There's also a
+                                                        red line represents routes.
+
+Figure 9: Visualization of VLM Attention Across Different Map Representations. A comparison of different
+map representations showing that while Semantic Map exhibits sparse attention patterns without convergence on
+semantic objects, our ASM successfully leverages textual labels to guide attention towards semantic objects, as
+evidenced by concentrated attention distributions and the VLM's responses.
+
+attention alignment with semantically meaningful        tention to both semantic objects and navigation
+regions, showing sharp attention peaks (> 0.8) pre-     paths, enabling effective grounding of navigational
+cisely aligned with labeled objects and navigation-     features through the model's pre-trained language
+relevant areas. Moreover, our attention maps            understanding capabilities.
+demonstrate that the red trajectory lines in ASM
+receive substantial attention focus, providing struc-
+tured navigational cues that complement the seman-
+tic understanding. In contrast, attention patterns re-
+main notably diffuse when processing the original
+top-down map (peak attention < 0.3) and seman-
+tic map (peak attention < 0.4), suggesting limited
+semantic understanding. This quantitative differ-
+ence in attention patterns is further reflected in the
+model's descriptive outputs - while basic map de-
+scriptions indicate only geometric recognition ("a
+black and white map with a blue line") for the
+original format, ASM enables sophisticated spatial-
+semantic understanding with precise object local-
+ization (e.g., "bed in the upper left part"). These
+visualization results demonstrate that ASM's ex-
+plicit textual annotations and structured trajectory
+representation successfully guide the model's at-
+VLM Attention Visualization for Maps                 User: Please describe this map.
+
+     Original                                        Assistant: The map appears to be a simplified layout of a
+Top-Down Map                                         building or area, likely indicating a pathway or route. The
+                                                     majority of the map is in a dark gray color, suggesting
+                                      Attention Map  areas that are not currently accessible or are obstacles.
+                                                     There is a blue line that indicates a specific path or route to
+                                                     follow. This line suggests movement from one location to
+                                                     another. The layout includes multiple shapes, possibly
+                                                     representing rooms or structures, though the details are
+                                                     minimal due to the monochromatic scheme.
+
+    Semantic Map    Attention Map                    Assistant: The image is a white and red map of a city,
+                    Attention Map                    featuring a red arrow pointing to a specific location. The
+Annotated Semantic                                   arrow is positioned in the middle of the map, drawing
+     Map (Ours)                                      attention to the area it is pointing towards. The map also
+                                                     includes a few buildings, which are scattered throughout
+                                                     the scene. The overall layout of the map suggests that it is
+                                                     a simplified representation of a city, with the red arrow
+                                                     serving as a guide to a particular point of interest.
+
+                                                     Assistant: The image is a white and yellow map of a
+                                                     building, possibly a house. The map is filled with various
+                                                     labels and a red line, indicating different areas, route and
+                                                     objects within the building. There are several potted plants
+                                                     scattered throughout the map, with some placed near the
+                                                     center and others closer to the edges. In addition to the
+                                                     potted plants, there are also chairs, a sofa and a sink visible
+                                                     on the map. The chairs are located near the center of the
+                                                     map, while the sink is situated towards the left side.
+
+Figure 10: Additional Visualizations of VLM Attention Across Different Map Representations.
+ASMs Observations  Turn left at top of stairs. Walk forward into bedroom. Continue straight, and turn left into bathroom. Wait here.
+
+ASMs Observations                                                             Steps
+                   Turn around and walk into the bedroom. Once in the bedroom, turn left and exit the bedroom into the hallway. Walk
+ASMs Observations  to the end of the of the hallway. and turn right. Walk into the bedroom straight ahead and stop.
+
+ASMs Observations                                                              Steps
+                     Walk up the stairs and turn left at the plant. Walk forward wait at the bedroom with rug that has squares on it.
+
+                                                                             Steps
+                     Walk out of the bedroom and into the hall. Take a right in the hall past the stairs and enter the room. Take a left
+                     before the bed and take a left into the closet. Stop in the doorway to the closet.
+
+                                                                              Steps
+                                               Figure 11: (1/6) Simulator demo results visualization.
+ASMs Observations  Turn left and exit the bedroom. Walk past the stairs into the rightmost doorway. Wait by the entrance of the bedroom.
+
+ASMs Observations                                                            Steps
+                    Go up the stairs. Turn right. Stop just inside the doorway of the bedroom with the round mirror on the wall to the
+ASMs Observations   right, opposite the bed.
+
+ASMs Observations                                                            Steps
+                     Walk down the hallway towards the table and chairs next to the large window. You will pass a staircase going
+                     down on your right hand side. Once you pass the staircase and enter the larger room, turn right. Walk forward
+                     until you are standing beside the frist black end table next to the couch.
+
+                                                                              Steps
+                    Exit the bathroom, and walk through the closet. Make a left just before the bed. Exit the bedroom, and make a
+                    right. Walk through the open bedroom door on the right. Wait in the door's threshold.
+
+                                                                             Steps
+                                              Figure 12: (2/6) Simulator demo results visualization.
+ASMs Observations    Move through the kitchen with the square table to your right. Continue moving forward to the staircase just after
+                     the refrigerator. Walk up the stairs and stop 18 inches before the end of the stair railing to your right.
+ASMs Observations
+                                                                           Steps
+ASMs Observations    Walk past the dining room table, through the sitting room and out the sliding glass doors. Wait on the patio near
+                     the table and chairs.
+ASMs Observations
+                                                                            Steps
+                   Take a left and take a right at the doll hutch. Walk into the bedroom and take a left. Walk into the bathroom and
+                   wait in front of the sink.
+
+                                                                           Steps
+                   Go up the steps. Turn right and go straight until you get to the phone and vase with flower. Then turn right. Wait in
+                   that room.
+
+                                                                            Steps
+                                             Figure 13: (3/6) Simulator demo results visualization.
+ASMs Observations  With the window behind you, walk straight past the table and kitchen area and through the doorway. Keep going
+                   until you get to a separate sitting room on the left with blue walls and white couches. Walk into the room and stop
+ASMs Observations  once you step on the carpet.
+
+ASMs Observations                                                           Steps
+                   Continue up the stairs, walk towards the sitting area, go straight passed the table on the left. Stop by the double doors.
+ASMs Observations
+                                                                            Steps
+                   Walk towards the ovens and take a left. Walk towards the fireplace and enter the dining room to the right of the
+                   fireplace. Stop in front of the white chair.
+
+                                                                           Steps
+                   Walk down the hallway and walk into the kitchen and take a left at the island counter into the hallway and take a
+                   right into the dining room and walk through the dining room into the living room and stop nest to the edge of the
+                   couch behind the end table.
+
+                                                                            Steps
+
+                                         Figure 14: (4/6) Simulator demo results visualization.
+ASMs Observations  Walk past the island and to the left. Walk through the entryway on the left and stop inside the bedroom.
+
+ASMs Observations                                                           Steps
+                   Keep walking forward and turn right to exit. Enter the kitchen, and keep walking forward passing the small corner
+ASMs Observations  table with four chairs on the right. Enter the corner where the staircase is visible, and stop in front of the stairs.
+
+ASMs Observations                                                           Steps
+                   Turn around and go to the doorway on the far right of the living area, take a right and head towards the dining
+                   room table and stop.
+
+                                                                            Steps
+                   Go through the middle of the room, make a right and go passed the stairs on your right and into the bedroom
+                   doorway and wait.
+
+                                                                            Steps
+                                             Figure 15: (5/6) Simulator demo results visualization.
+ASMs Observations  Walk past the pool table and turn right. Walk into the next room and turn left. At the door to the bathroom, turn left,
+                   step forward to wait in the doorway to the wine cellar.
+ASMs Observations
+                                                                           Steps
+ASMs Observations  Turn to the left, walk between the massage tables. Go out of the door, and straight just a little way and turn right.
+                   You'll see a big bathtub-like thing. You'll stop right there.
+ASMs Observations
+                                                                           Steps
+                   Turn around and walk into the dining room. Take a right. Take a left after the table and wait in the doorway.
+
+                                                                            Steps
+
+                   Walk around the bed and chairs and enter the bathroom on your left. Stop near the shower.
+
+                                                                            Steps
+                                             Figure 16: (6/6) Simulator demo results visualization.
+ASMs Observations   Tea Room: Go straight ahead and stop next to the plants at the end.
+
+ASMs Observations                                                             Steps
+                   Conference Room: Go straight and then turn left, stop in front of the TV.
+ASMs Observations
+                                                                              Steps
+                    Office: Go straight in this office area and stop in front of the first door on the right.
+
+                                                                             Steps
+                                            Figure 17: (1/2) Real-world demo results visualization.
+ASMs Observations  Lecture Hall: Turn around and go straight, stop at the door.
+
+ASMs Observations                                                           Steps
+                   Living Room: Turn left, pass the table and stop in front of the sofa at the end.
+ASMs Observations
+                                                                            Steps
+                   Living Room: Move forward, look for the grey sofa and stop in front of it.
+
+                                                                            Steps
+                                           Figure 18: (2/2) Real-world demo results visualization.
+

@@ -1,0 +1,125 @@
+# X30 VLN framework: core services. Use the launcher (scripts/x30.ps1 | scripts/x30.sh) which assembles the file list:
+#   compose.yml + compose.models.yml [+ compose.sim.yml if it exists] [+ compose.real.yml for host networking]
+# Raw equivalent, from docker/:
+#   docker compose --env-file ../.env -f compose.yml -f compose.models.yml [-f compose.sim.yml] --profile <sim|real|replay|models> up -d
+# (compose "include:" cannot skip a missing file, which is why the launcher builds the -f list; see docs/INFRA.md)
+#
+# Profiles:  sim     sim (compose.sim.yml) + framework + tools + models
+#            real    ros1_bridge + framework + tools + models
+#            replay  replay (rosbag2 player) + framework + tools
+#            models  perception + vlm only          (two-vlm adds the small mapper VLM)
+# Conventions for other compose files (compose.sim.yml): join network x30_net, use the same DDS environment variables,
+# mount ./dds at /etc/x30:ro, name containers x30-<service>. See docs/INFRA.md section "Adding a ROS 2 service".
+name: x30
+
+x-ros-env: &ros-env
+  RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+  ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+  CYCLONEDDS_URI: file:///etc/x30/${X30_DDS_FILE:-cyclonedds.xml}
+  PERCEPTION_URL: http://perception:8100
+  VLM_BASE_URL: http://vlm:8000/v1
+  VLM_MODEL: ${VLM_ALIAS:-qwen3-vl}
+  X30_ROOT: /x30
+  X30_CONFIGS: /x30/configs
+  X30_SKIP_PKGS: ${X30_SKIP_PKGS:-x30_sim}
+  X30_BUILD_JOBS: ${X30_BUILD_JOBS:-4}
+
+x-framework-build: &framework-build
+  context: images/framework
+  args:
+    HOST_UID: ${HOST_UID:-1000}
+    HOST_GID: ${HOST_GID:-1000}
+
+x-workspace-volumes: &workspace-volumes
+  - ../ros2_ws/src:/ws/src
+  - ..:/x30
+  - x30_ws_build:/ws/build
+  - x30_ws_install:/ws/install
+  - x30_ws_log:/ws/log
+  - ./dds:/etc/x30:ro
+
+networks:
+  x30_net:
+    name: x30_net
+    driver: bridge
+
+volumes:
+  # colcon output lives in named volumes (NTFS bind mounts are slow); source stays on the host
+  x30_ws_build:
+    name: x30_ws_build
+  x30_ws_install:
+    name: x30_ws_install
+  x30_ws_log:
+    name: x30_ws_log
+
+services:
+  framework:
+    profiles: [sim, real, replay]
+    image: x30-framework:latest
+    build: *framework-build
+    container_name: x30-framework
+    hostname: framework
+    init: true
+    tty: true
+    stdin_open: true
+    command: ["sleep", "infinity"]
+    shm_size: 2gb
+    environment:
+      <<: *ros-env
+      X30_PROFILE: ${X30_PROFILE:-}
+    volumes: *workspace-volumes
+    networks: [x30_net]
+
+  # Foxglove bridge: connect Foxglove Studio (desktop app or https://app.foxglove.dev) to ws://localhost:8765. No X forwarding.
+  tools:
+    profiles: [sim, real, replay]
+    image: x30-framework:latest
+    container_name: x30-tools
+    hostname: tools
+    init: true
+    command: ["ros2", "launch", "foxglove_bridge", "foxglove_bridge_launch.xml", "port:=8765", "address:=0.0.0.0", "send_buffer_limit:=100000000"]
+    environment: *ros-env
+    volumes: *workspace-volumes
+    ports:
+      - "127.0.0.1:8765:8765"
+    networks: [x30_net]
+    depends_on: [framework]
+
+  # Plays a rosbag2 directory onto the robot-facing topics (default: the converted lab bag). Consumers use use_sim_time with --clock.
+  replay:
+    profiles: [replay]
+    image: x30-framework:latest
+    container_name: x30-replay
+    hostname: replay
+    init: true
+    command: ["bash", "-lc", "exec ros2 bag play \"$$(python3 /x30/docker/scripts/bag_compat.py \"$$REPLAY_BAG\")\" $$REPLAY_ARGS"]
+    environment:
+      <<: *ros-env
+      REPLAY_BAG: ${REPLAY_BAG:-/x30/datasets/real/lab_2026-10-06}
+      REPLAY_ARGS: ${REPLAY_ARGS:---loop --clock}
+    volumes: *workspace-volumes
+    networks: [x30_net]
+    depends_on: [framework]
+
+  # Real robot only. On a Linux workstation add compose.real.yml (host networking); on Docker Desktop this service only works
+  # for bag/loopback tests, because the robot cannot call back into a NATed container (docs/INFRA.md, "Real robot networking").
+  ros1_bridge:
+    profiles: [real]
+    build: images/ros1_bridge
+    image: x30-ros1-bridge:latest
+    container_name: x30-ros1-bridge
+    hostname: ros1-bridge
+    init: true
+    restart: on-failure
+    environment:
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+      CYCLONEDDS_URI: file:///etc/x30/${X30_DDS_FILE_BRIDGE:-cyclonedds-foxy.xml}
+      ROS_MASTER_URI: ${ROS_MASTER_URI:-http://127.0.0.1:11311}
+      ROS_IP: ${ROS_IP:-127.0.0.1}
+      BRIDGE_TOPICS: ${BRIDGE_TOPICS:-/x30/configs/ros1_bridge_topics.yaml}
+      BRIDGE_MODE: ${BRIDGE_MODE:-parameter}
+    volumes:
+      - ../configs:/x30/configs:ro
+      - ./dds:/etc/x30:ro
+    networks: [x30_net]

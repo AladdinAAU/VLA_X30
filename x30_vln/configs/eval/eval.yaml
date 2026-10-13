@@ -1,0 +1,136 @@
+# Evaluation configuration for x30_eval (single source of defaults; docs/EVALUATION.md explains every value).
+# Overrides: --config <file> on the CLI, or an overlay (X30_CONFIG_OVERLAY, key "eval") during sweeps.
+# Everything here is about SCORING and RUNNING episodes. Changing a success radius or threshold after looking at
+# results is a form of tuning on the test set: such changes must be made before a run and are stored in its manifest.
+
+success:
+  pose_radius_m: 0.5            # pose goals: robot centre within half a body length (body ~0.9 m) of the goal point
+  object_radius_m: 1.5          # object goals: robot centre within 1.5 m of the object's footprint (episode goal.radius wins)
+  object_distance_mode: surface # surface = distance to the object's axis-aligned footprint box, centroid = to its centre
+  require_stop: true            # success needs the system to end the task itself (stop_reason == finished)
+  require_agent_claim: true     # ... and to claim success (Navigate result.success)
+  synonyms:                     # label equivalence for goal matching and map evaluation (canonical: aliases)
+    couch: [sofa]
+    tv: [television]
+    trash can: [garbage bin, waste bin, bin, rubbish bin]
+    plant: [potted plant, houseplant]
+    fire extinguisher: [extinguisher]
+    table: [dining table]
+
+robot:
+  footprint_length_m: 0.9       # used for collision checks against the GT grid (body length is inferred, not documented)
+  footprint_width_m: 0.45
+
+shortest_path:                  # optimum for SPL: any-angle path on the GT grid of the scene
+  inflate_m: 0.3                # robot radius used for planning the optimum (must be <= what the stack plans with)
+  grid_paths:                   # first existing file wins; {scene} is the episode scene id; relative to the project root
+    - ros2_ws/src/x30_worlds/worlds/{scene}/occupancy.yaml
+    - datasets/worlds/{scene}/occupancy.yaml
+    - results/grids/{scene}.yaml
+  fallback: euclidean           # none | euclidean : with no grid and no shortest_path_m use the straight line (a lower bound on l, so SPL is pessimistic; flagged spl_basis)
+
+ndtw:
+  d_th_m: 3.0                   # success threshold of R2R/VLN-CE (kept for comparability)
+  spacing_m: 0.5                # both paths are resampled to this spacing before DTW
+
+collisions:
+  source: auto                  # auto | contacts | grid | none  (auto = sim contacts if reported, else GT grid)
+  refractory_s: 1.0             # events closer than this count once
+
+ate:
+  method: yaw                   # yaw (strict) | se2 (free fit); both are always stored, this one is the headline
+  min_pairs: 10
+
+semantic_map:
+  match_radius_m: 1.0
+  cover_radius_m: 5.0           # recall_covered only counts GT objects this close to the executed path
+  vocab: null                   # restrict GT objects to these labels (the perception vocabulary); null = all
+  ignore_labels: [wall, floor, ceiling, door, window]
+
+difficulty:                     # derived from the optimal path length when an episode has no explicit difficulty
+  easy_max_m: 6.0
+  medium_max_m: 15.0
+
+run:
+  poll_dt_s: 0.2
+  grace_s: 1.0                  # extra recording after the task ends (final pose settles)
+  cancel_grace_s: 5.0           # evaluator timeout = time_limit_s + this, then the goal is cancelled
+  wall_limit_factor: 3.0        # wall-clock guard when running on sim time: factor * time_limit_s + extra
+  wall_limit_extra_s: 180.0
+  ready_timeout_s: 90.0
+  max_infra_retries: 3          # re-runs of an episode that failed for infrastructure reasons (not counted as nav failures)
+  infra_backoff_s: 15.0
+  abort_after_infra_episodes: 2 # stop the whole run after this many consecutive episodes that exhausted their retries
+  start_jitter_xy_m: 0.0        # optional start perturbation per repeat (needs a GT grid to stay in free space)
+  start_jitter_yaw_rad: 0.0
+  record_hz: 10.0               # pose pairs (SLAM vs GT) sampling rate
+  frames:
+    enabled: false              # save camera frames (for fine-tuning/perception export)
+    hz: 2.0
+    max_width: 640
+    jpeg_quality: 85
+
+reset:
+  strategy: services            # services | relaunch | none
+  pose_service: /sim/set_robot_pose
+  pose_timeout_s: 90.0          # the legged sim answers only after the controller trots again
+  settle_s: 2.0                 # after reset, wait this long before checking /x30/ready
+  services:                     # Json services called (request JSON) in this order; optional ones may be absent
+    - {name: /semantic_map/reset, request: {}, optional: false}
+    - {name: /mapping/reset, request: {}, optional: true}      # 2D map / occupancy mapper (see docs/requests/eval-to-bringup.md)
+    - {name: /slam/reset, request: {}, optional: true}         # SLAM / odometry restart at the new pose
+  relaunch_command: null        # used when strategy == relaunch, e.g. a docker compose restart of the framework container
+  relaunch_wait_s: 60.0
+
+topics:
+  gt_pose: /gt/pose
+  gt_objects: /gt/objects
+  gt_scene_info: /gt/scene_info
+  ready: /x30/ready
+  safety: /x30/safety
+  navigate_action: /x30/navigate
+  map_objects: /semantic_map/objects
+  estop: /x30/estop
+  mode: /x30/mode
+  teleop: /cmd_vel_teleop
+  contacts: /sim/contacts       # optional std_msgs/String JSON {"t":..} or std_msgs/Empty; absent = grid-based collisions
+  odom_active: /odometry/active
+  camera: /camera/color/image_raw
+  camera_info: /camera/color/camera_info
+  camera_frame: camera_optical_frame
+  detections: /perception/detections
+  slam_frame: map
+  base_frame: base_link
+
+infra:                          # an episode is an infrastructure failure when ...
+  error_patterns:               # ... the result message/stop_reason matches any of these (case-insensitive regex)
+    - connection (refused|error|reset)
+    - connect(ion)? timed? ?out
+    - max retries exceeded
+    - llm error
+    - vlm (server|endpoint) (down|unreachable)
+    - service .* (not available|unavailable)
+    - sim(ulator)? (crash|died|not responding)
+    - container .* (not running|exited)
+    - read timed out
+    - 502 bad gateway|503 service unavailable
+  containers: []                # names checked with `docker inspect` before each episode when docker is available
+
+manifest:
+  hash_globs:                   # files hashed into the manifest (relative to the project root)
+    - configs/**/*.yaml
+    - ros2_ws/src/x30_agent/**/prompts/**/*
+    - ros2_ws/src/x30_agent/**/*.md
+  models_config: configs/models.yaml
+  docker_containers: []         # container names whose image ids are recorded
+  docker_images: []             # image tags whose ids are recorded
+
+failure:                        # thresholds of the heuristic failure classifier
+  loop_repeat: 3                # identical consecutive tool calls
+  collision_min: 2              # collisions in a failed episode before it is called a collision failure
+  safety_stops_min: 5           # guard stop onsets before it is called a safety failure
+  never_found_map_radius_m: 2.0 # a map object of the goal label this close to the goal counts as "found"
+
+report:
+  n_boot: 4000                  # bootstrap resamples for confidence intervals
+  seed: 0

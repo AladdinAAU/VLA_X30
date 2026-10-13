@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<!-- Converted from aws-robomaker-small-warehouse-world (small_warehouse.world), MIT-0, by x30_datasets.adapters.aws -->
+<sdf version="1.9">
+  <world name="aws_small_warehouse">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <atmosphere type="adiabatic"><temperature>293.15</temperature><pressure>101325</pressure></atmosphere>
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.55 0.65 0.8 1</background>
+      <shadows>false</shadows>
+      <grid>false</grid>
+    </scene>
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.55 0.55 0.55 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>-0.3 0.2 -0.9</direction>
+    </light>
+    <model name="ground_plane">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><plane><normal>0 0 1</normal><size>18 25</size></plane></geometry>
+          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface></collision>
+        <visual name="visual"><geometry><plane><normal>0 0 1</normal><size>18 25</size></plane></geometry>
+          <material><ambient>0.28 0.28 0.3 1</ambient><diffuse>0.28 0.28 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>2</label></plugin>
+    </model>
+    <include>
+      <name>aws_robomaker_warehouse_RoofB_01_001</name>
+      <uri>model://aws_robomaker_warehouse_RoofB_01</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>shelf_01</name>
+      <uri>model://aws_robomaker_warehouse_ShelfF_01</uri>
+      <pose>-5.7951 -0.9566 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>aws_robomaker_warehouse_WallB_01_001</name>
+      <uri>model://aws_robomaker_warehouse_WallB_01</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>shelf_02</name>
+      <uri>model://aws_robomaker_warehouse_ShelfE_01</uri>
+      <pose>4.7316 0.5794 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>shelf_03</name>
+      <uri>model://aws_robomaker_warehouse_ShelfE_01</uri>
+      <pose>4.7316 -4.827 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>shelf_04</name>
+      <uri>model://aws_robomaker_warehouse_ShelfE_01</uri>
+      <pose>4.7316 -8.6651 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>shelf_05</name>
+      <uri>model://aws_robomaker_warehouse_ShelfD_01</uri>
+      <pose>4.7316 -1.2427 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>shelf_06</name>
+      <uri>model://aws_robomaker_warehouse_ShelfD_01</uri>
+      <pose>4.7316 -3.0386 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>shelf_07</name>
+      <uri>model://aws_robomaker_warehouse_ShelfD_01</uri>
+      <pose>4.7316 -6.7505 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>19</label></plugin>
+    </include>
+    <include>
+      <name>aws_robomaker_warehouse_GroundB_01_001</name>
+      <uri>model://aws_robomaker_warehouse_GroundB_01</uri>
+      <pose>0 0 -0.0901 0 0 0</pose>
+    </include>
+    <include>
+      <name>lamp_01</name>
+      <uri>model://aws_robomaker_warehouse_Lamp_01</uri>
+      <pose>0 0 -4 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>34</label></plugin>
+    </include>
+    <include>
+      <name>bucket_01</name>
+      <uri>model://aws_robomaker_warehouse_Bucket_01</uri>
+      <pose>0.4334 9.6317 0 0 0 -1.5632</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>63</label></plugin>
+    </include>
+    <include>
+      <name>bucket_02</name>
+      <uri>model://aws_robomaker_warehouse_Bucket_01</uri>
+      <pose>-1.8321 -6.3752 0 0 0 -1.5632</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>63</label></plugin>
+    </include>
+    <include>
+      <name>bucket_03</name>
+      <uri>model://aws_robomaker_warehouse_Bucket_01</uri>
+      <pose>0.4334 8.59 0 0 0 -1.5632</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>63</label></plugin>
+    </include>
+    <include>
+      <name>clutter_01</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringA_01</uri>
+      <pose>5.7081 8.6168 -0.0175 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_02</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringA_01</uri>
+      <pose>3.4086 8.6168 -0.0175 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_03</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringA_01</uri>
+      <pose>-1.4913 5.2224 -0.0175 0 0 -1.5832</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_04</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>3.325 3.8224 -0.0121 0 0 1.5639</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_05</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>5.5417 3.8165 -0.0157 0 0 -1.5832</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_06</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>5.3842 6.1372 0 0 0 3.15</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_07</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>3.236 6.1372 0 0 0 3.15</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_08</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>-1.5737 2.302 -0.0157 0 0 -3.1332</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_09</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringC_01</uri>
+      <pose>-1.2196 9.407 -0.0157 0 0 1.5639</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>clutter_10</name>
+      <uri>model://aws_robomaker_warehouse_ClutteringD_01</uri>
+      <pose>-1.6347 -7.8118 -0.3196 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>55</label></plugin>
+    </include>
+    <include>
+      <name>trash_can_01</name>
+      <uri>model://aws_robomaker_warehouse_TrashCanC_01</uri>
+      <pose>-1.5924 7.7154 0 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>35</label></plugin>
+    </include>
+    <include>
+      <name>pallet_jack_01</name>
+      <uri>model://aws_robomaker_warehouse_PalletJackB_01</uri>
+      <pose>-0.2761 -9.4819 0.0233 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>64</label></plugin>
+    </include>
+  </world>
+</sdf>

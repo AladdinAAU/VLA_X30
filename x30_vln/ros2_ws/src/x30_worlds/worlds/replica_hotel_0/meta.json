@@ -1,0 +1,66 @@
+{
+ "sdf": "worlds/replica_hotel_0/world.sdf",
+ "spawn": {
+  "x": 4.07,
+  "y": 1.17,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -3.91,
+  -2.66,
+  6.68,
+  3.52
+ ],
+ "objects_file": "worlds/replica_hotel_0/objects.json",
+ "map_file": "worlds/replica_hotel_0/map.yaml",
+ "robot_radius_m": 0.25,
+ "license": "Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education use only; see datasets/external/replica_src/LICENSE",
+ "source": "facebookresearch/Replica-Dataset hotel_0",
+ "source_dataset": "replica",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   1.0184
+  ]
+ },
+ "stats": {
+  "source_file": "hotel_0",
+  "up_axis": "z",
+  "scale": 1.0,
+  "floor_z_source": -1.018,
+  "extent_m": [
+   8.59,
+   4.18,
+   2.75
+  ],
+  "triangles": 2193298,
+  "triangles_visual": 249475,
+  "triangles_ceiling": 38247,
+  "collision_boxes": 455,
+  "collision_pitch_m": 0.1,
+  "navigable_area_m2": 5.3,
+  "objects": 83,
+  "visual_mesh_mb": 28.9
+ },
+ "source_scene_id": "hotel_0"
+}

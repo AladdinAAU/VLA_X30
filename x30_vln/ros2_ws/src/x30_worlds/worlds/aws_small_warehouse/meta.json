@@ -1,0 +1,36 @@
+{
+ "sdf": "worlds/aws_small_warehouse/world.sdf",
+ "spawn": {
+  "x": -0.88,
+  "y": -2.38,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -9.0,
+  -12.5,
+  9.0,
+  12.5
+ ],
+ "objects_file": "worlds/aws_small_warehouse/objects.json",
+ "map_file": "worlds/aws_small_warehouse/map.yaml",
+ "license": "MIT-0 (AWS RoboMaker world and models)",
+ "source": "https://github.com/aws-robotics/aws-robomaker-small-warehouse-world branch ros1, file worlds/small_warehouse.world",
+ "source_dataset": "aws-robomaker",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "includes": 26,
+  "objects": 23,
+  "navigable_area_m2": 152.2,
+  "objects_by_label": {
+   "bucket": 3,
+   "clutter": 10,
+   "lamp": 1,
+   "pallet_jack": 1,
+   "shelf": 7,
+   "trash_can": 1
+  },
+  "skipped_non_include_models": [],
+  "models_copied": 13
+ }
+}

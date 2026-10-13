@@ -1,0 +1,122 @@
+# Model servers (GPU). Merged with compose.yml by the launcher (needs x30_net from there).
+# llama.cpp server flags follow the working drone setup (docker-compose.drone.yml): -hf, --jinja, -ngl 99; ctx raised to 16384
+# because the reasoner sends images plus a map summary. The GGUF + mmproj come from the cache in VLM_MODELS_DIR.
+services:
+  vlm:
+    profiles: [models, sim, real]
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: x30-vlm
+    hostname: vlm
+    init: true
+    command:
+      - -hf
+      - ${VLM_HF:-Qwen/Qwen3-VL-8B-Instruct-GGUF:Q4_K_M}
+      - --alias
+      - ${VLM_ALIAS:-qwen3-vl}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - -ngl
+      - "99"
+      - -c
+      - "${VLM_CTX:-16384}"
+      - --parallel
+      - "${VLM_PARALLEL:-1}"
+      - --jinja
+    environment:
+      LLAMA_CACHE: /models
+    volumes:
+      - ${VLM_MODELS_DIR:-D:/vlm-models}:/models
+    ports:
+      - "127.0.0.1:${VLM_PORT:-8000}:8000"
+    networks: [x30_net]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 60s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Optional small VLM for the mapper role (captions, attributes), so the reasoner keeps its own context budget.
+  # 4B Q4_K_M is about 2.5 GB + mmproj 0.8 GB + KV; together with the 8B reasoner (about 9 GB) and perception (about 2 GB) it stays near 17 GB.
+  vlm2:
+    profiles: [two-vlm]
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: x30-vlm2
+    hostname: vlm2
+    init: true
+    command:
+      - -hf
+      - ${VLM2_HF:-Qwen/Qwen3-VL-4B-Instruct-GGUF:Q4_K_M}
+      - --alias
+      - ${VLM2_ALIAS:-qwen3-vl-mapper}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - -ngl
+      - "99"
+      - -c
+      - "${VLM2_CTX:-8192}"
+      - --jinja
+    environment:
+      LLAMA_CACHE: /models
+    volumes:
+      - ${VLM_MODELS_DIR:-D:/vlm-models}:/models
+    ports:
+      - "127.0.0.1:${VLM2_PORT:-8001}:8000"
+    networks: [x30_net]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 60s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  perception:
+    profiles: [models, sim, real]
+    image: x30-perception:latest
+    build:
+      context: images/perception
+      args:
+        BASE_IMAGE: ${PERCEPTION_BASE_IMAGE:-ultralytics/ultralytics:latest}
+    container_name: x30-perception
+    hostname: perception
+    init: true
+    environment:
+      YOLOE_WEIGHTS: ${YOLOE_WEIGHTS:-yoloe-11l-seg.pt}
+    volumes:
+      - ${PERCEPTION_CACHE_DIR:-D:/perception-cache}:/cache
+      # server code is owned by the perception agent; if server.py is missing the image starts a placeholder health server
+      - ../ros2_ws/src/x30_perception/perception_server:/app/perception_server:ro
+    ports:
+      - "127.0.0.1:${PERCEPTION_PORT:-8100}:8100"
+    networks: [x30_net]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8100/health', timeout=4).status==200 else 1)"]
+      interval: 15s
+      timeout: 6s
+      retries: 20
+      start_period: 30s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

@@ -1,0 +1,20 @@
+# Single entry point for a navigation task
+string mode                  # velocity_follow | object_nav | goal_pose | explore
+string instruction           # natural language task
+string target_label          # optional: object class for object_nav
+geometry_msgs/PoseStamped goal   # used by goal_pose
+string episode_id
+float32 timeout_s
+string params_json           # optional overrides, e.g. {"standoff_m":1.2}
+---
+bool success
+string stop_reason           # finished | timeout | aborted | safety | no_progress | error
+string message
+float32 path_length_m
+float32 duration_s
+uint32 agent_turns
+---
+string status
+string current_skill
+float32 distance_to_goal     # NaN if unknown
+uint32 agent_turn

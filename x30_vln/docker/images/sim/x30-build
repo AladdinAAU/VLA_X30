@@ -1,0 +1,16 @@
+#!/bin/bash
+# colcon build of /ws for the sim container (source bind-mounted at /ws/src; build/install/log in named volumes).
+#   x30-build                 build x30_msgs, x30_worlds (if present) and x30_sim
+#   x30-build PKG ...         build the named packages and what they need
+set -eo pipefail
+. /usr/local/bin/x30-env
+cd /ws
+JOBS="${X30_BUILD_JOBS:-4}"
+PKGS=("$@")
+if [ ${#PKGS[@]} -eq 0 ]; then
+    PKGS=(x30_msgs x30_sim)
+    [ -f src/x30_worlds/package.xml ] && PKGS+=(x30_worlds)
+fi
+echo "[x30-build] colcon build --packages-up-to ${PKGS[*]}"
+colcon build --symlink-install --parallel-workers "$JOBS" --packages-up-to "${PKGS[@]}" \
+    --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON

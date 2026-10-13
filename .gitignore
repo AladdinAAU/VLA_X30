@@ -1,0 +1,57 @@
+# ROS 2 / colcon build products
+build/
+install/
+log/
+**/build/
+**/install/
+**/log/
+**/.ros/
+
+# Python tooling and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+htmlcov/
+.coverage*
+
+# Robot recordings and generated datasets/results
+*.bag
+*.bag2
+*.db3
+*.mcap
+*.sqlite
+*.sqlite3
+*.npz
+*.npy
+
+# Downloaded model weights and framework caches
+*.gguf
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.ckpt
+models/
+**/.locks/
+
+# Local credentials and machine-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

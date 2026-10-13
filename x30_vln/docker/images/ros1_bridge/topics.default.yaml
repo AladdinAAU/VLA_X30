@@ -1,0 +1,17 @@
+# Default topic list for the parameter bridge (same format as Rob7_Gr760_P7/Docker/Main/bridge/topics.yaml).
+# Used only when the file named by BRIDGE_TOPICS (default configs/ros1_bridge_topics.yaml) does not exist.
+# Parameter bridge topics are bidirectional: whoever publishes on one side shows up on the other.
+# Do NOT add /tf here unless you accept the feedback risk (framework /tf goes back to ROS 1); x30_hw publishes static TF itself.
+topics:
+  -
+    topic: /lidar_points
+    type: sensor_msgs/msg/PointCloud2
+    queue_size: 5
+  -
+    topic: /imu/data
+    type: sensor_msgs/msg/Imu
+    queue_size: 100
+  -
+    topic: /cmd_vel
+    type: geometry_msgs/msg/Twist
+    queue_size: 10

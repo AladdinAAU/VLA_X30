@@ -1,0 +1,7 @@
+# Overlay example: python -m x30_eval.run_episodes ... --overlay configs/eval/examples/overlay_example.yaml
+# Keys are config file stems under configs/ ; values are deep-merged over that file (see docs/EVALUATION.md, "Overlays").
+agent/object_nav:
+  model: {temperature: 0.0}
+  limits: {max_turns: 20}
+modes/object_nav:
+  no_progress_window_s: 90.0

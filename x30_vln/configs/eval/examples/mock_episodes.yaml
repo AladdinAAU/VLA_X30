@@ -1,0 +1,7 @@
+# Episodes for the MOCK stack (x30_eval.testing.mock_stack): used only to test the ROS runner path without Gazebo.
+- {id: mock_pose, scene: mock_world, mode: goal_pose, instruction: "Go to the point (6, 4).", start: {x: 1.0, y: 1.0, yaw: 0.0},
+   goal: {type: pose, x: 6.0, y: 4.0}, time_limit_s: 30, split: dev}
+- {id: mock_plant, scene: mock_world, mode: object_nav, instruction: "Find the plant and stop next to it.", start: {x: 1.0, y: 1.0, yaw: 0.0},
+   goal: {type: object, label: plant, radius: 1.5}, time_limit_s: 30, split: dev}
+- {id: mock_hang, scene: mock_world, mode: object_nav, instruction: "hang", start: {x: 1.0, y: 1.0, yaw: 0.0},
+   goal: {type: object, label: chair, radius: 1.5}, time_limit_s: 6, split: dev}

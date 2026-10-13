@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Same as cyclonedds.xml but for the ros1_bridge container (ROS 2 Foxy, CycloneDDS 0.7): that version does not know
+  Internal/SocketReceiveBufferSize and aborts on unknown elements, so only options valid in 0.7 are used.
+  Selected by compose.yml through X30_DDS_FILE_BRIDGE (default cyclonedds-foxy.xml). Keep the other settings identical.
+-->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain id="any">
+    <General>
+      <AllowMulticast>spdp</AllowMulticast>
+      <MaxMessageSize>65500B</MaxMessageSize>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+    </Discovery>
+    <Internal>
+      <Watermarks>
+        <WhcHigh>8MB</WhcHigh>
+      </Watermarks>
+    </Internal>
+  </Domain>
+</CycloneDDS>

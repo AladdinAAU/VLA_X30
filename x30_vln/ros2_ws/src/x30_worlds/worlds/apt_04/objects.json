@@ -1,0 +1,2335 @@
+[
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_01",
+  "pose": {
+   "x": 1.5,
+   "y": 0.75,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.12,
+   0.15,
+   2.2
+  ],
+  "bbox": [
+   0.94,
+   0.675,
+   0.0,
+   2.06,
+   0.825,
+   2.2
+  ],
+  "size_local": [
+   1.0,
+   0.15,
+   2.1
+  ],
+  "room": "hall_1",
+  "connects": [
+   "hall_1",
+   "kitchen_1"
+  ],
+  "clear_width": 1.0,
+  "color": "brown",
+  "temperature_c": null,
+  "attributes": [
+   "brown"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 0
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_02",
+  "pose": {
+   "x": 5.063,
+   "y": 0.75,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.32,
+   0.15,
+   2.2
+  ],
+  "bbox": [
+   4.403,
+   0.675,
+   0.0,
+   5.723,
+   0.825,
+   2.2
+  ],
+  "size_local": [
+   1.2,
+   0.15,
+   2.1
+  ],
+  "room": "hall_1",
+  "connects": [
+   "hall_1",
+   "living_room_1"
+  ],
+  "clear_width": 1.2,
+  "color": "brown",
+  "temperature_c": null,
+  "attributes": [
+   "brown"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 1
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_03",
+  "pose": {
+   "x": 2.279,
+   "y": -0.75,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.12,
+   0.15,
+   2.2
+  ],
+  "bbox": [
+   1.719,
+   -0.825,
+   0.0,
+   2.839,
+   -0.675,
+   2.2
+  ],
+  "size_local": [
+   1.0,
+   0.15,
+   2.1
+  ],
+  "room": "hall_1",
+  "connects": [
+   "hall_1",
+   "bathroom_1"
+  ],
+  "clear_width": 1.0,
+  "color": "brown",
+  "temperature_c": null,
+  "attributes": [
+   "brown"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 2
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_04",
+  "pose": {
+   "x": 7.996,
+   "y": -0.75,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   1.32,
+   0.15,
+   2.2
+  ],
+  "bbox": [
+   7.336,
+   -0.825,
+   0.0,
+   8.656,
+   -0.675,
+   2.2
+  ],
+  "size_local": [
+   1.2,
+   0.15,
+   2.1
+  ],
+  "room": "hall_1",
+  "connects": [
+   "hall_1",
+   "bedroom_1"
+  ],
+  "clear_width": 1.2,
+  "color": "brown",
+  "temperature_c": null,
+  "attributes": [
+   "brown"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 3
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_05",
+  "pose": {
+   "x": 3.736,
+   "y": 3.237,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.15,
+   1.32,
+   2.2
+  ],
+  "bbox": [
+   3.661,
+   2.577,
+   0.0,
+   3.811,
+   3.897,
+   2.2
+  ],
+  "size_local": [
+   1.2,
+   0.15,
+   2.1
+  ],
+  "room": "kitchen_1",
+  "connects": [
+   "kitchen_1",
+   "living_room_1"
+  ],
+  "clear_width": 1.2,
+  "color": "brown",
+  "temperature_c": null,
+  "attributes": [
+   "brown"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 4
+ },
+ {
+  "label": "fire_extinguisher",
+  "label_id": 38,
+  "instance": "fire_extinguisher_01",
+  "pose": {
+   "x": 3.394,
+   "y": 0.545,
+   "z": 0.0,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.2,
+   0.2,
+   0.62
+  ],
+  "bbox": [
+   3.294,
+   0.445,
+   0.0,
+   3.494,
+   0.645,
+   0.62
+  ],
+  "size_local": [
+   0.2,
+   0.2,
+   0.62
+  ],
+  "room": "hall_1",
+  "color": "red",
+  "temperature_c": null,
+  "attributes": [
+   "red"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 5
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_01",
+  "pose": {
+   "x": 3.474,
+   "y": -0.645,
+   "z": 1.4,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.6,
+   0.04,
+   0.45
+  ],
+  "bbox": [
+   3.174,
+   -0.665,
+   1.4,
+   3.774,
+   -0.625,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "hall_1",
+  "color": "yellow",
+  "temperature_c": null,
+  "attributes": [
+   "yellow"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 6
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_02",
+  "pose": {
+   "x": 5.577,
+   "y": 0.645,
+   "z": 1.4,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.6,
+   0.04,
+   0.45
+  ],
+  "bbox": [
+   5.277,
+   0.625,
+   1.4,
+   5.877,
+   0.665,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "hall_1",
+  "color": "red",
+  "temperature_c": null,
+  "attributes": [
+   "red"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 7
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_03",
+  "pose": {
+   "x": 9.222,
+   "y": 0.19,
+   "z": 1.4,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "bbox": [
+   9.202,
+   -0.11,
+   1.4,
+   9.242,
+   0.49,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "hall_1",
+  "color": "red",
+  "temperature_c": null,
+  "attributes": [
+   "red"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 8
+ },
+ {
+  "label": "refrigerator",
+  "label_id": 24,
+  "instance": "refrigerator_01",
+  "pose": {
+   "x": 3.301,
+   "y": 1.185,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.7,
+   0.7,
+   1.8
+  ],
+  "bbox": [
+   2.951,
+   0.835,
+   0.0,
+   3.651,
+   1.535,
+   1.8
+  ],
+  "size_local": [
+   0.7,
+   0.7,
+   1.8
+  ],
+  "room": "kitchen_1",
+  "color": "gray",
+  "temperature_c": 8.0,
+  "attributes": [
+   "cold",
+   "gray"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 9
+ },
+ {
+  "label": "kitchen_counter",
+  "label_id": 25,
+  "instance": "kitchen_counter_01",
+  "pose": {
+   "x": 1.975,
+   "y": 4.535,
+   "z": 0.0,
+   "yaw": -1.5708
+  },
+  "size": [
+   3.0,
+   0.62,
+   0.9
+  ],
+  "bbox": [
+   0.475,
+   4.225,
+   0.0,
+   3.475,
+   4.845,
+   0.9
+  ],
+  "size_local": [
+   0.62,
+   3.0,
+   0.9
+  ],
+  "room": "kitchen_1",
+  "color": "wood",
+  "temperature_c": null,
+  "attributes": [
+   "wood"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 10
+ },
+ {
+  "label": "microwave",
+  "label_id": 28,
+  "instance": "microwave_01",
+  "pose": {
+   "x": 1.222,
+   "y": 4.524,
+   "z": 0.9,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.45,
+   0.35,
+   0.27
+  ],
+  "bbox": [
+   0.997,
+   4.349,
+   0.9,
+   1.447,
+   4.699,
+   1.17
+  ],
+  "size_local": [
+   0.35,
+   0.45,
+   0.27
+  ],
+  "room": "kitchen_1",
+  "color": "black",
+  "temperature_c": 27.0,
+  "attributes": [
+   "warm",
+   "black"
+  ],
+  "parent": "kitchen_counter_01",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 11
+ },
+ {
+  "label": "stove",
+  "label_id": 27,
+  "instance": "stove_01",
+  "pose": {
+   "x": 0.415,
+   "y": 3.008,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.62,
+   0.62,
+   0.9
+  ],
+  "bbox": [
+   0.105,
+   2.698,
+   0.0,
+   0.725,
+   3.318,
+   0.9
+  ],
+  "size_local": [
+   0.62,
+   0.62,
+   0.9
+  ],
+  "room": "kitchen_1",
+  "color": "metal",
+  "temperature_c": 65.0,
+  "attributes": [
+   "hot",
+   "metal"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 12
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 1.578,
+   "y": 2.983,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.9,
+   1.6,
+   0.75
+  ],
+  "bbox": [
+   1.128,
+   2.183,
+   0.0,
+   2.028,
+   3.783,
+   0.75
+  ],
+  "size_local": [
+   0.9,
+   1.6,
+   0.75
+  ],
+  "room": "kitchen_1",
+  "color": "wood",
+  "temperature_c": null,
+  "attributes": [
+   "wood"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 13
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_01",
+  "pose": {
+   "x": 0.265,
+   "y": 1.055,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.32,
+   0.32,
+   0.42
+  ],
+  "bbox": [
+   0.105,
+   0.895,
+   0.0,
+   0.425,
+   1.215,
+   0.42
+  ],
+  "size_local": [
+   0.32,
+   0.32,
+   0.42
+  ],
+  "room": "kitchen_1",
+  "color": "gray",
+  "temperature_c": null,
+  "attributes": [
+   "gray"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 14
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_01",
+  "pose": {
+   "x": 1.146,
+   "y": 4.835,
+   "z": 0.9,
+   "yaw": -1.5708
+  },
+  "size": [
+   1.2,
+   0.06,
+   1.2
+  ],
+  "bbox": [
+   0.546,
+   4.805,
+   0.9,
+   1.746,
+   4.865,
+   2.1
+  ],
+  "size_local": [
+   0.06,
+   1.2,
+   1.2
+  ],
+  "room": "kitchen_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 15
+ },
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_01",
+  "pose": {
+   "x": 8.772,
+   "y": 3.395,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.9,
+   2.0,
+   0.85
+  ],
+  "bbox": [
+   8.322,
+   2.395,
+   0.0,
+   9.222,
+   4.395,
+   0.85
+  ],
+  "size_local": [
+   0.9,
+   2.0,
+   0.85
+  ],
+  "room": "living_room_1",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [
+   "beige"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 16
+ },
+ {
+  "label": "coffee_table",
+  "label_id": 31,
+  "instance": "coffee_table_01",
+  "pose": {
+   "x": 7.722,
+   "y": 3.395,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.55,
+   1.0,
+   0.42
+  ],
+  "bbox": [
+   7.447,
+   2.895,
+   0.0,
+   7.997,
+   3.895,
+   0.42
+  ],
+  "size_local": [
+   0.55,
+   1.0,
+   0.42
+  ],
+  "room": "living_room_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 17
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_01",
+  "pose": {
+   "x": 7.722,
+   "y": 3.395,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   2.0,
+   1.4,
+   0.005
+  ],
+  "bbox": [
+   6.722,
+   2.695,
+   0.0,
+   8.722,
+   4.095,
+   0.005
+  ],
+  "size_local": [
+   2.0,
+   1.4,
+   0.005
+  ],
+  "room": "living_room_1",
+  "color": "orange",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 18
+ },
+ {
+  "label": "armchair",
+  "label_id": 14,
+  "instance": "armchair_01",
+  "pose": {
+   "x": 7.772,
+   "y": 2.095,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.8,
+   0.8,
+   0.85
+  ],
+  "bbox": [
+   7.372,
+   1.695,
+   0.0,
+   8.172,
+   2.495,
+   0.85
+  ],
+  "size_local": [
+   0.8,
+   0.8,
+   0.85
+  ],
+  "room": "living_room_1",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [
+   "beige"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 19
+ },
+ {
+  "label": "tv_stand",
+  "label_id": 32,
+  "instance": "tv_stand_01",
+  "pose": {
+   "x": 7.746,
+   "y": 1.055,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.4,
+   0.4,
+   0.45
+  ],
+  "bbox": [
+   7.046,
+   0.855,
+   0.0,
+   8.446,
+   1.255,
+   0.45
+  ],
+  "size_local": [
+   0.4,
+   1.4,
+   0.45
+  ],
+  "room": "living_room_1",
+  "color": "black",
+  "temperature_c": null,
+  "attributes": [
+   "black"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 20
+ },
+ {
+  "label": "tv",
+  "label_id": 21,
+  "instance": "tv_01",
+  "pose": {
+   "x": 7.807,
+   "y": 1.037,
+   "z": 0.45,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.1,
+   0.14,
+   0.616
+  ],
+  "bbox": [
+   7.257,
+   0.967,
+   0.45,
+   8.357,
+   1.107,
+   1.066
+  ],
+  "size_local": [
+   0.14,
+   1.1,
+   0.616
+  ],
+  "room": "living_room_1",
+  "color": "black",
+  "temperature_c": 31.0,
+  "attributes": [
+   "warm",
+   "black"
+  ],
+  "parent": "tv_stand_01",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 21
+ },
+ {
+  "label": "bookshelf",
+  "label_id": 18,
+  "instance": "bookshelf_01",
+  "pose": {
+   "x": 5.831,
+   "y": 4.695,
+   "z": 0.0,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.9,
+   0.3,
+   1.8
+  ],
+  "bbox": [
+   5.381,
+   4.545,
+   0.0,
+   6.281,
+   4.845,
+   1.8
+  ],
+  "size_local": [
+   0.3,
+   0.9,
+   1.8
+  ],
+  "room": "living_room_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 22
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_01",
+  "pose": {
+   "x": 4.121,
+   "y": 4.565,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.6,
+   0.6,
+   0.984
+  ],
+  "bbox": [
+   3.821,
+   4.265,
+   0.0,
+   4.421,
+   4.865,
+   0.984
+  ],
+  "size_local": [
+   0.6,
+   0.6,
+   0.984
+  ],
+  "room": "living_room_1",
+  "color": "green",
+  "temperature_c": null,
+  "attributes": [
+   "green"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 23
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_01",
+  "pose": {
+   "x": 3.981,
+   "y": 0.995,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "bbox": [
+   3.821,
+   0.835,
+   0.0,
+   4.141,
+   1.155,
+   1.7
+  ],
+  "size_local": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "room": "living_room_1",
+  "color": "cream",
+  "temperature_c": null,
+  "attributes": [
+   "cream"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 24
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_02",
+  "pose": {
+   "x": 7.686,
+   "y": 4.835,
+   "z": 0.9,
+   "yaw": -1.5708
+  },
+  "size": [
+   1.2,
+   0.06,
+   1.2
+  ],
+  "bbox": [
+   7.086,
+   4.805,
+   0.9,
+   8.286,
+   4.865,
+   2.1
+  ],
+  "size_local": [
+   0.06,
+   1.2,
+   1.2
+  ],
+  "room": "living_room_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 25
+ },
+ {
+  "label": "radiator",
+  "label_id": 36,
+  "instance": "radiator_01",
+  "pose": {
+   "x": 7.686,
+   "y": 4.815,
+   "z": 0.15,
+   "yaw": -1.5708
+  },
+  "size": [
+   1.0,
+   0.1,
+   0.75
+  ],
+  "bbox": [
+   7.186,
+   4.765,
+   0.15,
+   8.186,
+   4.865,
+   0.9
+  ],
+  "size_local": [
+   0.1,
+   1.0,
+   0.75
+  ],
+  "room": "living_room_1",
+  "color": "white",
+  "temperature_c": 60.0,
+  "attributes": [
+   "hot",
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 26
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_04",
+  "pose": {
+   "x": 9.222,
+   "y": 1.521,
+   "z": 1.4,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "bbox": [
+   9.202,
+   1.221,
+   1.4,
+   9.242,
+   1.821,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "living_room_1",
+  "color": "orange",
+  "temperature_c": null,
+  "attributes": [
+   "orange"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 27
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_05",
+  "pose": {
+   "x": 3.841,
+   "y": 4.175,
+   "z": 1.4,
+   "yaw": 0.0
+  },
+  "size": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "bbox": [
+   3.821,
+   3.875,
+   1.4,
+   3.861,
+   4.475,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "living_room_1",
+  "color": "orange",
+  "temperature_c": null,
+  "attributes": [
+   "orange"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 28
+ },
+ {
+  "label": "person",
+  "label_id": 37,
+  "instance": "person_01",
+  "pose": {
+   "x": 5.621,
+   "y": 2.534,
+   "z": 0.0,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.5,
+   0.45,
+   1.7
+  ],
+  "bbox": [
+   5.371,
+   2.309,
+   0.0,
+   5.871,
+   2.759,
+   1.7
+  ],
+  "size_local": [
+   0.45,
+   0.5,
+   1.7
+  ],
+  "room": "living_room_1",
+  "color": "purple",
+  "temperature_c": 36.0,
+  "attributes": [
+   "person-like",
+   "warm",
+   "purple"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 29
+ },
+ {
+  "label": "toilet",
+  "label_id": 29,
+  "instance": "toilet_01",
+  "pose": {
+   "x": 3.339,
+   "y": -3.822,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.7,
+   0.4,
+   0.8
+  ],
+  "bbox": [
+   2.989,
+   -4.022,
+   0.0,
+   3.689,
+   -3.622,
+   0.8
+  ],
+  "size_local": [
+   0.7,
+   0.4,
+   0.8
+  ],
+  "room": "bathroom_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 30
+ },
+ {
+  "label": "sink",
+  "label_id": 26,
+  "instance": "sink_01",
+  "pose": {
+   "x": 0.33,
+   "y": -2.879,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.45,
+   0.5,
+   0.95
+  ],
+  "bbox": [
+   0.105,
+   -3.129,
+   0.0,
+   0.555,
+   -2.629,
+   0.95
+  ],
+  "size_local": [
+   0.45,
+   0.5,
+   0.95
+  ],
+  "room": "bathroom_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 31
+ },
+ {
+  "label": "bathtub",
+  "label_id": 30,
+  "instance": "bathtub_01",
+  "pose": {
+   "x": 1.732,
+   "y": -4.07,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.7,
+   0.75,
+   0.55
+  ],
+  "bbox": [
+   0.882,
+   -4.445,
+   0.0,
+   2.582,
+   -3.695,
+   0.55
+  ],
+  "size_local": [
+   0.75,
+   1.7,
+   0.55
+  ],
+  "room": "bathroom_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 32
+ },
+ {
+  "label": "trash_can",
+  "label_id": 35,
+  "instance": "trash_can_02",
+  "pose": {
+   "x": 3.515,
+   "y": -1.015,
+   "z": 0.0,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.32,
+   0.32,
+   0.42
+  ],
+  "bbox": [
+   3.355,
+   -1.175,
+   0.0,
+   3.675,
+   -0.855,
+   0.42
+  ],
+  "size_local": [
+   0.32,
+   0.32,
+   0.42
+  ],
+  "room": "bathroom_1",
+  "color": "green",
+  "temperature_c": null,
+  "attributes": [
+   "green"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 33
+ },
+ {
+  "label": "mirror",
+  "label_id": 52,
+  "instance": "mirror_01",
+  "pose": {
+   "x": 3.689,
+   "y": -3.252,
+   "z": 1.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.04,
+   0.6,
+   0.8
+  ],
+  "bbox": [
+   3.669,
+   -3.552,
+   1.0,
+   3.709,
+   -2.952,
+   1.8
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.8
+  ],
+  "room": "bathroom_1",
+  "color": "metal",
+  "temperature_c": null,
+  "attributes": [
+   "metal"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 34
+ },
+ {
+  "label": "bed",
+  "label_id": 15,
+  "instance": "bed_01",
+  "pose": {
+   "x": 4.919,
+   "y": -2.61,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.04,
+   1.6,
+   0.95
+  ],
+  "bbox": [
+   3.899,
+   -3.41,
+   0.0,
+   5.939,
+   -1.81,
+   0.95
+  ],
+  "size_local": [
+   2.04,
+   1.6,
+   0.95
+  ],
+  "room": "bedroom_1",
+  "color": "green",
+  "temperature_c": null,
+  "attributes": [
+   "green"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 35
+ },
+ {
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_01",
+  "pose": {
+   "x": 4.099,
+   "y": -1.56,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "bbox": [
+   3.899,
+   -1.76,
+   0.0,
+   4.299,
+   -1.36,
+   0.5
+  ],
+  "size_local": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "room": "bedroom_1",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [
+   "beige"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 36
+ },
+ {
+  "label": "laptop",
+  "label_id": 23,
+  "instance": "laptop_01",
+  "pose": {
+   "x": 4.107,
+   "y": -1.56,
+   "z": 0.5,
+   "yaw": 0.0
+  },
+  "size": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "bbox": [
+   3.987,
+   -1.725,
+   0.5,
+   4.227,
+   -1.395,
+   0.74
+  ],
+  "size_local": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "room": "bedroom_1",
+  "color": "gray",
+  "temperature_c": 36.0,
+  "attributes": [
+   "warm",
+   "gray"
+  ],
+  "parent": "nightstand_01",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 37
+ },
+ {
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_02",
+  "pose": {
+   "x": 4.099,
+   "y": -3.66,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "bbox": [
+   3.899,
+   -3.86,
+   0.0,
+   4.299,
+   -3.46,
+   0.5
+  ],
+  "size_local": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "room": "bedroom_1",
+  "color": "black",
+  "temperature_c": null,
+  "attributes": [
+   "black"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 38
+ },
+ {
+  "label": "laptop",
+  "label_id": 23,
+  "instance": "laptop_02",
+  "pose": {
+   "x": 4.1,
+   "y": -3.66,
+   "z": 0.5,
+   "yaw": 0.0
+  },
+  "size": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "bbox": [
+   3.98,
+   -3.825,
+   0.5,
+   4.22,
+   -3.495,
+   0.74
+  ],
+  "size_local": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "room": "bedroom_1",
+  "color": "black",
+  "temperature_c": 36.0,
+  "attributes": [
+   "warm",
+   "black"
+  ],
+  "parent": "nightstand_02",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 39
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_02",
+  "pose": {
+   "x": 5.819,
+   "y": -2.61,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   2.4,
+   1.6,
+   0.005
+  ],
+  "bbox": [
+   4.619,
+   -3.41,
+   0.0,
+   7.019,
+   -1.81,
+   0.005
+  ],
+  "size_local": [
+   2.4,
+   1.6,
+   0.005
+  ],
+  "room": "bedroom_1",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 40
+ },
+ {
+  "label": "wardrobe",
+  "label_id": 17,
+  "instance": "wardrobe_01",
+  "pose": {
+   "x": 8.922,
+   "y": -3.874,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.6,
+   1.0,
+   2.0
+  ],
+  "bbox": [
+   8.622,
+   -4.374,
+   0.0,
+   9.222,
+   -3.374,
+   2.0
+  ],
+  "size_local": [
+   0.6,
+   1.0,
+   2.0
+  ],
+  "room": "bedroom_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 41
+ },
+ {
+  "label": "desk",
+  "label_id": 12,
+  "instance": "desk_01",
+  "pose": {
+   "x": 7.158,
+   "y": -4.095,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.2,
+   0.7,
+   0.75
+  ],
+  "bbox": [
+   6.558,
+   -4.445,
+   0.0,
+   7.758,
+   -3.745,
+   0.75
+  ],
+  "size_local": [
+   0.7,
+   1.2,
+   0.75
+  ],
+  "room": "bedroom_1",
+  "color": "wood",
+  "temperature_c": null,
+  "attributes": [
+   "wood"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 42
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": 7.158,
+   "y": -3.545,
+   "z": 0.0,
+   "yaw": 4.7124
+  },
+  "size": [
+   0.6,
+   0.6,
+   1.03
+  ],
+  "bbox": [
+   6.858,
+   -3.845,
+   0.0,
+   7.458,
+   -3.245,
+   1.03
+  ],
+  "size_local": [
+   0.6,
+   0.6,
+   1.03
+  ],
+  "room": "bedroom_1",
+  "color": "red",
+  "temperature_c": null,
+  "attributes": [
+   "red"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 43
+ },
+ {
+  "label": "laptop",
+  "label_id": 23,
+  "instance": "laptop_03",
+  "pose": {
+   "x": 6.81,
+   "y": -4.007,
+   "z": 0.75,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.33,
+   0.24,
+   0.24
+  ],
+  "bbox": [
+   6.645,
+   -4.127,
+   0.75,
+   6.975,
+   -3.887,
+   0.99
+  ],
+  "size_local": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "room": "bedroom_1",
+  "color": "metal",
+  "temperature_c": 36.0,
+  "attributes": [
+   "warm",
+   "metal"
+  ],
+  "parent": "desk_01",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 44
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_02",
+  "pose": {
+   "x": 4.039,
+   "y": -0.995,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "bbox": [
+   3.879,
+   -1.155,
+   0.0,
+   4.199,
+   -0.835,
+   1.7
+  ],
+  "size_local": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "room": "bedroom_1",
+  "color": "cream",
+  "temperature_c": null,
+  "attributes": [
+   "cream"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 45
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_03",
+  "pose": {
+   "x": 5.076,
+   "y": -4.435,
+   "z": 0.9,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.5,
+   0.06,
+   1.2
+  ],
+  "bbox": [
+   4.326,
+   -4.465,
+   0.9,
+   5.826,
+   -4.405,
+   2.1
+  ],
+  "size_local": [
+   0.06,
+   1.5,
+   1.2
+  ],
+  "room": "bedroom_1",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 46
+ },
+ {
+  "label": "radiator",
+  "label_id": 36,
+  "instance": "radiator_02",
+  "pose": {
+   "x": 5.076,
+   "y": -4.415,
+   "z": 0.15,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.0,
+   0.1,
+   0.75
+  ],
+  "bbox": [
+   4.576,
+   -4.465,
+   0.15,
+   5.576,
+   -4.365,
+   0.9
+  ],
+  "size_local": [
+   0.1,
+   1.0,
+   0.75
+  ],
+  "room": "bedroom_1",
+  "color": "white",
+  "temperature_c": 60.0,
+  "attributes": [
+   "hot",
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 47
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_06",
+  "pose": {
+   "x": 5.091,
+   "y": -0.855,
+   "z": 1.4,
+   "yaw": -1.5708
+  },
+  "size": [
+   0.6,
+   0.04,
+   0.45
+  ],
+  "bbox": [
+   4.791,
+   -0.875,
+   1.4,
+   5.391,
+   -0.835,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "bedroom_1",
+  "color": "yellow",
+  "temperature_c": null,
+  "attributes": [
+   "yellow"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 48
+ },
+ {
+  "label": "bed",
+  "label_id": 15,
+  "instance": "bed_02",
+  "pose": {
+   "x": 10.522,
+   "y": -3.425,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.6,
+   2.04,
+   0.95
+  ],
+  "bbox": [
+   9.722,
+   -4.445,
+   0.0,
+   11.322,
+   -2.405,
+   0.95
+  ],
+  "size_local": [
+   2.04,
+   1.6,
+   0.95
+  ],
+  "room": "bedroom_2",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [
+   "beige"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 49
+ },
+ {
+  "label": "nightstand",
+  "label_id": 16,
+  "instance": "nightstand_03",
+  "pose": {
+   "x": 11.572,
+   "y": -4.245,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "bbox": [
+   11.372,
+   -4.445,
+   0.0,
+   11.772,
+   -4.045,
+   0.5
+  ],
+  "size_local": [
+   0.4,
+   0.4,
+   0.5
+  ],
+  "room": "bedroom_2",
+  "color": "black",
+  "temperature_c": null,
+  "attributes": [
+   "black"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 50
+ },
+ {
+  "label": "laptop",
+  "label_id": 23,
+  "instance": "laptop_04",
+  "pose": {
+   "x": 11.572,
+   "y": -4.236,
+   "z": 0.5,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.33,
+   0.24,
+   0.24
+  ],
+  "bbox": [
+   11.407,
+   -4.356,
+   0.5,
+   11.737,
+   -4.116,
+   0.74
+  ],
+  "size_local": [
+   0.24,
+   0.33,
+   0.24
+  ],
+  "room": "bedroom_2",
+  "color": "metal",
+  "temperature_c": 36.0,
+  "attributes": [
+   "warm",
+   "metal"
+  ],
+  "parent": "nightstand_03",
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 51
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_03",
+  "pose": {
+   "x": 10.522,
+   "y": -2.525,
+   "z": 0.0,
+   "yaw": 1.5708
+  },
+  "size": [
+   1.6,
+   2.4,
+   0.005
+  ],
+  "bbox": [
+   9.722,
+   -3.725,
+   0.0,
+   11.322,
+   -1.325,
+   0.005
+  ],
+  "size_local": [
+   2.4,
+   1.6,
+   0.005
+  ],
+  "room": "bedroom_2",
+  "color": "beige",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 52
+ },
+ {
+  "label": "wardrobe",
+  "label_id": 17,
+  "instance": "wardrobe_02",
+  "pose": {
+   "x": 12.722,
+   "y": -2.936,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.6,
+   1.5,
+   2.0
+  ],
+  "bbox": [
+   12.422,
+   -3.686,
+   0.0,
+   13.022,
+   -2.186,
+   2.0
+  ],
+  "size_local": [
+   0.6,
+   1.5,
+   2.0
+  ],
+  "room": "bedroom_2",
+  "color": "wood",
+  "temperature_c": null,
+  "attributes": [
+   "wood"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 53
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_02",
+  "pose": {
+   "x": 12.742,
+   "y": -4.165,
+   "z": 0.0,
+   "yaw": 3.1416
+  },
+  "size": [
+   0.6,
+   0.6,
+   1.043
+  ],
+  "bbox": [
+   12.442,
+   -4.465,
+   0.0,
+   13.042,
+   -3.865,
+   1.043
+  ],
+  "size_local": [
+   0.6,
+   0.6,
+   1.043
+  ],
+  "room": "bedroom_2",
+  "color": "green",
+  "temperature_c": null,
+  "attributes": [
+   "green"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 54
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_03",
+  "pose": {
+   "x": 9.572,
+   "y": 4.705,
+   "z": 0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "bbox": [
+   9.412,
+   4.545,
+   0.0,
+   9.732,
+   4.865,
+   1.7
+  ],
+  "size_local": [
+   0.32,
+   0.32,
+   1.7
+  ],
+  "room": "bedroom_2",
+  "color": "cream",
+  "temperature_c": null,
+  "attributes": [
+   "cream"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 55
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_04",
+  "pose": {
+   "x": 11.542,
+   "y": 4.835,
+   "z": 0.9,
+   "yaw": -1.5708
+  },
+  "size": [
+   1.2,
+   0.06,
+   1.2
+  ],
+  "bbox": [
+   10.942,
+   4.805,
+   0.9,
+   12.142,
+   4.865,
+   2.1
+  ],
+  "size_local": [
+   0.06,
+   1.2,
+   1.2
+  ],
+  "room": "bedroom_2",
+  "color": "white",
+  "temperature_c": null,
+  "attributes": [
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 56
+ },
+ {
+  "label": "radiator",
+  "label_id": 36,
+  "instance": "radiator_03",
+  "pose": {
+   "x": 11.542,
+   "y": 4.815,
+   "z": 0.15,
+   "yaw": -1.5708
+  },
+  "size": [
+   1.0,
+   0.1,
+   0.75
+  ],
+  "bbox": [
+   11.042,
+   4.765,
+   0.15,
+   12.042,
+   4.865,
+   0.9
+  ],
+  "size_local": [
+   0.1,
+   1.0,
+   0.75
+  ],
+  "room": "bedroom_2",
+  "color": "white",
+  "temperature_c": 60.0,
+  "attributes": [
+   "hot",
+   "white"
+  ],
+  "parent": null,
+  "blocks_robot": true,
+  "source": "procgen",
+  "id": 57
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_07",
+  "pose": {
+   "x": 12.723,
+   "y": -4.445,
+   "z": 1.4,
+   "yaw": 1.5708
+  },
+  "size": [
+   0.6,
+   0.04,
+   0.45
+  ],
+  "bbox": [
+   12.423,
+   -4.465,
+   1.4,
+   13.023,
+   -4.425,
+   1.85
+  ],
+  "size_local": [
+   0.04,
+   0.6,
+   0.45
+  ],
+  "room": "bedroom_2",
+  "color": "purple",
+  "temperature_c": null,
+  "attributes": [
+   "purple"
+  ],
+  "parent": null,
+  "blocks_robot": false,
+  "source": "procgen",
+  "id": 58
+ }
+]

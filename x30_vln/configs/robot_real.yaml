@@ -1,0 +1,165 @@
+# Real X30 robot configuration (read by x30_hw launch files and nodes, and by scripts/hw tools).
+# Every number carries its source in a comment:
+#   [digest N]  docs/robot/x30-interfaces.md section N        [man pN] X30 Pro manual page    [api pN] API V1.0.5 page
+#   [rob7]      reference/repos/Rob7_Gr760_P7 (our prework)   [inv]    invented/engineering choice, justify before changing
+#   TO_BE_MEASURED = null: nothing is documented; a measurement procedure is in docs/REAL_ROBOT_RUNBOOK.md section 9.
+# Rule: no number here may be tightened or loosened without a measurement or a documented reason.
+
+robot:
+  name: x30
+  body_frame: "origin = geometric centre of the body, x forward, y left, z up, yaw CCW [digest 7, man p66]"
+  standing_height_m: null          # TO_BE_MEASURED (not documented, digest 8.1)
+  mass_kg: null                    # TO_BE_MEASURED
+
+network:                           # [digest 2.1]. Tests never use these; only --live tools and the real launch do.
+  motion_host: {ip: "192.168.1.103", port: 43893}          # UDP, heartbeat >= 2 Hz [api p8]
+  perception_host: {ip: "192.168.1.105"}                   # RTSP 8554, elevation map 43899 (not used by x30_hw)
+  navigation_host: {ip: "192.168.1.106", ros_master_port: 11311}   # ROS 1 master used by Rob7 [rob7]
+  dev_pc: {ip: "192.168.1.131", telemetry_port: 43897}     # [rob7] ROS_IP; MUST be registered in network.toml on the motion host [digest 2.1]
+  telemetry_port: 43897
+  ping_timeout_s: 1.0
+
+stage_default: B                   # A sensors only | B teleop 0.2 m/s | C velocity_follow | D object_nav (runbook section 6)
+
+# Velocity limits per bring-up stage [digest 5.1]. hard_* = nav_bridge clamp (independent of gait); adapter applies the same.
+stages:
+  A: {allow_motion: false, vx_forward: 0.0,  vx_backward: 0.0,  vy: 0.0, wz: 0.0}
+  B: {allow_motion: true,  vx_forward: 0.2,  vx_backward: 0.1,  vy: 0.1, wz: 0.3}    # [digest 5.1 bring-up row]
+  C: {allow_motion: true,  vx_forward: 0.4,  vx_backward: 0.15, vy: 0.2, wz: 0.5}    # [digest 5.1 initial autonomy row, INTERFACES section 2]
+  D: {allow_motion: true,  vx_forward: 0.4,  vx_backward: 0.15, vy: 0.2, wz: 0.5}    # raise to 0.6/0.2/0.3/0.8 only after measured stopping distance [digest 5.1]
+limits_after_validation: {vx_forward: 0.6, vx_backward: 0.2, vy: 0.3, wz: 0.8}      # [digest 5.1], not used by default
+limits_vendor_max_mountain: {vx_forward: 1.0, vx_backward: 1.0, vy: 0.8, wz: 1.2}   # [api p65]
+
+nav_bridge:
+  motion_host_ip: "192.168.1.103"      # overridden to 127.0.0.1 by the dry-run launch
+  motion_host_port: 43893
+  local_recv_port: 43897
+  stand_target_gait: 33                # Mountain (RL) [digest 3.5]; no body-height or terrain changes in RL gaits [digest 5]
+  cmd_vel_timeout_ms: 400              # [digest 4.3 item 3: 300-500]
+  telemetry_stale_ms: 500              # [inv] 100 missed packets at 200 Hz
+  heartbeat_interval_ms: 200           # [nb yaml], vendor minimum 2 Hz [api p9]
+  max_accel: 0.5                       # m/s2 [digest 5.1]
+  max_accel_yaw: 1.0                   # rad/s2 [inv] no vendor value
+  max_jerk: 2.0                        # m/s3 [inv] 0.5 m/s2 reached in 0.25 s
+  max_jerk_yaw: 4.0                    # [inv]
+  startup_acquire_control: false       # [digest 4.3 item 4] never fight the handheld controller
+  enable_charge_interface: false       # talks to the perception host; unrelated to VLN
+  # Covariances are placeholders (variances). Replace with measured drift (runbook section 9, measure_odom_drift).
+  odom_pose_cov_xy: 0.05               # m2 [inv]
+  odom_pose_cov_yaw: 0.1               # rad2 [inv]
+  odom_twist_cov_v: 0.01               # (m/s)2 [inv]
+  odom_twist_cov_wz: 0.02              # (rad/s)2 [inv]
+  imu_orientation_cov: 0.001           # rad2 [inv]
+  imu_angvel_cov: 0.0001               # (rad/s)2 [inv] (static bag Allan variance: TO_BE_MEASURED)
+  imu_linacc_cov: 0.01                 # (m/s2)2 [inv]
+  odom_flip_vy: false                  # sign conventions of /leg_odom are UNVERIFIED (digest 8.13); measure_step_response checks them
+  odom_flip_yaw: false
+  battery_current_unit_a: 1.0          # amperes per raw count: 1.0 before deeprcs 1.10.19, 0.01 after [api p25-26]; firmware version TO_BE_MEASURED
+  battery_current_sign: -1.0           # BatteryState + = charging; robot sign convention not documented [inv]
+
+adapter:                               # x30_hw real_adapter
+  cmd_vel_in: /cmd_vel                 # INTERFACES section 2, produced by safety_guard only
+  cmd_vel_hw: /x30/cmd_vel_hw          # nav_bridge input
+  cmd_timeout_s: 0.4                   # forward zero when /cmd_vel is older than this [digest 5.1: <= 0.5 s]
+  no_lateral_above_vx: 0.5             # no vy while vx > 0.5 [digest 5.1]
+  battery_min_percent_to_arm: 25       # [inv] vendor low-battery behaviour undocumented (digest 5)
+  battery_disarm_percent: 12           # [inv]
+  estop_confirm_timeout_s: 0.2         # call the soft_estop service if nav_bridge has not confirmed estop_active in this time
+  imu_source: ros1                     # ros1 = bridged robot /imu/data (shares the lidar clock domain); udp = republish /x30/imu/data as /imu/data
+                                       # (then the bridge list ros1_bridge_topics_udp_imu.yaml is REQUIRED, else the PC IMU would leak into the robot's ROS 1 graph)
+  imu_wait_s: 5.0                      # ros1 mode: ERROR in /x30/health if the bridged IMU is absent after this long
+  rate_expectations_hz:                # monitored, WARN below 60 %, ERROR below 20 %
+    lidar_points: 10.0                 # [digest 2.2, bag]
+    imu: 200.0                         # [digest 2.2] (udp mode republishes the UDP IMU rate)
+    odom: 200.0                        # [digest 2.2] /x30/leg_odom
+    camera: 10.0                       # [INTERFACES 2] only when camera_ingest runs
+  health_period_s: 1.0
+
+clock:                                 # robot clock vs dev PC, runbook section 4 (chrony first!)
+  robot_minus_pc_s: 0.0                # applied by the adapter to PC-stamped /odom and /imu/data and by camera_ingest; measure with clock_offset.py
+  warn_abs_s: 0.02
+  error_abs_s: 0.1
+
+topics:
+  robot_ros1_bridged: [/lidar_points, /imu/data, /leg_odom, /livox/imu_192_168_2_202, /livox/imu_192_168_2_203, /livox/imu_192_168_2_204, /livox/imu_192_168_2_205]   # [digest 2.2, rob7]
+  contract: {lidar: /lidar_points, imu: /imu/data, odom: /odom, cmd_vel: /cmd_vel, ready: /x30/ready, battery: /x30/battery, estop: /x30/estop, health: /x30/health}
+
+frames: {map: map, odom: odom, base: base_link, lidar: lidar_link, imu: imu_link, camera: camera_link, camera_optical: camera_optical_frame, thermal: thermal_link, thermal_optical: thermal_optical_frame}
+
+# Static extrinsics, body frame (base_link) -> sensor. Metres and degrees (rpy, extrinsic x-y-z, ROS convention).
+# status: documented = position from the manual; assumed = placeholder; calibrate = angle needs the lidar-camera/lidar calibration tools.
+extrinsics:
+  imu_link:
+    xyz: [0.13045, -0.001, 0.0149]     # [man p67, digest 1.2]: (130.45, -1, 14.9) mm, axes aligned with the body
+    rpy_deg: [0.0, 0.0, 0.0]
+    status: documented
+  lidar_link:                          # merged Livox cloud frame (INTERFACES section 1)
+    xyz: [0.0, 0.0, 0.0]
+    rpy_deg: [0.0, 0.0, 0.0]
+    status: assumed                    # lidar_link == base_link is inferred [digest 7, 8.2]; verify with the bag ground plane (docs/reports/hw.md) and a flat-wall test
+  # The manual lists four mounts (front-up, front-down, rear-up, rear-down; all y = 0). INTERFACES names them
+  # fl/fr/rl/rr; the mapping used here is fl=front-up, fr=front-down, rl=rear-up, rr=rear-down (NAMING MISMATCH, see hw.md).
+  lidar_fl_link:
+    xyz: [0.44367, 0.0, 0.05415]       # [man p66-69] front-up
+    rpy_deg: [0.0, 25.0, 0.0]          # [man p67 figure] 25 deg; axis and sign UNVERIFIED -> calibrate
+    status: calibrate
+  lidar_fr_link:
+    xyz: [0.43297, 0.0, -0.05519]      # front-down
+    rpy_deg: [0.0, 46.0, 0.0]
+    status: calibrate
+  lidar_rl_link:
+    xyz: [-0.46576, 0.0, 0.03484]      # rear-up
+    rpy_deg: [0.0, 5.0, 180.0]         # 180 deg yaw: the rear sensors look backwards (inferred from the figure)
+    status: calibrate
+  lidar_rr_link:
+    xyz: [-0.41074, 0.0, -0.05601]     # rear-down
+    rpy_deg: [0.0, 56.0, 180.0]
+    status: calibrate
+  camera_link:
+    xyz: [0.40, 0.0, 0.10]             # PLACEHOLDER: mount pose not documented [digest 1.2, 8.3]; TO_BE_MEASURED
+    rpy_deg: [0.0, 0.0, 0.0]
+    status: assumed
+  thermal_link:
+    enabled: false                     # no thermal camera on the stock X30 [digest 6.3]
+    xyz: [0.40, 0.0, 0.10]
+    rpy_deg: [0.0, 0.0, 0.0]
+    status: assumed
+  optical_rpy_deg: [-90.0, 0.0, -90.0] # camera_link (x fwd, y left, z up) -> optical (z fwd, x right, y down), REP-103
+
+camera:                                # camera_ingest
+  enabled: true
+  url: "rtsp://192.168.1.105:8554/test"   # field-found, NOT vendor documented [digest 6.2]; may change with firmware
+  transport: tcp                       # [digest 6.2] more robust than UDP over Wi-Fi
+  backend: ffmpeg                      # ffmpeg (OpenCV VideoCapture) | gstreamer
+  frame_id: camera_optical_frame
+  publish_rate_hz_max: 15.0            # INTERFACES 10-15 Hz
+  stamp_offset_s: 0.0                  # added to the arrival time; set to -(measured pipeline latency) (runbook section 9)
+  drop_late_frames: true               # always publish the newest decoded frame, never queue
+  reconnect: {initial_s: 1.0, max_s: 10.0}
+  intrinsics_file: calibration/camera.yaml   # relative to configs/; written by calibrate_camera.py
+  placeholder_hfov_deg: 100.0          # used ONLY while no calibration file exists; [digest 7: 100-120 deg placeholder]
+  placeholder_size: [1280, 720]        # [digest 7] provisional
+thermal:
+  enabled: false
+  url: ""                              # no stock thermal camera [digest 6.3]; third-party payload URLs are placeholders
+  transport: tcp
+  backend: ffmpeg
+  frame_id: thermal_optical_frame
+  publish_rate_hz_max: 8.0
+  stamp_offset_s: 0.0
+  invert: false                        # hot = bright is required by INTERFACES; set true if the stream is white-hot inverted
+  intrinsics_file: calibration/thermal.yaml
+
+odometry:
+  source: leg                          # leg odometry is /odom [INTERFACES section 2]; lidar odometry is produced by the framework
+  frame_id: odom
+  child_frame_id: base_link
+  drift_per_10m_m: null                # TO_BE_MEASURED (measure_odom_drift.py)
+  yaw_drift_deg_per_rotation: null     # TO_BE_MEASURED
+
+measured:                              # filled by the measurement tools (never guess)
+  latency_s: null
+  lag_tau_s: null
+  max_accel_mps2: null
+  stopping_distance_m: {"0.2": null, "0.4": null, "0.6": null}
+  speed_scale_vs_table: null           # measured/commanded in steady state; 1.0 = the API table is right for this firmware

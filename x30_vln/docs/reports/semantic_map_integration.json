@@ -1,0 +1,25 @@
+{
+ "failures": [],
+ "numbers": {
+  "play_s": 130.5,
+  "frames": 639,
+  "recall": 0.9,
+  "mean_err_m": 0.045,
+  "median_err_m": 0.039,
+  "duplicates": 0,
+  "objects": 18,
+  "summary_tokens": 390,
+  "stats": {
+   "frames": 639,
+   "detections": 1130,
+   "created": 64,
+   "merged": 15,
+   "removed_ttl": 20,
+   "removed_miss": 2,
+   "removed_dynamic": 3,
+   "rays": 146,
+   "triangulated": 8,
+   "ignored": 19
+  }
+ }
+}

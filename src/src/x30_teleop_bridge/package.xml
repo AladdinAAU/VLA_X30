@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>x30_teleop_bridge</name>
+  <version>0.1.0</version>
+  <description>
+    Bridges standard geometry_msgs/Twist cmd_vel (as produced by Nav2's MPPI
+    controller and the paper's frontier explorer) into the
+    control_input_msgs/Inputs message and command sequence that
+    unitree_guide_controller expects on /control_input, and drives the FSM
+    from PASSIVE to FIXEDSTAND to TROTTING on startup.
+  </description>
+  <maintainer email="burgerbdd@gmail.com">burgerbdd</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>geometry_msgs</depend>
+  <depend>control_input_msgs</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

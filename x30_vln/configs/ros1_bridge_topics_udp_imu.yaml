@@ -1,0 +1,65 @@
+# ros1_bridge topic list for the REAL X30 (loaded by the x30-ros1-bridge container with `rosparam load`, then
+# `ros2 run ros1_bridge parameter_bridge`). Format as in Rob7_Gr760_P7/Docker/Main/bridge/topics.yaml.
+#
+# WARNING: parameter_bridge topics are BIDIRECTIONAL. Anything the PC publishes on one of these names is forwarded into
+# the robot's ROS 1 graph (digest 2.3). Therefore:
+#   * nothing in this list may be published by a ROS 2 node on the PC (the framework publishes /odom, /cmd_vel, /x30/*
+#     which are NOT listed here: robot names are bridged unchanged, PC-side names are different on purpose);
+#   * /cmd_vel is NOT listed: the robot's navigation host consumes ROS 1 /cmd_vel in non-manual mode, and nav_bridge
+#     already sends the same velocity over UDP (dual path). Velocity goes through x30_nav_bridge ONLY.
+#   * /tf is NOT listed (feedback loop risk); x30_hw publishes static TF itself.
+# Bandwidth: /lidar_points is about 2.1 MB x 10 Hz = 21 MB/s (166 Mbit/s): use wired Ethernet [digest 8.12].
+# Variant WITHOUT /imu/data: use when real_adapter imu_source:=udp so that no second publisher can ever share /imu/data.
+topics:
+  -
+    topic: /lidar_points
+    type: sensor_msgs/msg/PointCloud2
+    queue_size: 5
+  -
+    topic: /leg_odom
+    type: nav_msgs/msg/Odometry
+    queue_size: 50
+  -
+    topic: /livox/imu_192_168_2_202
+    type: sensor_msgs/msg/Imu
+    queue_size: 50
+  -
+    topic: /livox/imu_192_168_2_203
+    type: sensor_msgs/msg/Imu
+    queue_size: 50
+  -
+    topic: /livox/imu_192_168_2_204
+    type: sensor_msgs/msg/Imu
+    queue_size: 50
+  -
+    topic: /livox/imu_192_168_2_205
+    type: sensor_msgs/msg/Imu
+    queue_size: 50
+  -
+    topic: /battery/level
+    type: std_msgs/msg/UInt8
+    queue_size: 5
+  -
+    topic: /battery/voltage
+    type: std_msgs/msg/Float32
+    queue_size: 5
+  -
+    topic: /battery/current
+    type: std_msgs/msg/Float32
+    queue_size: 5
+  -
+    topic: /robot_basic_state
+    type: std_msgs/msg/Int32
+    queue_size: 10
+  -
+    topic: /robot_gait_state
+    type: std_msgs/msg/Int32
+    queue_size: 10
+  -
+    topic: /control_mode
+    type: std_msgs/msg/UInt8
+    queue_size: 10
+  -
+    topic: /robot_velocity
+    type: geometry_msgs/msg/Twist
+    queue_size: 10

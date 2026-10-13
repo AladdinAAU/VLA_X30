@@ -1,0 +1,283 @@
+{
+ "world": "lab_01",
+ "wall_height": 3.2,
+ "rooms": [
+  {
+   "id": "corridor_1",
+   "type": "corridor",
+   "name": "corridor",
+   "rect": [
+    0.0,
+    -1.2,
+    26.598,
+    1.2
+   ],
+   "center": [
+    13.299,
+    0.0
+   ],
+   "area": 63.84,
+   "walled": true,
+   "doors": [
+    "door_01",
+    "door_02",
+    "door_03",
+    "door_04",
+    "door_05",
+    "door_06",
+    "door_07",
+    "door_08"
+   ]
+  },
+  {
+   "id": "lab_1",
+   "type": "lab",
+   "name": "lab 1",
+   "rect": [
+    0.0,
+    1.2,
+    7.346,
+    6.4
+   ],
+   "center": [
+    3.673,
+    3.8
+   ],
+   "area": 38.2,
+   "walled": true,
+   "doors": [
+    "door_01"
+   ]
+  },
+  {
+   "id": "lab_2",
+   "type": "lab",
+   "name": "lab 2",
+   "rect": [
+    7.346,
+    1.2,
+    14.532,
+    6.4
+   ],
+   "center": [
+    10.939,
+    3.8
+   ],
+   "area": 37.37,
+   "walled": true,
+   "doors": [
+    "door_02"
+   ]
+  },
+  {
+   "id": "lab_3",
+   "type": "lab",
+   "name": "lab 3",
+   "rect": [
+    14.532,
+    1.2,
+    22.807,
+    6.4
+   ],
+   "center": [
+    18.669,
+    3.8
+   ],
+   "area": 43.03,
+   "walled": true,
+   "doors": [
+    "door_03"
+   ]
+  },
+  {
+   "id": "server_room_1",
+   "type": "server_room",
+   "name": "server room",
+   "rect": [
+    22.807,
+    1.2,
+    26.598,
+    6.4
+   ],
+   "center": [
+    24.702,
+    3.8
+   ],
+   "area": 19.72,
+   "walled": true,
+   "doors": [
+    "door_04"
+   ]
+  },
+  {
+   "id": "lab_4",
+   "type": "lab",
+   "name": "lab 4",
+   "rect": [
+    0.0,
+    -6.2,
+    8.159,
+    -1.2
+   ],
+   "center": [
+    4.079,
+    -3.7
+   ],
+   "area": 40.79,
+   "walled": true,
+   "doors": [
+    "door_05"
+   ]
+  },
+  {
+   "id": "lab_5",
+   "type": "lab",
+   "name": "lab 5",
+   "rect": [
+    8.159,
+    -6.2,
+    16.481,
+    -1.2
+   ],
+   "center": [
+    12.32,
+    -3.7
+   ],
+   "area": 41.61,
+   "walled": true,
+   "doors": [
+    "door_06"
+   ]
+  },
+  {
+   "id": "office_1",
+   "type": "office",
+   "name": "office",
+   "rect": [
+    16.481,
+    -6.2,
+    21.691,
+    -1.2
+   ],
+   "center": [
+    19.086,
+    -3.7
+   ],
+   "area": 26.05,
+   "walled": true,
+   "doors": [
+    "door_07"
+   ]
+  },
+  {
+   "id": "storage_1",
+   "type": "storage",
+   "name": "storage",
+   "rect": [
+    21.691,
+    -6.2,
+    26.598,
+    -1.2
+   ],
+   "center": [
+    24.145,
+    -3.7
+   ],
+   "area": 24.53,
+   "walled": true,
+   "doors": [
+    "door_08"
+   ]
+  }
+ ],
+ "doors": [
+  {
+   "id": "door_01",
+   "x": 4.438,
+   "y": 1.2,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_1"
+   ]
+  },
+  {
+   "id": "door_02",
+   "x": 12.619,
+   "y": 1.2,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_2"
+   ]
+  },
+  {
+   "id": "door_03",
+   "x": 20.64,
+   "y": 1.2,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_3"
+   ]
+  },
+  {
+   "id": "door_04",
+   "x": 24.28,
+   "y": 1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "server_room_1"
+   ]
+  },
+  {
+   "id": "door_05",
+   "x": 4.121,
+   "y": -1.2,
+   "width": 1.0,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_4"
+   ]
+  },
+  {
+   "id": "door_06",
+   "x": 10.473,
+   "y": -1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "lab_5"
+   ]
+  },
+  {
+   "id": "door_07",
+   "x": 18.049,
+   "y": -1.2,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "office_1"
+   ]
+  },
+  {
+   "id": "door_08",
+   "x": 24.788,
+   "y": -1.2,
+   "width": 1.2,
+   "orient": "h",
+   "connects": [
+    "corridor_1",
+    "storage_1"
+   ]
+  }
+ ]
+}

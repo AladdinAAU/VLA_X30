@@ -1,0 +1,218 @@
+<?xml version="1.0" ?>
+<!--
+  Built-in world of x30_sim (id: default_arena): a closed 12 x 10 m room with a ceiling, obstacles and a few warm objects.
+  Derived from the prework closed_arena. The simulator adds missing systems (physics, sensors, ...) when it loads the world,
+  so this file only needs content.
+  Semantic labels: <x30:label> (see docs/requests/sim-to-worlds.md). Temperatures: gz Thermal plugin inside the <visual>, Kelvin.
+-->
+<sdf version="1.9" xmlns:x30="http://x30.local/sdf">
+  <world name="default_arena">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.6 0.75 0.9 1</background>
+      <shadows>false</shadows>
+      <grid>false</grid>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <x30:label>floor</x30:label>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <surface><friction><ode><mu>0.8</mu><mu2>0.8</mu2></ode></friction></surface>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <material><ambient>0.45 0.45 0.45 1</ambient><diffuse>0.45 0.45 0.45 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="ceiling">
+      <static>true</static>
+      <pose>0 0 2.7 0 0 0</pose>
+      <x30:label>ceiling</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>12.2 10.2 0.1</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>12.2 10.2 0.1</size></box></geometry>
+          <material><ambient>0.85 0.85 0.85 1</ambient><diffuse>0.85 0.85 0.85 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 5 1.35 0 0 0</pose>
+      <x30:label>wall</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>12.2 0.2 2.7</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>12.2 0.2 2.7</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -5 1.35 0 0 0</pose>
+      <x30:label>wall</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>12.2 0.2 2.7</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>12.2 0.2 2.7</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <pose>6 0 1.35 0 0 1.5708</pose>
+      <x30:label>wall</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>10.2 0.2 2.7</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>10.2 0.2 2.7</size></box></geometry>
+          <material><ambient>0.75 0.8 0.8 1</ambient><diffuse>0.75 0.8 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-6 0 1.35 0 0 1.5708</pose>
+      <x30:label>wall</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>10.2 0.2 2.7</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>10.2 0.2 2.7</size></box></geometry>
+          <material><ambient>0.75 0.8 0.8 1</ambient><diffuse>0.75 0.8 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- obstacles -->
+    <model name="box_1">
+      <static>true</static>
+      <pose>2.5 2.0 0.4 0 0 0.3</pose>
+      <x30:label>box</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.8 0.8 0.8</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>0.8 0.8 0.8</size></box></geometry>
+          <material><ambient>0.7 0.3 0.2 1</ambient><diffuse>0.7 0.3 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="cabinet_1">
+      <static>true</static>
+      <pose>-3.0 -1.5 0.5 0 0 -0.5</pose>
+      <x30:label>cabinet</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>1.0 0.5 1.0</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>1.0 0.5 1.0</size></box></geometry>
+          <material><ambient>0.2 0.4 0.7 1</ambient><diffuse>0.2 0.4 0.7 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="barrel_1">
+      <static>true</static>
+      <pose>0.5 -2.5 0.5 0 0 0</pose>
+      <x30:label>barrel</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.35</radius><length>1.0</length></cylinder></geometry></collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.35</radius><length>1.0</length></cylinder></geometry>
+          <material><ambient>0.3 0.7 0.3 1</ambient><diffuse>0.3 0.7 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="plant_1">
+      <static>true</static>
+      <pose>-2.0 3.0 0.6 0 0 0</pose>
+      <x30:label>plant</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.2 0.55 0.2 1</ambient><diffuse>0.2 0.55 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="partition_1">
+      <static>true</static>
+      <pose>3.5 -3.0 0.5 0 0 1.5708</pose>
+      <x30:label>wall</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>2.5 0.2 1.0</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>2.5 0.2 1.0</size></box></geometry>
+          <material><ambient>0.6 0.6 0.2 1</ambient><diffuse>0.6 0.6 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- warm objects (thermal camera): temperature in Kelvin through the Gazebo Thermal plugin, one per model -->
+    <model name="person_1">
+      <static>true</static>
+      <pose>-1.5 -3.5 0.9 0 0 0</pose>
+      <x30:label>person</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.22</radius><length>1.8</length></cylinder></geometry></collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.22</radius><length>1.8</length></cylinder></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal">
+            <temperature>309.0</temperature>
+          </plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="radiator_1">
+      <static>true</static>
+      <pose>5.85 -2.0 0.4 0 0 0</pose>
+      <x30:label>radiator</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.1 1.2 0.6</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>0.1 1.2 0.6</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal">
+            <temperature>343.0</temperature>
+          </plugin>
+        </visual>
+      </link>
+    </model>
+    <model name="fire_extinguisher_1">
+      <static>true</static>
+      <pose>1.5 4.6 0.3 0 0 0</pose>
+      <x30:label>fire_extinguisher</x30:label>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.08</radius><length>0.6</length></cylinder></geometry></collision>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.08</radius><length>0.6</length></cylinder></geometry>
+          <material><ambient>0.85 0.1 0.1 1</ambient><diffuse>0.85 0.1 0.1 1</diffuse></material>
+          <plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal">
+            <temperature>293.0</temperature>
+          </plugin>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

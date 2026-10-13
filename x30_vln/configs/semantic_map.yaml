@@ -1,0 +1,264 @@
+# Semantic map (package x30_semantic_map). Every key is optional; omitted keys use the defaults in
+# x30_semantic_map/config.py. Unknown keys are an error. The mapper VLM endpoint (url, model, key) comes from
+# models.yaml `mapper_vlm` and the X30_MAPPER_* environment variables, not from this file.
+semantic_map:
+  mapper:
+    map_frame: map
+    base_frame: base_link
+    camera_frame: camera_optical_frame
+    detections_topic: /perception/detections
+    map_topic: /map
+    camera_info_topic: /camera/color/camera_info
+    publish_period_s: 1.0
+    markers_period_s: 1.0
+    annotated_period_s: 2.0
+    publish_tentative: false          # tentative objects are only visible through query(include_tentative)
+    use_view_misses: true             # remove objects the camera repeatedly looked at and did not see
+    save_dir: ""                      # default directory for the save/load services ("" = current directory)
+    autosave_period_s: 0.0            # 0 = off
+
+  association:
+    gate_min_m: 0.35
+    gate_max_m: 1.5
+    gate_size_factor: 0.6
+    bearing_gate_m: 1.5
+    iou_assoc: 0.30
+    cross_label_iou: 0.50
+    recency_tau_s: 5.0
+    history: 40
+    obs_min_dt_s: 0.25
+    min_points: 5
+    max_extent_m: 6.0
+    position_trim: 2.5
+    size_percentile: 80.0
+
+  confirm:
+    min_obs: 4
+    min_mean_score: 0.30
+
+  forget:
+    tentative_ttl_s: 20.0
+    miss_limit: 8.0
+    hit_credit: 1.0
+    view_margin: 0.8
+    view_min_range_m: 0.6
+    view_max_range_m: 5.0
+    rejected_ttl_s: 300.0
+    rejected_radius_m: 0.6
+    rejected_extra_obs: 3
+    max_objects: 3000
+
+  dynamic:
+    speed_max_mps: 1.6
+    gate_max_m: 2.5
+    moving_speed_mps: 0.30
+    window_s: 2.0
+    ttl_moving_s: 10.0
+    ttl_static_s: 120.0
+    merge_dist_m: 0.5
+
+  bearing:
+    enabled: true
+    ttl_s: 60.0
+    object_ttl_s: 180.0
+    max_rays: 500
+    min_baseline_m: 0.4
+    min_angle_deg: 6.0
+    min_range_m: 0.4
+    max_range_m: 15.0
+    max_skew_m: 0.35
+    min_rays: 2
+    assoc_ray_dist_m: 0.5
+    support_objects: true
+
+  merge:
+    period_s: 2.0
+    dist_factor: 0.7
+    dist_min_m: 0.30
+    dist_max_m: 0.9
+    iou: 0.30
+    doubtful_factor: 2.0
+
+  # The stock X30 has NO thermal camera. Leave this off unless a thermal payload (or the simulator's thermal
+  # sensor) feeds perception; NaN statistics from perception are ignored either way.
+  thermal:
+    enabled: false
+    warm_delta_c: 4.0
+    warm_abs_c: 29.0
+    hot_c: 50.0
+    person_min_mean_c: 28.0
+
+  size:
+    thresholds_m: [0.15, 0.45, 1.0, 2.0]
+    names: [tiny, small, medium, large, huge]
+
+  views:
+    per_object: 3
+    min_separation_deg: 30.0
+    min_crop_px: 24
+    sharpness_weight: 0.3
+
+  rooms:
+    enabled: true
+    period_s: 5.0
+    free_threshold: 25
+    occupied_threshold: 65
+    door_clearance_m: 0.55
+    min_room_area_m2: 2.0
+    corridor_max_width_m: 2.0
+    corridor_min_aspect: 2.5
+    assign_max_dist_m: 1.5
+    object_room_search_m: 0.9
+    min_score: 2.0
+    rules:                            # room type -> {object label: weight}; the best total >= min_score names a room
+      kitchen: {refrigerator: 3, microwave: 2, oven: 2, sink: 1.5, dining table: 1, kettle: 1, toaster: 1}
+      bedroom: {bed: 3, nightstand: 1, wardrobe: 1.5}
+      bathroom: {toilet: 3, bathtub: 3, shower: 3, sink: 1}
+      living room: {couch: 2, tv: 1.5, coffee table: 1.5, armchair: 1}
+      dining room: {dining table: 2, chair: 0.5}
+      office: {desk: 1.5, monitor: 1.5, computer: 1.5, keyboard: 1, office chair: 1, printer: 1, whiteboard: 1}
+      meeting room: {whiteboard: 1.5, projector: 2, table: 0.5, chair: 0.5}
+      lab: {workbench: 2, oscilloscope: 2, tool: 1, robot: 1.5}
+      storage room: {box: 1, shelf: 1, cabinet: 1, crate: 1}
+
+  frontiers:
+    min_length_m: 0.6
+    min_unknown_cells: 40
+    max_report: 4
+
+  relations:
+    near_m: 1.2
+    on_tol_m: 0.25
+    on_overlap: 0.3
+    between_tol_m: 0.5
+    front_back_deg: 45.0
+    radius_m: 4.0
+
+  summary:
+    token_budget: 700
+    chars_per_token: 3.6
+    max_objects: 30
+    caption_chars: 70
+    include_tentative: false
+
+  render:
+    max_size_px: 800
+    margin_m: 1.0
+    ascii_cols: 60
+    trajectory_min_step_m: 0.15
+    trajectory_max_points: 4000
+    show_captions: false
+    egocentric: false                 # true: rotate so the robot heading points up
+    font_scale: 0.45
+
+  vlm:
+    enabled: true
+    max_tokens: 300
+    temperature: 0.1
+    timeout_s: 30.0
+    retries: 1
+    response_format: json_object      # json_object | json_schema | none
+    max_image_px: 336
+    jpeg_quality: 85
+    min_interval_s: 1.0
+    max_calls_per_min: 20
+    max_calls_total: 2000
+    max_completion_tokens_total: 400000
+    queue_max: 64
+    fail_threshold: 3
+    backoff_s: 15.0
+    backoff_max_s: 300.0
+    caption_objects: true
+    caption_min_obs: 4
+    recaption_quality_gain: 1.6
+    max_captions_per_object: 3
+    name_rooms: true
+    disambiguate: true
+    find_timeout_s: 8.0
+    find_recheck_top_k: 2
+    find_max_candidates: 12
+    room_types: [kitchen, bedroom, bathroom, living room, dining room, office, corridor, hall, lobby,
+                 meeting room, lab, storage room, stairwell, other]
+    cache_size: 512
+    log_path: ""                      # JSONL log of every VLM call ("" = memory only, see /semantic_map/summary)
+    rejected_label_votes: 2
+
+  # Label groups: the first entry is the canonical name; members are treated as the same class.
+  synonyms:
+    - [chair, armchair, seat, stool, office chair, desk chair, dining chair]
+    - [couch, sofa, loveseat]
+    - [tv, television, monitor, screen, display, computer monitor]
+    - [trash can, garbage can, waste bin, bin, dustbin, rubbish bin]
+    - [fire extinguisher, extinguisher]
+    - [table, dining table, coffee table, desk, side table, workbench]
+    - [refrigerator, fridge]
+    - [potted plant, plant, houseplant]
+    - [person, human, man, woman, people, pedestrian]
+    - [door, doorway, open door, closed door]
+    - [bottle, water bottle]
+    - [cup, mug]
+    - [backpack, bag, handbag]
+    - [shelf, bookshelf, shelves, rack]
+    - [box, cardboard box, crate]
+    - [laptop, computer, notebook computer]
+    - [cabinet, cupboard, wardrobe, locker]
+
+  # Categories: shared parameters (strictness, gate, colours). The first match decides; unknown labels use the defaults.
+  categories:
+    person:
+      labels: [person, human, man, woman, people, pedestrian]
+      dynamic: true
+      min_obs: 2
+      min_mean_score: 0.35
+      gate_m: 1.0
+      min_height_m: 0.8
+      max_extent_m: 2.5
+      color: [230, 60, 60]
+    furniture:
+      labels: [chair, couch, table, bed, shelf, cabinet, desk, bench, nightstand, stool, sofa, armchair,
+               office chair, dining table, coffee table, bookshelf, wardrobe, drawer, locker, rack]
+      min_obs: 4
+      min_mean_score: 0.30
+      color: [140, 90, 40]
+    appliance:
+      labels: [refrigerator, microwave, oven, sink, toaster, washing machine, kettle, coffee machine, dishwasher,
+               printer, vending machine, water dispenser]
+      min_obs: 4
+      min_mean_score: 0.30
+      color: [30, 130, 180]
+    electronics:
+      labels: [tv, monitor, laptop, computer, keyboard, projector, screen, display, television, speaker, phone]
+      min_obs: 4
+      min_mean_score: 0.30
+      color: [90, 60, 190]
+    safety:
+      labels: [fire extinguisher, extinguisher, exit sign, first aid kit, fire alarm, emergency light]
+      min_obs: 3
+      min_mean_score: 0.25
+      gate_m: 0.5
+      color: [220, 30, 30]
+    structure:
+      labels: [door, window, stairs, staircase, elevator, pillar, column, wall, doorway, radiator]
+      min_obs: 4
+      min_mean_score: 0.25
+      min_height_m: 0.5
+      color: [100, 100, 100]
+    plant:
+      labels: [potted plant, plant, houseplant, tree]
+      min_obs: 4
+      min_mean_score: 0.30
+      color: [40, 150, 60]
+    small_item:
+      labels: [bottle, cup, mug, backpack, bag, handbag, book, box, cardboard box, crate, trash can, bin, bucket,
+               tool, helmet, umbrella, suitcase]
+      min_obs: 4
+      min_mean_score: 0.30
+      gate_m: 0.45
+      color: [230, 150, 30]
+    robot:
+      labels: [robot, quadruped, drone]
+      dynamic: true
+      min_obs: 3
+      color: [200, 40, 160]
+
+  colors: {}                          # empty = built-in 12 named colours for crop colour naming

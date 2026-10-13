@@ -1,0 +1,65 @@
+{
+ "sdf": "worlds/habtest_apartment_1/world.sdf",
+ "spawn": {
+  "x": 0.92,
+  "y": -4.21,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.96,
+  -9.14,
+  7.94,
+  3.6
+ ],
+ "objects_file": "worlds/habtest_apartment_1/objects.json",
+ "map_file": "worlds/habtest_apartment_1/map.yaml",
+ "license": "Habitat test scenes: Hugging Face card cc-by-nc-4.0 (no licence file in the archive); apartment_1 derives from Replica (research terms)",
+ "source": "habitat-test-scenes.zip (dl.fbaipublicfiles.com/habitat)",
+ "source_dataset": "habitat-test-scenes",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   1.727854
+  ]
+ },
+ "stats": {
+  "source_file": "apartment_1.glb",
+  "up_axis": "z",
+  "scale": 1.0,
+  "floor_z_source": -1.728,
+  "extent_m": [
+   7.9,
+   10.74,
+   2.94
+  ],
+  "triangles": 381673,
+  "triangles_visual": 249911,
+  "triangles_ceiling": 36196,
+  "collision_boxes": 553,
+  "collision_pitch_m": 0.1,
+  "navigable_area_m2": 23.5,
+  "objects": 0,
+  "visual_mesh_mb": 68.5
+ },
+ "source_scene_id": "apartment_1.glb"
+}

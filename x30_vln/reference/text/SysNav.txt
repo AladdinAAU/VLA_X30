@@ -1,0 +1,668 @@
+                                           SysNav: Multi-Level Systematic Cooperation Enables
+                                             Real-World, Cross-Embodiment Object Navigation
+
+                                                  Haokun Zhu1, Zongtai Li1, Zihan Liu1,2, Kevin Guo1, Zhengzhi Lin1,
+                                            Yuxin Cai1,3, Guofei Chen1, Chen Lv3, Wenshan Wang1, Jean Oh1, Ji Zhang1
+                                       1Carnegie Mellon University 2New York University 3Nanyang Technological University
+
+                                       10 m                                                               10 m
+
+arXiv:2603.06914v1 [cs.RO] 6 Mar 2026  Long-range ObjectNav on Building-scale
+
+                                       10 m                                                               10 m
+
+                                       190 Real-world Experiments
+
+                                       Fig. 1: SysNav achieves object navigation in diverse real-world environments and generalizes across multiple embodiments.
+                                       To our knowledge, it is the first system to reliably and efficiently complete object navigation at building-scale.
+
+                                          Abstract-- Object navigation (ObjectNav) in real-world en-      ensuring system efficiency. At the low-level, planned waypoints
+                                       vironments is a complex problem that requires simultaneously       are executed through different embodiment-specific motion
+                                       addressing multiple challenges, including complex spatial struc-   control modules. We deploy our system on three embodiments,
+                                       ture, long-horizon planning and semantic understanding. Re-        a custom-built wheeled robot, the Unitree Go2 quadruped
+                                       cent advances in Vision-Language Models (VLMs) offer promis-       and the Unitree G1 humanoid, and conduct 190 real-world
+                                       ing capabilities for semantic understanding, yet effectively       experiments. Our system achieves substantial improvements in
+                                       integrating them into real-world navigation systems remains        both success rate and navigation efficiency. To the best of our
+                                       a non-trivial challenge. In this work, we formulate real-world     knowledge, SysNav is the first system capable of reliably and ef-
+                                       ObjectNav as a system-level problem and introduce SysNav,          ficiently completing building-scale long-range object navigation
+                                       a three-level ObjectNav system designed for real-world cross-      in complex real-world environments. Furthermore, extensive
+                                       embodiment deployment. SysNav decouples semantic reasoning,        experiments on four simulation benchmarks demonstrate state-
+                                       navigation planning and motion control to ensure robustness        of-the-art performance. Project page is available at https://cmu-
+                                       and generalizability. At the high-level, we summarize the          vln.github.io/.
+                                       environment into a structured scene representation and leverage
+                                       VLMs to provide semantic-grounded navigation guidance. At                                   I. INTRODUCTION
+                                       the mid-level, we introduce a hierarchical room-based nav-
+                                       igation strategy that reserves VLM guidance for room-level            Object Navigation (ObjectNav) is a fundamental problem
+                                       decisions, which effectively utilizes its reasoning ability while  in robotics, where an agent must autonomously locate and
+                                                                                                          reach an instance of a target object category in an unknown
+environment as soon as possible. Successfully accomplishing       jects exhibit strong semantic priors (e.g., refrigerators in
+this task requires not only robust visual perception, but also    kitchens), while the spatial scale of individual rooms allows
+long-horizon decision making and semantic understanding.          efficient coverage using classical exploration methods. More-
+While recent years have witnessed significant progress in Ob-     over, given VLMs' limited 3D spatial understanding [1],
+jectNav within simulation, deploying real-world ObjectNav         [2], involving VLMs in fine-grained, in-room exploration
+systems that are both stable and efficient, particularly across   fails to leverage their semantic strengths and may reduce
+different embodiments, remains a challenging problem.             efficiency. Based on this insight, we restrict VLM-based rea-
+                                                                  soning to room-level decisions and employ efficient classical
+   A primary challenge of real-world ObjectNav is that it         exploration within rooms. Supported by the structured scene
+is inherently a complex, multifaceted problem composed of         representation, the VLM selects the next room to explore,
+multiple sub-challenges, including complex spatial structure,     enabling efficient and robust global navigation.
+long-horizon planning and semantic understanding. Despite
+this complexity, most existing approaches formulate Object-          We have successfully deployed the proposed system across
+Nav as a single-policy learning problem, typically relying on     three robot embodiments, a wheeled robot, the Unitree Go2
+end-to-end models that directly map raw sensor observations       quadruped, and the Unitree G1 humanoid, and conducted
+to discrete actions. However, a single end-to-end policy          190 real-world experiments. Our system achieves a 4-5×
+struggles to simultaneously address these diverse challenges,     improvement in navigation efficiency over existing Object-
+and the scarcity of real-robot training data further exacerbates  Nav baselines and, to the best of our knowledge, is the
+the difficulty of applying such approaches in real-world set-     first system capable of reliably and efficiently completing
+tings. Therefore, we argue that real-world ObjectNav should       object navigation at building-scale. In addition, we evaluate
+be treated as a system-level problem rather than a single-        our approach on four widely used simulation benchmarks,
+policy learning task, requiring a fully integrated multi-level    HM3D-v1, HM3D-v2, MP3D, and HM3D-OVON, where it
+system that explicitly decouples different sub-challenges and     achieves state-of-the-art performance across all benchmarks.
+designs specialized modules to address them.
+                                                                                         II. RELATED WORKS
+   Another critical challenge lies in how to effectively or-
+ganize semantic information and leverage the reasoning            A. Object Navigation
+capabilities of VLMs for real-world navigation. Although
+VLMs exhibit strong commonsense reasoning abilities, many            Existing ObjectNav methods fall into two categories: end-
+existing approaches over-rely on them for exploration and         to-end learning and modular approaches. End-to-end meth-
+decision-making. While such strategies may perform ade-           ods [3], [4], [5], [6], [7] use reinforcement learning or VLM
+quately in clean simulation environments, they often per-         fine-tuning to directly map observations to discrete actions.
+form poorly in complex real-world settings. This is because       In contrast, modular methods [8], [9], [10], [11], [12], [13],
+ObjectNav requires precise spatial grounding and long-term        [14], [15], [16] decompose navigation into steps such as map-
+spatial consistency, capabilities that current VLMs do not        ping, planning, and action execution, and often leveraging
+inherently possess. We argue that a successful ObjectNav          semantic maps for more interpretable and scalable navigation
+system should utilize VLM reasoning abilities at the appro-       behavior. However, most existing methods are developed in
+priate spatial level, rather than overextending its responsibil-  simplified simulation settings and treat ObjectNav primarily
+ities beyond their effective capacity. Meanwhile, the system      as a policy learning problem, limiting their ability to handle
+should organize environmental information in a structured         real-world complexity and real-time constraints. To address
+form to provide meaningful contextual information, allowing       this gap, we propose a comprehensive three-level ObjectNav
+VLMs to effectively leverage their reasoning strengths.           system designed for complex real-world environments and
+                                                                  cross-embodiment deployment.
+   To address these challenges, we propose SysNav, a three-
+level ObjectNav system designed for real-world deployment         B. VLM-Guided Navigation
+and cross-embodiment generalization. SysNav decouples se-
+mantic reasoning, navigation planning and motion control,            With internet-scale training data, Vision-Language Models
+allowing each component to focus on its respective strengths.     (VLMs) [17], [18], [19], [20] have shown strong commen-
+The high-level module organizes environmental information         sense reasoning abilities and have been widely applied
+into a structured scene representation and the VLM per-           in Object Navigation tasks to guide the decision-making
+forms high-level semantic reasoning over this representation,     process. For example, InstructNav [21] leverages multi-
+providing semantic-grounded navigation guidance. Guided           sourced value maps to model key navigation elements.
+by the high-level semantic reasoning, the mid-level module        ApexNav [16] employs VLMs to score each frontier for
+plans navigation strategies, exploration paths and waypoints,     exploration planning. However, due to VLMs' limited 3D
+while the low-level module executes these waypoints via           spatial understanding ability [22], [1], [2], over-reliance on
+embodiment-specific motion control. At the mid-level, we          VLMs for navigation can lead to inefficient behavior, such as
+further introduce a hierarchical navigation strategy that treats  frequent backtracking. To address this, we propose to treat
+rooms as the minimal decision-making units for the VLM.           rooms as the minimal decision-making unit for VLMs to
+Indoor environments naturally decompose into functionally         provide semantic-grounded navigation guidance.
+distinct rooms (e.g., kitchens, bedrooms), where target ob-
+  Overview                                                         Find the white chair in the bedroom                                                             Semantic Reasoning                                                               Unexplored Rooms           Explored Rooms
+                                                                                                                                                                                                                                                                          Living Room Study Room
+High                                                                               Sensor Input                                                                    VLM Reason           Scene Rep Build                              Laundry Bedroom Bedroom Bathroom
+Level                                                                                                                                                                                                                                                                                                White Bed
+                                                                      Panorama                                                                                                                                                                                                                       in Bedroom
+Mid                                                                   RGB Image
+Level
+                                                                         LiDAR
+Low                                                                   Point Cloud
+Level
+
+        In-room Exploration                                                                                                                                                      VLM   Semantic
+                                                                                                                                                                                Query     Info
+Local Planning
+                                                                                                                                                                   Semantic                      Structured
+                                                                                                                                                                   Guidance                  Environment Info
+
+Traversablity                                                                                                                                                      Room-based Navigation
+   Analysis
+                                                                                                                                                                                                                    Candidate Rooms
+
+                       Viewpoint
+                        Scoring
+
+Selection &
+ Solve TSP
+
+                                                                                                                                                                                       Contextual   Answer
+                                                                                                                                                                                          Info 
+                       Global Planning
+
+Local Pose Candidate                                                         Local & Global Path                                                                     In-room            Cross-room
+Global Pose Candidate                                                           Concatenation                                                                      Exploration          Navigation
+Planned Path
+Local Plan Horizon                                                                                                                                                                                 Waypoint
+
+     Cross-room Navigation
+
+Candidate Rooms
+
+                                                                                                                                                                           Base Autonomy                                              White Chair
+                                                                                                                                                                                                                                     in Study Room
+                                                                                                                                                                   Motion
+                                                                                                                                                                                Motion             Motion
+
+Laundry1 Bedroom2 Bedroom3                                                                                                                                         Control  Control  Control 
+
+· Task: Find the white chair in the bedroom.                                 · Task: Find the white chair in the bedroom.
+
+Context Info  · History: I have explored bedroom1 , living1 . . .            Context Info  · Current State: The robot is exploring Living Room1 with
+                                                                                sofa, pillow, table, chair . . .
+· Candidate:                                                                 · New Observation: The robot discovered a new Study
+       · Laundry1 with washing machine . . .
+                                                                              Q: Early Stop? Room1 with white chair, table . . .
+  Q: Next Room? · Bedroom2 with chair, bed . . .
+                                                                             · Question: Should the robot stop exploring Living Room1
+       · ......                                                                 and switch to Study Room2 ?
+· Question: Which room should be explored next?
+
+                                                                                                                                                                                                                                     Pillow on Sofa      Chair next to Table White Toilet Chair next to Table
+
+Answer: Bedroom2 .                                                 Bedroom2  Answe: Early Stop !                                                      Early Stop!                                                                    Unknow Area         Room node        Room-Viewpoint Edge ,-     (Belonging)
+Reason: A desk is observed in this                                           Reason: A white chair matching the                                                                                                                      Robot               Viewpoint node   Viewpoint-Object Edge ,-   (Visibility)
+room, which suggests a higher                                                target is observed in the new room.                                                                                                                     History Trajectory  Object node      Object-Object Edge ,-      (Spatial-Relation)
+likelihood of finding a chair.                                               The robot should switch to the new
+                                                                             room to verify the spatial constraint.
+
+Room-query Navigation                                                        Early-stop Navigation
+
+Fig. 2: Overview of the proposed SysNav. The high-level Semantic Reasoning module organizes environmental information
+into a structured scene representation (Sec. IV-A.1) and leverages VLM reasoning to provide semantic-grounded navigation
+guidance (Sec. IV-A.2). The mid-level Room-based Navigation module performs hierarchical navigation with in-room
+exploration (Sec. IV-B.1) and cross-room navigation (Sec. IV-B.2). The low-level Base Autonomy module executes planned
+waypoints through embodiment-specific motion control (Sec. IV-C).
+
+C. Scene Representation for Indoor Navigation                                                                                                                                                      oi  O such that c(oi) = ctgt as soon as possible, without
+                                                                                                                                                                                                   prior knowledge of the environment layout.
+   Scene representation [23] transforms raw observations into
+structured information for navigation. Frontier-based meth-                                                                                                                                           In the more general setting, the robot is given G =
+ods [9], [24], [25], [26], [16] record frontiers on grid maps                                                                                                                                      (ctgt, ), where ctgt denotes the target object category, and
+and incorporate semantic cues for exploration. In contrast,                                                                                                                                         = {1, 2, . . . , K } is a set of semantic constraints. Each
+graph-based methods represent environments as scene graphs                                                                                                                                         constraint k(·) may encode object attributes (e.g., color
+to support higher-level reasoning. Prior works [14], [27]                                                                                                                                          or state) or spatial relationships with other objects, such
+use scene graphs to summarize semantic information and                                                                                                                                             as "chair, red", "tv, in the lounge" or "person, sitting on
+let VLMs to select frontier locations. Others [28], [29],                                                                                                                                          a couch". The robot is required to navigate to an object
+[30] explicitly construct viewpoints in the scene graph,                                                                                                                                           instance oi  O that satisfies {c(oi) = ctgt}  {k 
+enabling VLMs to reason over the graph and choose among                                                                                                                                            , k(oi) = 1}, which introduces additional semantic rea-
+viewpoints to guide navigation. While effective, existing                                                                                                                                          soning requirements beyond category-level object navigation.
+scene representation in ObjectNav often lack spatial structure
+and contextual information for high-level reasoning. We                                                                                                                                               An episode is considered successful if the robot reaches a
+propose a three-layer scene representation that models multi-                                                                                                                                      pose pt from which at least one object instance oi satisfying
+granularity nodes and their spatial relationships, providing                                                                                                                                       the task constraints is observable and dist(pt, oi)  succ.
+structured context for VLM reasoning.
+                                                                                                                                                                                                                               IV. METHOD
+                 III. PROBLEM FORMULATION
+                                                                                                                                                                                                      Our navigation system is decoupled into three levels, each
+   The robot is initialized in an unknown indoor environment                                                                                                                                       responsible for a distinct aspect of the ObjectNav task: high-
+M containing multiple objects O. At each time step, it                                                                                                                                             level semantic reasoning, mid-level navigation planning, and
+receives a multimodal observation of the environment: ot =                                                                                                                                         low-level motion control. Below, we provide detailed de-
+{It360, Ptlidar}, where It360  RH×W ×3 denotes a 360 RGB                                                                                                                                           scriptions of the design and functionality of each level.
+panoramic image captured at the robot's current pose, and
+Ptlidar  R3 denotes the LiDAR point cloud. The robot                                                                                                                                               A. High-level - Semantic Reasoning
+executes actions at = (vt, t), parameterized by linear and
+angular velocities, from a continuous control space A.                                                                                                                                                The high-level semantic reasoning module constructs a
+                                                                                                                                                                                                   structured scene representation of the environment and lever-
+   Object Navigation. In the traditional object navigation                                                                                                                                         ages the reasoning capabilities of the VLM to provide
+task setting, the robot is given the goal of a target object                                                                                                                                       semantic-grounded navigation guidance for the mid-level
+category G = (ctgt) and is required to navigate to an instance                                                                                                                                     navigation planning module. It consists of two core compo-
+                                                                                                                                                                                                   nents: Scene Representation Building and VLM Reasoning.
+1) Scene Representation Building:                                     A(vio) = {ci, conf i, Pi, bboxi, Ii, (1, 2, ...)}, where ci is
+Room Node vr: To decompose the environment into a                     the object category, conf i is the detection confidence score,
+                                                                      Pi is the reconstructed 3D point cloud of the object, bboxi
+set of semantically meaningful high-level structural units and
+                                                                      is the 3D bounding box of the object, Ii is a representative
+exploit this structure for efficient exploration, we introduce
+
+room nodes at the top layer of the scene representation,              RGB image of the object that provides the best view of the
+                                                                      object2, and (1, 2, ...) are the self-attribute of the object
+where each room node represents an individual room in
+
+the environment. Inspired by [31], [23], we identify wall             (e.g., color, material). To keep the representation compact
+
+structures in the environment by fitting planar surfaces and          and general, object self-attributes are inferred on demand
+
+analyzing the distribution of point clouds along the vertical         rather than predefined. When a task specifies self-attribute
+
+(z) axis. By dilating the detected wall regions, we partition         constraints  for category ci, we retrieve the corresponding
+                                                                      nodes {vjo | c(vjo) = ci} and use their RGB images to prompt
+the initially connected space into multiple disconnected com-         the VLM for attribute inference, appending the results 
+
+ponents, each of which is treated as an individual room and           to each node. This design efficiently satisfies universal self-
+added to our representation R as a room node vir.
+                                                                      attribute constraints while avoiding the redundancy.
+   For each room node vir, we maintain a set of attributes
+A (vir) = {mir, cir, Iir}, where mi denotes the 2D top-down           Room-Room Edge         er-r: To model room connec-
+room mask, ci represents the room category (e.g., kitchen or
+                                                                      tivity, we introduce room-room edges. An edge eir,-j r is added
+bedroom), and Ii is a representative RGB image that provides
+the best view of the room 1.                                          in R when two room nodes correspond to rooms connected
+
+   Viewpoint Node vv: To efficiently store semantic infor-            in the environment via a doorway.
+
+                                                                      Room-Viewpoint Edge    er-v: To model viewpoint-
+
+mation and discretely represent explored areas, we introduce          room affiliation, we introduce room-viewpoint edges. Edge
+
+viewpoint nodes at the middle layer of the scene representa-          ejr,-i v is added to R when viv lies in room vjr.
+
+tion. Each viewpoint node corresponds to a previously visited         Room-Object Edge       er-o: To model object-room
+
+location, capturing surrounding semantic and geometric in-            containment, we introduce room-object edges. An edge eri,-j o
+                                                                      is added in R when vjo lies within room vir.
+formation within a defined range. These nodes together form
+
+a compact discrete representation of the environment.                 Viewpoint-Object Edge              ev-o: To model object-
+
+For viewpoint construction, we define a coverage distance             viewpoint visibility, we introduce viewpoint-object edges. An
+
+dcover. Voxels within this distance from a viewpoint are con-         edge eiv,-j o is added in R when the robot at viewpoint viv can
+                                                                      observe object node vjo.
+sidered fully observed, both semantically and geometrically,
+forming the coverage region C(viv) of viewpoint node viv.             Object-Object Edge     eo-o: To model spatial re-
+During exploration, we continuously evaluate the coverage
+                                                                      lationships between object instances, we introduce object-
+
+region at the robot's current pose and compare it against the         object edges. To avoid excessive graph density, such edges
+
+union of coverage regions of all existing viewpoint nodes.            are added only when required by the task. Specifically, if
+Let Cprev = vivR C(viv) denote the accumulated coverage
+of viewpoints in representation R. If the newly observed              the instruction specifies a spatial constraint  (e.g., "the
+                                                                      cup is on the table") between vio and vjo, we retrieve
+region provides sufficient novel coverage beyond what has             viewpoint nodes Vi,j = {vkv | evk-,io  R, evk-,jo  R} that
+                                                                      observe both objects. Using their RGB images, the VLM
+already been captured, i.e., |Ct \ Cprev| > , we add the              determines whether  holds. If so, we add an edge eio,-j o in
+robot's current pose as a new viewpoint node vjv to R.                R with attribute A(eoi,-j o) =  indicating the satisfied spatial
+                                                                      relation. This design efficiently satisfies task-specific object-
+   For each viewpoint node viv, we maintain a set of attributes
+A(viv) = {pi, Ci, Ii}, where pi is the position, Ci is the            object spatial constraints while avoiding the redundancy.
+coverage region associated with the viewpoint, and Ii is
+                                                                      2) VLM Reasoning: In the high-level module, we in-
+the panorama image captured at the viewpoint. With this
+
+design, RGB images are stored only at representative view-            corporate a VLM Reasoning component. It leverages the
+
+point nodes rather than along the entire trajectory, enabling         contextual information encoded in the scene representation
+
+efficient storage of semantic information.                            R to provide semantic-grounded guidance for navigation
+
+Object Node  vo: To model object instances, we                        through the common-sense reasoning capabilities of VLMs.
+
+introduce object nodes at the lowest layer of the scene repre-
+
+sentation, where each node corresponds to an object instance          B. Mid-level - Room-based Navigation
+
+in the environment. We use open-vocabulary detection and                 The mid-level module leverages the structured scene rep-
+                                                                      resentation and VLM guidance from the high-level module
+segmentation methods [32], [33], [34] to obtain segmented             to plan global exploration strategies and navigation paths,
+                                                                      outputting waypoints for the low-level control module. In
+3D object instances. At time step t, we reconstruct each              mid-level, rooms serve as the minimal semantic planning
+                                                                      units. Within each room, efficient classical exploration algo-
+object's 3D point cloud from the predicted masks, LiDAR               rithms are used to cover free space, while VLM reasoning is
+                                                                      reserved for room-level decision-making. Accordingly, the
+data, and robot pose. For each newly detected object, we add
+an object node vio to R and merge it with existing nodes if
+they represent the same physical instance.
+
+   For each object node vio, we maintain a set of attributes
+
+1The best view means the image maximizing the room's visible voxels.  2The best view means the image maximizing the object's viewing angle.
+module includes two components: an in-room exploration                                  candidate rooms and selects the room that is most likely to
+                                                                                        contain the target object. By restricting semantic reasoning
+policy for efficient coverage and a cross-room navigation                               to room-level decisions, the system leverages VLM strengths
+                                                                                        while preserving overall navigation efficiency.
+policy that selects and switches rooms under high-level
+
+semantic guidance, enabling efficient global object search.
+
+1) In-room Exploration Policy: Following [35], our in-
+
+room exploration adopts a two-level planning structure con-                             C. Low-level - Base Autonomy
+
+sisting of local planning and global planning to achieve                                   To achieve cross-embodiment generality and robust nav-
+                                                                                        igation, we design a low-level base autonomy module [36]
+efficient coverage within each room.                                                    that translates planned waypoints into embodiment-specific
+                                                                                        motion commands through different motion control modules
+   When exploring room vjr, we define a local planning                                  M . It incorporates waypoint-following, collision avoidance
+horizon H = {c1, . . . , cn}  M as a set of sampled pose                                and terrain traversability analysis to ensure safe execution.
+
+cHatvnrjrdaivda=tes{.ciTheHtra|vceirsiasbtlreavcearnsdaibdlaete&s  within the room are
+mjr denotes the room mask of vjr.                                  mjr(ci) = 1}, where
+
+We define a surface point set S  M representing                                                              V. EXPERIMENT
+
+the generalized boundary between free and non-free space                                A. Experiment Setup
+
+(including occupied and unknown space). For each pose
+
+candidate c, let Scov(c) denote the surface points it can cover,                        We evaluate SysNav in both real-world environments
+
+which means dist(p, c) < dcover and p is visible from c. Let                            and simulation benchmarks. In real-world, we conduct 190
+
+Ttraj be the set of previously visited poses, and define the                            episodes, including 78 episodes for qualitative evaluation and
+uncovered surface points as S^ = cTtraj S(c) \ Scov.
+                                                                                        112 episodes for quantitative evaluation. In simulation, we
+   For each ci  Htvrjrav, the coverage score is wcov(ci) =
+ Scov(ci)  S^ . We apply stochastic sampling guided by                                  conduct 8,195 episodes across four different benchmarks.
+
+                                                                                        Real-World Robot Setup: In real-world experiments, we
+
+                                                                                        deploy our system on three different robot platforms: a
+
+wcov to select pose candidates, iteratively updating the un-                            Mecanum wheeled robot [39], Unitree Go2 quadruped and
+covered surface set until all remaining scores fall below . A
+                                                                                        Unitree G1 humanoid. For each platform, we mount a Livox
+
+TSP is then solved over the selected candidates to generate a                           Mid-360 LiDAR and a Ricoh Theta Z1 panoramic camera for
+
+local exploration path. This procedure is repeated K times,                             sensor inputs. For Unitree Go2 and G1, the built-in LiDAR
+
+and the minimum-cost path is chosen.                                                    is additionally used for locomotion control. SysNav runs on
+
+Local and global planning are coordinated through a                                     a laptop with an i9-14900HX CPU and an RTX-4090 GPU.
+
+rolling window mechanism: chosen pose candidates leaving                                Simulation Benchmark Setup: In simulation, we follow
+
+the local horizon are transferred to the global horizon, where                          the Habitat Challenge 2023 [40] setup. The robot is equipped
+
+a TSP generates the global exploration path. The final path                             with a 640×480 RGB-D camera. The agent moves forward
+                                                                                        by 0.25m per step and rotates by 30 per action. We convert
+concatenates local and global plans and is converted into
+
+waypoints for low-level control.                                                        depth images into point clouds using the robot pose as input
+
+2) Cross-room Navigation Policy: For cross-room naviga-                                 to our system. We conduct experiments on four benchmarks:
+
+tion, we propose a room-level decision mechanism that uses                              (1) HM3D-v1 [41], including 2,000 episodes across 20 high-
+
+VLM reasoning to coordinate the exploration order across                                fidelity scenes with 6 target categories; (2) HM3D-v2 [42],
+
+rooms. The VLM acts as a high-level reasoner, evaluating                                including 1,000 episodes across 36 high-fidelity scenes with
+
+each room's relevance to the current task online.                                       6 target categories; (3) MP3D [43], including 2,195 episodes
+
+   Early-stop navigation mode. When exploring room vir                                  across 11 scenes with 21 target categories; and (4) HM3D-
+and discovering a new room vjr, we provide the VLM with
+contextual information Ces = {A(vir), {vuo | eri,-uo                                    OVON [44] val-unseen split, including 3,000 episodes across
+R}, A(vjr), {vvo | ejr,-vo  R}, G}, where A(·) and
+{v·o | er·,-· o  R} denote room attributes and the object                               36 scenes with 49 target categories.
+sets belonging to the corresponding room respectively, and
+                                                                                        Evaluation Metrics: Following [40], we use two primary
+
+                                                                                        metrics: (1) Success Rate (SR), defined as the percentage of
+
+                                                                                        episodes in which the robot reaches the target object within
+
+G is the task goal. Based on Ces, the VLM decides whether                               a predefined success distance; and (2) Success weighted
+
+to terminate exploration in the current room and switch to                              by Path Length (SPL), which penalizes the success rate
+
+the new one. This semantic-aware interruption mechanism                                 by the ratio of the shortest path length to the actual path
+
+enables dynamic focus adjustment and avoids redundant                                   length. In addition, for real-world experiments where ground-
+
+exploration of semantically irrelevant rooms.                                           truth shortest path lengths are unavailable, we adopt Success
+
+   Room-query navigation mode. If in-room exploration in                                Penalized by Time (SPT) as an alternative metric, defined as
+vir completes without locating the target, the system switches
+to a global reassessment mode. In this mode, the VLM                                    SP T  =  SR · (1 -      ), t  where   t  is  the  task  completion
+is provided with contextual information Crq = {{A(vkr) |
+vkr  Runcov}, T raj, G}, including attributes of uncovered                                                  Ttimeout
+rooms, the robot's trajectory and the task goal. Based on                               time and Ttimeout is the predefined timeout threshold. We
+
+                                                                                        also report the Average Time (AT) over successful episodes.
+
+                                                                                        Implementation Details: For semantic mapping, we use
+
+                                                                                        YOLOv8xworldv2 [32] and SAM2.1 hiera b+ [34] for object
+
+this context, the VLM performs semantic reasoning over the                              detection and segmentation. For the VLM module, we use
+                        Wheeled Robot: Long-range Object Navigation (w. Attri & Spatial Constrain)
+
+Find the refrigerator
+    in the lounge.
+
+   Robot starts in an   Robot finds a refrigerator, but    Robot transits to the next  Robot transits to the next         Robot transits to the next             Robot finds the refrigerator                                                                                                          10 m
+unknown environment.      not in a lounge, continues.      room selected by the VLM.   room selected by the VLM.          room selected by the VLM.                in the lounge, completes.
+                                                                                                                                                                                                    The overview of the whole environment.
+
+ Find the blue trash
+can in the classroom.
+
+   Robot starts in an   Robot early stop to a new room     Robot finds white trash can, not Robot finds blue, grey trash cans, Robot aborts exploring current    Robot finds the blue trash can                                                                                                             10 m
+unknown environment.    as it detects a trash can inside.  blue, not in classroom, continue. but not in a classroom, continues. room and transits to classroom.    in a classroom, completes.
+                                                                                                                                                                                                    The overview of the whole environment.
+
+ Find the microwave
+near the refrigerator.
+
+   Robot starts in an   Robot finds a microwave but not Robot transits to the next room Robot finds a microwave but not Robot transits to the next room Robot finds a microwave oven                                                                                                                       10 m
+unknown environment.
+                        near the refrigerator, continues.  selected by the VLM.        near the refrigerator, continues.  selected by the VLM.                   near the refrigerator, completes.  The overview of the whole environment.
+
+Quadruped: Object Navigation (w. Attri & Spatial Constrain)                                                               Humanoid: Object Navigation (w. Attri & Spatial Constrain)
+
+Find the coffee machine.                                   Find the tv_monitor.                                                                 Find the extinguisher.                              Find the printer.
+
+Find the whiteboard.                                                             Find the plant.                          Find the vacuum cleaner.                                                  Find the tv_monitor.
+
+Find the red chair.                                        Find the chair with one person sitting on it.                                        Find the grey sofa.                                 Find the blue trash can.
+
+Find the blue sofa.                                        Find the blue trash can.                                       Find the whiteboard that is clean.                                        Find the chair with one person sitting on it.
+
+Find the person sleeping on the yellow sofa.               Find the blue bag on the sofa.                                 Find the person sitting on the sofa.                                      Find the tv_monitor on the black desk.
+
+Fig. 3: Qualitative results from real-world deployment of SysNav. The first three rows show building-scale object
+navigation with multiple constraints on a wheeled robot, including step-by-step VLM reasoning analysis. The last five rows
+demonstrate cross-embodiment performance on quadruped and humanoid robots. For each episode, we visualize the final
+scene representation, first-person view and global overview at task completion (zoom in for details of R). Red denotes
+self-attribute constraints, blue denotes spatial relationship constraints and orange denotes target object categories.
+
+Gemini-2.5-flash [20]. For the Unitree Go2 and G1, we use                                                                 successfully models complex environments into a structured
+the built-in locomotion policy for low-level control.                                                                     scene representation, which serves as a unified representa-
+                                                                                                                          tion for high-level reasoning and decision-making. Based
+B. Qualitative Results in Real-world                                                                                      on this representation, the VLM Query module performs
+                                                                                                                          instruction-aware reasoning over semantic constraints and
+   We conduct 78 real-world episodes for qualitative evalua-                                                              provides semantically grounded navigation guidance to the
+tion, including 4 in building-scale environments, 41 using                                                                planning module. For example, in the second row, the high-
+a wheeled robot platform, 19 using a quadruped robot,                                                                     level module identifies the classroom in the environment and
+and 14 using a humanoid robot. The results are shown                                                                      guides the robot to prioritize exploring that room, thereby
+in Fig. 3. The first three rows illustrate performance in                                                                 improving search efficiency. Additionally, the VLM Query
+building-scale environments on the wheeled robot platform.                                                                module determines whether objects satisfy semantic and spa-
+The results demonstrate that the semantic mapping module
+TABLE I: Quantitative comparison of SysNav with state-of-the-art methods on HM3D-v1, HM3D-v2, MP3D, and
+HM3D-OVON benchmarks. We report the Success Rate (SR) and Success penalized by Path Length (SPL) for each method.
+The best results are highlighted in bold, while the second-best results are underlined.
+
+Method            Open-Set  Zero-Shot     HM3D-v1                   HM3D-v2           MP3D        HM3D-OVON
+
+L3MVN [11]                             SR (%)  SPL (%)       SR (%)  SPL (%)    SR (%)  SPL (%)   SR (%)  SPL (%) 
+ESC [12]                         
+VoroNav [30]                           50.4  23.1                36.3  15.7     34.9        14.5  -     -
+VLFM [13]                        
+SG-Nav [14]                            39.2  22.3                -           -  28.7        11.2  -     -
+OpenFMNav [37]                   
+TriHelper [38]                         42.0  26.0                -           -  -           -     -     -
+InstructNav [21]                 
+MTU3D [15]                             52.5  30.4                63.6  32.5     36.4        17.5  35.2  19.6
+ApexNav [16]                    
+                                       54.0  24.9                49.6  25.5     40.2        16.0  -     -
+SysNav                          
+                                       54.9  24.4                -           -  37.2        15.7  -     -
+
+                                       56.5  25.3                -           -  -           -     -     -
+
+                                       -           -             58.0  20.9     -           -     -     -
+
+                                       -           -             -           -  -           -     40.8  12.1
+
+                                       59.6  33.0                76.2  38.0     39.2        17.8  -     -
+
+                                       63.7  30.5                80.8  37.2     50.7        18.1  54.9  26.1
+
+TABLE II: Quantitative comparison of SysNav with the             is because multi-room layouts introduce limited additional
+state-of-the-art methods in real-world environments.             difficulty for our system, however the medium scene contains
+                                                                 denser obstacles that slow the robot, reducing SPT and AT.
+Method            Easy      Medium           Hard
+                                                                 D. Quantitative Results in Simulation
+        SR SPT AT SR SPT AT SR SPT AT
+                                                                    We compare our system with multiple state-of-the-art
+VLFM [13] 58.3 40.3 52.1 47.5 34.4 75.3 25.6 12.9 97.4           baselines on four simulation benchmarks, with results shown
+                                                                 in Tab. I. Overall, our system consistently outperforms the
+Instruct [21] 45.8 29.5 67.4 55.0 27.8 84.6 37.2 20.7 103.4      baselines across all benchmarks. In particular, on the HM3D-
+                                                                 OVON benchmark, SR and SPL improve 14.1% and 6.5%
+SysNav  100.0 83.8 29.1 97.5 67.9 72.8 98.3 71.8 67.6            respectively. These results demonstrate that our approach
+                                                                 effectively exploits structural and semantic information for
+tial constraints based on the structured scene representation.   navigation, significantly improving task efficiency and suc-
+As shown in the third row, the system identifies a microwave     cess rate. The smaller improvement in SPL compared to
+and a refrigerator and further evaluates whether their spatial   SR arises from our real-world-oriented design, which adopts
+relationship satisfies the semantic constraint "near," enabling  stricter coverage strategies to handle environmental complex-
+accurate localization of the target object. The last five rows   ity and sensor noise. This can cause slight over-coverage in
+show results on quadruped and humanoid platforms, demon-         simulation, resulting in more modest SPL improvements.
+strating strong cross-platform generalization and robustness
+under diverse semantic constraints. Additional results and                                VI. CONCLUSION
+videos are available on our project page: cmu-vln.github.io.
+                                                                    In this work, we present a three-level ObjectNav system
+C. Quantitative Results in Real-world                            designed for real-world deployment and cross-embodiment
+                                                                 generalization. By decoupling semantic reasoning, navigation
+   For quantitative evaluation, we conduct 112 episodes on       planning, and motion control, our system enables each com-
+the wheeled robot platform across 10 target object categories    ponent to operate at the appropriate level, balancing semantic
+and 3 real-world environments. We categorize the environ-        intelligence with spatial reliability. A structured three-layer
+ments into easy, medium, and hard difficulty levels. The         scene representation supports interpretable and grounded
+easy setting (24 episodes) contains a single room with the       VLM reasoning, while the hierarchical room-based naviga-
+target mostly in the initial view. The medium setting (40        tion strategy integrates global semantic decision-making with
+episodes) also contains a single room but requires moderate      efficient local exploration. Extensive real-world experiments
+exploration. The hard setting (48 episodes) consists of three    across three robot embodiments demonstrate that our system
+rooms, where the target is located in a different room from      achieves substantial improvements in both success rate and
+the robot's initial position, requiring cross-room exploration.  navigation efficiency. To the best of our knowledge, this work
+Timeouts are 3 minutes for easy and 4 minutes for medium         is the first to reliably and efficiently accomplish building-
+and hard. For fair comparison, all baselines share the same      scale long-range object navigation in complex real-world
+point cloud and panoramic inputs as well as the same             environments. Results on multiple simulation benchmarks
+low-level base autonomy stack. We report SR, SPT, and            further validate its robustness and generality.
+AT (Tab. II), with AT computed over successful episodes.
+Our system significantly outperforms the baseline across all                          ACKNOWLEDGMENT
+difficulty levels. In the hard setting, SR and SPT improve
+by 61.1% and 51.1%, while AT is reduced by 29.8 seconds.            This work is partially sponsored by Denso and Alpha-Z.
+These results demonstrate that with the proposed semantic        The humanoid robot hardware is provided by Dimensional.
+reasoning and room-based navigation strategy, our system
+effectively leverages structural and semantic information for
+navigation, substantially improving success rate and effi-
+ciency. The slightly better performance in the hard setting
+                            REFERENCES                                           [19] T. Wu, G. Yang, Z. Li, K. Zhang, Z. Liu, L. Guibas, D. Lin, and
+                                                                                       G. Wetzstein, "Gpt-4v (ision) is a human-aligned evaluator for text-
+ [1] B. Chen, Z. Xu, S. Kirmani, B. Ichter, D. Sadigh, L. Guibas, and                  to-3d generation," in Proceedings of the IEEE/CVF conference on
+      F. Xia, "Spatialvlm: Endowing vision-language models with spatial                computer vision and pattern recognition, 2024, pp. 22 227­22 238.
+      reasoning capabilities," in Proceedings of the IEEE/CVF Conference
+      on Computer Vision and Pattern Recognition, 2024, pp. 14 455­14 465.       [20] G. Team, R. Anil, S. Borgeaud, J.-B. Alayrac, J. Yu, R. Soricut,
+                                                                                       J. Schalkwyk, A. M. Dai, A. Hauth, K. Millican et al., "Gem-
+ [2] Z. Qi, Z. Zhang, Y. Fang, J. Wang, and H. Zhao, "Gpt4scene:                       ini: a family of highly capable multimodal models," arXiv preprint
+      Understand 3d scenes from videos with vision-language models,"                   arXiv:2312.11805, 2023.
+      arXiv preprint arXiv:2501.01428, 2025.
+                                                                                 [21] Y. Long, W. Cai, H. Wang, G. Zhan, and H. Dong, "Instructnav:
+ [3] E. Wijmans, A. Kadian, A. Morcos, S. Lee, I. Essa, D. Parikh,                     Zero-shot system for generic instruction navigation in unexplored
+      M. Savva, and D. Batra, "Dd-ppo: Learning near-perfect pointgoal                 environment," in 8th Annual Conference on Robot Learning.
+      navigators from 2.5 billion frames," arXiv preprint arXiv:1911.00357,
+      2019.                                                                      [22] Z. Zhang, F. Hu, J. Lee, F. Shi, P. Kordjamshidi, J. Chai, and
+                                                                                       Z. Ma, "Do vision-language models represent space and how? eval-
+ [4] J. Ye, D. Batra, A. Das, and E. Wijmans, "Auxiliary tasks and explo-              uating spatial frame of reference under ambiguities," arXiv preprint
+      ration enable objectgoal navigation," in Proceedings of the IEEE/CVF             arXiv:2410.17385, 2024.
+      international conference on computer vision, 2021, pp. 16 117­16 126.
+                                                                                 [23] N. Hughes, Y. Chang, and L. Carlone, "Hydra: A real-time spatial
+ [5] R. Ramrakhya, E. Undersander, D. Batra, and A. Das, "Habitat-                     perception system for 3D scene graph construction and optimization,"
+      web: Learning embodied object-search strategies from human demon-                2022.
+      strations at scale," in Proceedings of the IEEE/CVF conference on
+      computer vision and pattern recognition, 2022, pp. 5173­5183.              [24] J. Chen, G. Li, S. Kumar, B. Ghanem, and F. Yu, "How to not
+                                                                                       train your dragon: Training-free embodied object goal navigation with
+ [6] R. Ramrakhya, D. Batra, E. Wijmans, and A. Das, "Pirlnav: Pretraining             semantic frontiers," arXiv preprint arXiv:2305.16925, 2023.
+      with imitation and rl finetuning for objectnav," in Proceedings of the
+      IEEE/CVF Conference on Computer Vision and Pattern Recognition,            [25] S. Y. Gadre, M. Wortsman, G. Ilharco, L. Schmidt, and S. Song, "Cows
+      2023, pp. 17 896­17 906.                                                         on pasture: Baselines and benchmarks for language-driven zero-shot
+                                                                                       object navigation," in Proceedings of the IEEE/CVF Conference on
+ [7] J. Zhang, K. Wang, S. Wang, M. Li, H. Liu, S. Wei, Z. Wang,                       Computer Vision and Pattern Recognition, 2023, pp. 23 171­23 181.
+      Z. Zhang, and H. Wang, "Uni-navid: A video-based vision-language-
+      action model for unifying embodied navigation tasks," arXiv preprint       [26] T. Gervet, S. Chintala, D. Batra, J. Malik, and D. S. Chaplot,
+      arXiv:2412.06224, 2024.                                                          "Navigating to objects in the real world," Science Robotics, vol. 8,
+                                                                                       no. 79, p. eadf6991, 2023.
+ [8] D. S. Chaplot, D. P. Gandhi, A. Gupta, and R. R. Salakhutdinov,
+      "Object goal navigation using goal-oriented semantic exploration,"         [27] J. Loo, Z. Wu, and D. Hsu, "Open scene graphs for open-world object-
+      Advances in Neural Information Processing Systems, vol. 33, pp.                  goal navigation," in First Workshop on Vision-Language Models for
+      4247­4258, 2020.                                                                 Navigation and Manipulation at ICRA 2024.
+
+ [9] S. K. Ramakrishnan, D. S. Chaplot, Z. Al-Halah, J. Malik, and               [28] D. An, H. Wang, W. Wang, Z. Wang, Y. Huang, K. He, and L. Wang,
+      K. Grauman, "Poni: Potential functions for objectgoal navigation with            "Etpnav: Evolving topological planning for vision-language navigation
+      interaction-free learning," in Proceedings of the IEEE/CVF Conference            in continuous environments," IEEE Transactions on Pattern Analysis
+      on Computer Vision and Pattern Recognition, 2022, pp. 18 890­18 900.             and Machine Intelligence, 2024.
+
+[10] J. Zhang, L. Dai, F. Meng, Q. Fan, X. Chen, K. Xu, and                      [29] H. Zhu, Z. Li, Z. Liu, W. Wang, J. Zhang, J. Francis, and J. Oh, "Strive:
+      H. Wang, "3d-aware object goal navigation via simultaneous                       Structured representation integrating vlm reasoning for efficient object
+      exploration and identification," 2023. [Online]. Available: https:               navigation," arXiv preprint arXiv:2505.06729, 2025.
+      //arxiv.org/abs/2212.00338
+                                                                                 [30] P. Wu, Y. Mu, B. Wu, Y. Hou, J. Ma, S. Zhang, and C. Liu, "Voronav:
+[11] B. Yu, H. Kasaei, and M. Cao, "L3mvn: Leveraging large language                   Voronoi-based zero-shot object navigation with large language model,"
+      models for visual target navigation," in 2023 IEEE/RSJ International             arXiv preprint arXiv:2401.02695, 2024.
+      Conference on Intelligent Robots and Systems (IROS). IEEE, Oct.
+      2023, p. 3554­3560. [Online]. Available: http://dx.doi.org/10.1109/        [31] A. Werby, C. Huang, M. Bu¨chner, A. Valada, and W. Burgard,
+      IROS55552.2023.10342512                                                          "Hierarchical open-vocabulary 3d scene graphs for language-grounded
+                                                                                       robot navigation," in First Workshop on Vision-Language Models for
+[12] K. Zhou, K. Zheng, C. Pryor, Y. Shen, H. Jin, L. Getoor,                          Navigation and Manipulation at ICRA 2024, 2024.
+      and X. E. Wang, "Esc: Exploration with soft commonsense
+      constraints for zero-shot object navigation," 2023. [Online]. Available:   [32] T. Cheng, L. Song, Y. Ge, W. Liu, X. Wang, and Y. Shan, "Yolo-
+      https://arxiv.org/abs/2301.13166                                                 world: Real-time open-vocabulary object detection," in Proceedings of
+                                                                                       the IEEE/CVF conference on computer vision and pattern recognition,
+[13] N. Yokoyama, S. Ha, D. Batra, J. Wang, and B. Bucher, "Vlfm: Vision-              2024, pp. 16 901­16 911.
+      language frontier maps for zero-shot semantic navigation," in 2024
+      IEEE International Conference on Robotics and Automation (ICRA).           [33] A. Wang, L. Liu, H. Chen, Z. Lin, J. Han, and G. Ding, "Yoloe:
+      IEEE, 2024, pp. 42­48.                                                           Real-time seeing anything," arXiv preprint arXiv:2503.07465, 2025.
+
+[14] H. Yin, X. Xu, Z. Wu, J. Zhou, and J. Lu, "Sg-nav: Online 3d scene          [34] N. Ravi, V. Gabeur, Y.-T. Hu, R. Hu, C. Ryali, T. Ma,
+      graph prompting for llm-based zero-shot object navigation," Advances             H. Khedr, R. Ra¨dle, C. Rolland, L. Gustafson, E. Mintun, J. Pan,
+      in Neural Information Processing Systems, vol. 37, pp. 5285­5307,                K. V. Alwala, N. Carion, C.-Y. Wu, R. Girshick, P. Dolla´r,
+      2024.                                                                            and C. Feichtenhofer, "Sam 2: Segment anything in images and
+                                                                                       videos," arXiv preprint arXiv:2408.00714, 2024. [Online]. Available:
+[15] Z. Zhu, X. Wang, Y. Li, Z. Zhang, X. Ma, Y. Chen, B. Jia, W. Liang,               https://arxiv.org/abs/2408.00714
+      Q. Yu, Z. Deng et al., "Move to understand a 3d scene: Bridging
+      visual grounding and exploration for efficient and versatile embodied      [35] C. Cao, H. Zhu, H. Choset, and J. Zhang, "Tare: A hierarchical
+      navigation," in Proceedings of the IEEE/CVF International Conference             framework for efficiently exploring complex 3d environments." in
+      on Computer Vision, 2025, pp. 8120­8132.                                         Robotics: Science and Systems, vol. 5, 2021, p. 2.
+
+[16] M. Zhang, Y. Du, C. Wu, J. Zhou, Z. Qi, J. Ma, and B. Zhou, "Apex-          [36] C. Cao, H. Zhu, F. Yang, Y. Xia, H. Choset, J. Oh, and J. Zhang,
+      nav: An adaptive exploration strategy for zero-shot object navigation            "Autonomous exploration development environment and the planning
+      with target-centric semantic fusion," arXiv preprint arXiv:2504.14478,           algorithms," in 2022 International Conference on Robotics and Au-
+      2025.                                                                            tomation (ICRA). IEEE, 2022, pp. 8921­8928.
+
+[17] J. Li, D. Li, C. Xiong, and S. Hoi, "Blip: Bootstrapping language-          [37] Y. Kuang, H. Lin, and M. Jiang, "Openfmnav: Towards open-set zero-
+      image pre-training for unified vision-language understanding and                 shot object navigation via vision-language foundation models," arXiv
+      generation," 2022. [Online]. Available: https://arxiv.org/abs/2201.              preprint arXiv:2402.10670, 2024.
+      12086
+                                                                                 [38] L. Zhang, Q. Zhang, H. Wang, E. Xiao, Z. Jiang, H. Chen, and R. Xu,
+[18] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal,                 "Trihelper: Zero-shot object navigation with dynamic assistance," in
+      G. Sastry, A. Askell, P. Mishkin, J. Clark et al., "Learning transferable        2024 IEEE/RSJ International Conference on Intelligent Robots and
+      visual models from natural language supervision," in International               Systems (IROS). IEEE, 2024, pp. 10 035­10 042.
+      conference on machine learning. PmLR, 2021, pp. 8748­8763.
+                                                                                 [39] J. Zhang, "Autonomy stack for mecanum wheel platform," https:
+                                                                                       //github.com/jizhang-cmu/autonomy stack mecanum wheel platform,
+                                                                                       2024, accessed: 2025-04-29.
+[40] K. Yadav, J. Krantz, R. Ramrakhya, S. K. Ramakrishnan, J. Yang,
+      A. Wang, J. Turner, A. Gokaslan, V.-P. Berges, R. Mootaghi,
+      O. Maksymets, A. X. Chang, M. Savva, A. Clegg, D. S. Chaplot,
+      and D. Batra, "Habitat challenge 2023," https://aihabitat.org/challenge/
+      2023/, 2023.
+
+[41] K. Yadav, S. K. Ramakrishnan, A. Gokaslan, O. Maksymets, R. Jain,
+      R. Ramrakhya, A. X. Chang, A. Clegg, M. Savva, E. Undersander,
+      D. S. Chaplot, and D. Batra, "Habitat challenge 2022," https://aihabitat.
+      org/challenge/2022/, 2022.
+
+[42] X. Puig, E. Undersander, A. Szot, M. D. Cote, R. Partsey, J. Yang,
+      R. Desai, A. W. Clegg, M. Hlavac, T. Min, T. Gervet, V. Vondrus, V.-P.
+      Berges, J. Turner, O. Maksymets, Z. Kira, M. Kalakrishnan, J. Malik,
+      D. S. Chaplot, U. Jain, D. Batra, A. Rai, and R. Mottaghi, "Habitat
+      3.0: A co-habitat for humans, avatars and robots," 2023.
+
+[43] A. Chang, A. Dai, T. Funkhouser, M. Halber, M. Niessner, M. Savva,
+      S. Song, A. Zeng, and Y. Zhang, "Matterport3d: Learning from rgb-d
+      data in indoor environments," International Conference on 3D Vision
+      (3DV), 2017.
+
+[44] N. Yokoyama, R. Ramrakhya, A. Das, D. Batra, and S. Ha, "Hm3d-
+      ovon: A dataset and benchmark for open-vocabulary object goal
+      navigation," in 2024 IEEE/RSJ International Conference on Intelligent
+      Robots and Systems (IROS). IEEE, 2024, pp. 5543­5550.
+

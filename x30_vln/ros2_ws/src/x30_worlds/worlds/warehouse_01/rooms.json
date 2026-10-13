@@ -1,0 +1,155 @@
+{
+ "world": "warehouse_01",
+ "wall_height": 5.0,
+ "rooms": [
+  {
+   "id": "office_1",
+   "type": "office",
+   "name": "office",
+   "rect": [
+    0.0,
+    15.5,
+    6.0,
+    20.0
+   ],
+   "center": [
+    3.0,
+    17.75
+   ],
+   "area": 27.0,
+   "walled": true,
+   "doors": [
+    "door_01"
+   ]
+  },
+  {
+   "id": "loading_area_1",
+   "type": "loading_area",
+   "name": "loading area",
+   "rect": [
+    0.0,
+    0.0,
+    28.0,
+    6.0
+   ],
+   "center": [
+    14.0,
+    3.0
+   ],
+   "area": 168.0,
+   "walled": false,
+   "doors": []
+  },
+  {
+   "id": "storage_area_1",
+   "type": "storage_area",
+   "name": "storage area 1",
+   "rect": [
+    0.0,
+    6.0,
+    14.0,
+    15.5
+   ],
+   "center": [
+    7.0,
+    10.75
+   ],
+   "area": 133.0,
+   "walled": false,
+   "doors": []
+  },
+  {
+   "id": "storage_area_2",
+   "type": "storage_area",
+   "name": "storage area 2",
+   "rect": [
+    14.0,
+    6.0,
+    28.0,
+    20.0
+   ],
+   "center": [
+    21.0,
+    13.0
+   ],
+   "area": 196.0,
+   "walled": false,
+   "doors": []
+  },
+  {
+   "id": "storage_area_3",
+   "type": "storage_area",
+   "name": "storage area 3",
+   "rect": [
+    6.0,
+    15.5,
+    14.0,
+    20.0
+   ],
+   "center": [
+    10.0,
+    17.75
+   ],
+   "area": 36.0,
+   "walled": false,
+   "doors": []
+  },
+  {
+   "id": "warehouse_hall_1",
+   "type": "warehouse_hall",
+   "name": "warehouse hall",
+   "rect": [
+    0.0,
+    0.0,
+    28.0,
+    20.0
+   ],
+   "center": [
+    14.0,
+    10.0
+   ],
+   "area": 560.0,
+   "walled": true,
+   "doors": [
+    "door_01",
+    "door_02",
+    "door_03"
+   ]
+  }
+ ],
+ "doors": [
+  {
+   "id": "door_01",
+   "x": 2.827,
+   "y": 15.5,
+   "width": 1.1,
+   "orient": "h",
+   "connects": [
+    "office_1",
+    "warehouse_hall_1"
+   ]
+  },
+  {
+   "id": "door_02",
+   "x": 13.72,
+   "y": 0.0,
+   "width": 4.0,
+   "orient": "h",
+   "connects": [
+    "warehouse_hall_1",
+    "outside"
+   ]
+  },
+  {
+   "id": "door_03",
+   "x": 28.0,
+   "y": 7.073,
+   "width": 1.6,
+   "orient": "v",
+   "connects": [
+    "warehouse_hall_1",
+    "outside"
+   ]
+  }
+ ]
+}

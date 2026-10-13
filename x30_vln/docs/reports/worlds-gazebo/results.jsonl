@@ -1,0 +1,10 @@
+{"world": "apt_01", "gz_sdf_k": "Valid", "load_s": 6.1, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.999, "rtf_samples": [0.999, 1.0, 0.996, 1.002, 1.0, 1.0], "log_errors": []}
+{"world": "apt_02", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 1.0, "rtf_samples": [0.995, 1.001, 1.0, 1.004, 1.002, 0.999], "log_errors": []}
+{"world": "apt_03", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 1.001, "rtf_samples": [1.0, 1.002, 1.001, 0.999, 0.999, 1.005], "log_errors": []}
+{"world": "apt_04", "gz_sdf_k": "Valid", "load_s": 6.1, "loaded": true, "view_png": true, "top_png": true, "rtf": 1.0, "rtf_samples": [1.0, 0.999, 1.0, 1.0, 0.999, 1.0], "log_errors": []}
+{"world": "office_01", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.971, "rtf_samples": [1.0, 0.756, 0.757, 1.0, 1.315, 0.999], "log_errors": []}
+{"world": "office_02", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 1.0, "rtf_samples": [1.0, 1.0, 1.0, 0.999, 1.0, 1.0], "log_errors": []}
+{"world": "lab_01", "gz_sdf_k": "Valid", "load_s": 6.1, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.831, "rtf_samples": [0.649, 1.001, 0.999, 0.999, 1.0, 0.337], "log_errors": []}
+{"world": "lab_02", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.995, "rtf_samples": [1.0, 0.97, 1.001, 1.001, 0.998, 0.999], "log_errors": []}
+{"world": "warehouse_01", "gz_sdf_k": "Valid", "load_s": 6.2, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.605, "rtf_samples": [0.668, 0.521, 0.764, 0.795, 0.163, 0.716], "log_errors": []}
+{"world": "warehouse_02", "gz_sdf_k": "Valid", "load_s": 6.3, "loaded": true, "view_png": true, "top_png": true, "rtf": 0.249, "rtf_samples": [0.392, 0.35, 0.299, 0.134, 0.231, 0.087], "log_errors": []}

@@ -1,0 +1,24 @@
+# Overlay for the REAL ROBOT on a Linux workstation (or Docker Desktop with host networking enabled over WSL2 mirrored networking):
+# ros1_bridge, framework and tools use the host network so the ROS 1 master/robot can connect back to the bridge
+# (ROS 1 TCPROS/XMLRPC open random ports; NAT breaks them). Models stay on x30_net and are reached through their published ports.
+# Merge order: compose.yml, compose.models.yml, compose.real.yml.  Set X30_DDS_FILE=cyclonedds-host.xml in .env.
+services:
+  ros1_bridge:
+    network_mode: host
+    networks: !reset []
+    hostname: !reset null
+  framework:
+    network_mode: host
+    networks: !reset []
+    hostname: !reset null
+    environment:
+      PERCEPTION_URL: http://127.0.0.1:${PERCEPTION_PORT:-8100}
+      VLM_BASE_URL: http://127.0.0.1:${VLM_PORT:-8000}/v1
+  tools:
+    network_mode: host
+    networks: !reset []
+    hostname: !reset null
+    ports: !reset []
+    environment:
+      PERCEPTION_URL: http://127.0.0.1:${PERCEPTION_PORT:-8100}
+      VLM_BASE_URL: http://127.0.0.1:${VLM_PORT:-8000}/v1

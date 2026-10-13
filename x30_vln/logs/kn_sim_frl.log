@@ -1,0 +1,53 @@
+[INFO] [launch]: All log files can be found below /home/x30/.ros/log/2026-10-10-20-01-36-583531-44d1f6fac2ac-596
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [gz_server-1]: process started with pid [599]
+[INFO] [robot_state_publisher-2]: process started with pid [600]
+[INFO] [static_transform_publisher-3]: process started with pid [601]
+[INFO] [parameter_bridge-4]: process started with pid [602]
+[INFO] [lidar_merge-5]: process started with pid [603]
+[INFO] [sim_state-6]: process started with pid [606]
+[INFO] [ground_truth-7]: process started with pid [607]
+[INFO] [sim_services-8]: process started with pid [608]
+[INFO] [thermal_processor-9]: process started with pid [611]
+[INFO] [kinematic_driver-10]: process started with pid [612]
+[static_transform_publisher-3] [INFO] [1791662496.987381404] [base_link_to_base]: Spinning until stopped - publishing transform
+[static_transform_publisher-3] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-3] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-3] from 'base_link' to 'base'
+[robot_state_publisher-2] [INFO] [1791662496.992935902] [robot_state_publisher]: Robot initialized
+[lidar_merge-5] [INFO] [1791662497.353862462] [lidar_merge]: merging lidars ['rl', 'rr', 'fr', 'fl'] into /lidar_points (lidar_link)
+[kinematic_driver-10] [INFO] [1791662497.363989213] [kinematic_driver]: kinematic locomotion: limits {'x': [-0.6, 0.6], 'y': [-0.3, 0.3], 'z': [-0.8, 0.8]}, latency 0.060 s, accel 1.0/2.0
+[ground_truth-7] [INFO] [1791662497.555486875] [ground_truth]: ground truth: 176 objects in "replica_frl_apartment_0" (180 models)
+[parameter_bridge-4] [INFO] [1791662498.012061426] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.012949257] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/imu_ros (gz.msgs.IMU) -> /imu/data (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.014239760] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/image (gz.msgs.Image) -> /camera/color/image_raw (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.014523854] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/camera_info (gz.msgs.CameraInfo) -> /camera/color/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.014895817] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/gt/odom_raw (gz.msgs.Odometry) -> /gt/odom_raw (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.015536804] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/lidar/fl/scan/points (gz.msgs.PointCloudPacked) -> /lidar/fl/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.015838096] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/lidar/fr/scan/points (gz.msgs.PointCloudPacked) -> /lidar/fr/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.016425283] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/lidar/rl/scan/points (gz.msgs.PointCloudPacked) -> /lidar/rl/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.016875435] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/lidar/rr/scan/points (gz.msgs.PointCloudPacked) -> /lidar/rr/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.017276430] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/camera/depth_image (gz.msgs.Image) -> /camera/depth/image_raw (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.017629065] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/thermal/image (gz.msgs.Image) -> /thermal/raw (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.017995299] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/thermal/camera_info (gz.msgs.CameraInfo) -> /thermal/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662498.018324338] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/x30/cmd_vel_gz (geometry_msgs/msg/Twist) -> /model/x30/cmd_vel (gz.msgs.Twist)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1791662499.258282660] [ros_gz_bridge]: Passing message from ROS geometry_msgs/msg/Twist to Gazebo gz.msgs.Twist (showing msg only once per type)
+[INFO] [create-11]: process started with pid [729]
+[create-11] [INFO] [1791662503.004096838] [ros_gz_sim]: Requesting list of world names.
+[create-11] [INFO] [1791662503.208118570] [ros_gz_sim]: Entity creation successful.
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="rgbd_camera"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="lidar_fl"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="lidar_fr"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="lidar_rl"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="lidar_rr"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="base"]/sensor[@name="thermal_camera"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[gz_server-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x30"]/link[@name="imu_link"]/sensor[@name="imu_ros"]/gz_frame_id:/tmp/x30_sim/x30_kinematic.urdf:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[INFO] [create-11]: process has finished cleanly [pid 729]
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/torso_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/fl_hip_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/l_thigh_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/shank_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/fr_hip_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/r_thigh_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/hl_hip_v15mm.obj[0m[1;33m][0m[1;33m[0m
+[gz_server-1] [1;33m[Wrn] [OBJLoader.cc:202] [0m[1;33mMissing material for shape[[0m[1;33m] [0m[1;33min OBJ file[[0m[1;33m/tmp/x30_sim_meshes/hr_hip_v15mm.obj[0m[1;33m][0m[1;33m[0m

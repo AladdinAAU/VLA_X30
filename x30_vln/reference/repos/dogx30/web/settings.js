@@ -1,0 +1,688 @@
+// 网关设置面板：在线改运动主机、感知主机、监听地址与点云参数。
+//
+// 这些参数以前只存在于 systemd 单元的 ExecStart 里，装完就只能上命令行改。
+// 现场换一台感知主机、或者发现板子被路由器 NAT 到别的网段要改绑定地址时，
+// 蹲在狗旁边用 vi 编辑 systemd 单元是不现实的。
+//
+// 三件事必须交代清楚，它们决定了这个面板为什么长这样：
+//
+// 一、要密码。协议本身没有身份认证（见 README 安全设计），而改配置能把网关
+//     指到别的主机上，也能把监听面从内网扩到全部网卡 —— 比操控狗更值得设门。
+//     密码是固定的 54longqr，不再去板子上取令牌。
+// 二、要重启。所有参数都在启动时装配（UDP 套接字、监听地址、ROS 节点），
+//     没有一条能热改。保存后网关会自己重启，遥控中断一两秒。
+// 三、要没人在操控。重启会中断遥控，狗正走着的时候不能发生，所以有人持有
+//     控制权时网关会直接拒绝。
+//
+// 不写 ?. 和 ??：安卓 App 是 WebView 壳，旧 WebView 不认这些语法。
+
+(function () {
+  'use strict';
+
+  const TOKEN_KEY = 'x30.admin.token';
+  const DEFAULT_PTZ_VIS = 'rtsp://192.168.10.168:554/11';
+
+  const SECTIONS = [
+    {
+      title: '双光布控球',
+      note: '布控球输出一路白光+热成像拼接画面。网关用 MediaMTX 拉这一路 RTSP，' +
+            '再转 WebRTC。编码必须和相机实际一致。云台口令从地址里取。',
+      fields: [
+        { key: 'ptz_vis_rtsp', label: '双光视频', type: 'text',
+          value: DEFAULT_PTZ_VIS,
+          hint: '默认 rtsp://192.168.10.168:554/11 。路径带 /h264、/h265 时按地址认编码。' },
+        { key: 'ptz_vis_codec', label: '双光编码', type: 'text',
+          hint: 'h264 或 h265。/11 这类短路径空着按 h264。相机主码请开 H.264，旧平板解不了 H.265。' },
+        { key: 'ptz_ir_rtsp', label: '热成像 RTSP', type: 'text', hidden: true },
+        { key: 'ptz_ir_codec', label: '热成像编码', type: 'text', hidden: true },
+      ],
+    },
+    {
+      title: '机器狗连接',
+      note: '运动与感知是两台不同的主机，上下楼步态需要两条通道配合。',
+      fields: [
+        { key: 'robot_ip', label: '运动主机 IP', type: 'text',
+          hint: '所有行走控制走这台。' },
+        { key: 'robot_port', label: '运动主机端口', type: 'number',
+          hint: '官方默认 43893，一般不用改。' },
+        { key: 'local_port', label: '本机遥测接收端口', type: 'number',
+          hint: '必须与运动主机 network.toml 里为本机登记的端口一致，' +
+                '否则一条遥测都收不到。' },
+        { key: 'perception_ip', label: '感知主机 IP', type: 'text',
+          hint: '上下楼地形图、点云、机身相机都在这台上。' },
+        { key: 'perception_port', label: '地形图端口', type: 'number',
+          hint: '官方默认 43899。' },
+        { key: 'gas_port', label: '本机气体接收端口', type: 'number',
+          hint: '气体主板每 2 秒往这个 UDP 口推 10 路浓度。串口服务器' +
+                '「目的 IP」填网关地址（10 网是 192.168.10.120），' +
+                '「目的端口」必须和这里一致，默认 1000。' },
+        { key: 'payload_ip', label: '载荷主板 IP', type: 'text',
+          hint: '气泵、UWB、风扇、摄像头走这台。空则用气体口学到的对端。' },
+        { key: 'payload_port', label: '载荷主板端口', type: 'number',
+          hint: '串口服务器本机端口，现场是 2000。' },
+        { key: 'light_ip', label: '条纹灯板 IP', type: 'text',
+          hint: '灯板 ESP8684 听 UDP 9000，现场是 192.168.1.200。' +
+                '不能填载荷主板，STM32 不处理条纹灯。' },
+        { key: 'light_port', label: '条纹灯板端口', type: 'number',
+          hint: '默认 9000。' },
+        { key: 'cannon_ip', label: '水炮 IP', type: 'text',
+          hint: '消防炮在 1 网 192.168.1.253:4000。2.4G 下平板直连炮台，不经网关。' },
+        { key: 'cannon_port', label: '水炮端口', type: 'number',
+          hint: '默认 4000。' },
+      ],
+    },
+    {
+      title: '遥控服务',
+      note: '改这两项会换掉控制台自己的地址，保存后需要用新地址重新打开。',
+      fields: [
+        { key: 'http_port', label: '服务端口', type: 'number',
+          hint: '控制台与 WebSocket 都在这个端口上。' },
+        { key: 'bind_address', label: '监听地址', type: 'text',
+          hint: '0.0.0.0 表示全部网卡。现场板子填 192.168.10.120（eth1）。接了 4G 不要留 0.0.0.0。' },
+      ],
+    },
+    {
+      title: '激光点云',
+      note: '感知主机的 ROS 可达性要先验证过再开。',
+      fields: [
+        { key: 'cloud_enabled', label: '启用点云回传', type: 'bool' },
+        { key: 'ros_master', label: 'ROS master', type: 'text',
+          hint: '通常是 http://<感知主机>:11311。' },
+        { key: 'ros_host', label: '本机在 ROS 网络中的地址', type: 'text',
+          hint: '必须是与狗直连那块网卡的地址。填成 MESH 侧地址的话，' +
+                '订阅会成功但一帧数据都收不到。' },
+        { key: 'cloud_topic', label: '点云话题', type: 'text' },
+        { key: 'cloud_hz', label: '下行帧率', type: 'number',
+          hint: '话题本身 10 Hz，下行降到 2 Hz 约 1.4 Mbps。' },
+        { key: 'cloud_points', label: '单帧点数上限', type: 'number',
+          hint: '20000 点约 120 KB/帧。' },
+      ],
+    },
+  ];
+
+  const state = {
+    sendFn: null,
+    available: false,   // 网关是否以 --config 启动
+    token: '',
+    current: null,      // 网关回来的那一份，用于算改动
+    open: false,
+    saving: false,
+    loading: false,
+    waitingRestart: false,
+    saveArmed: false,
+    pendingDiff: null,
+    lastSaved: null,
+  };
+
+  const inputs = {};
+  let root = null;
+  let noteEl = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  function isAppNative() {
+    try {
+      // 安卓 WebView 里桥方法的 typeof 常常不是 function。
+      return !!(window.X30Native && 'getGatewayHost' in window.X30Native);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function gatewayOpen() {
+    try {
+      if (window.app && typeof window.app.linkOpen === 'function') {
+        return !!window.app.linkOpen();
+      }
+    } catch (e) { /* 网页还没起来 */ }
+    return !!(window.app && window.app.ws && window.app.ws.readyState === 1);
+  }
+
+  // -------------------------------------------------------------------------
+  // 构建
+  // -------------------------------------------------------------------------
+
+  function buildForm(host) {
+    SECTIONS.forEach((sec) => {
+      const h = document.createElement('div');
+      h.className = 'set-sect';
+      h.textContent = sec.title;
+      host.appendChild(h);
+
+      if (sec.note) {
+        const n = document.createElement('p');
+        n.className = 'set-sect-note';
+        n.textContent = sec.note;
+        host.appendChild(n);
+      }
+
+      sec.fields.forEach((f) => {
+        if (f.hidden) {
+          const ghost = document.createElement('input');
+          ghost.type = 'hidden';
+          inputs[f.key] = ghost;
+          return;
+        }
+        const row = document.createElement('label');
+        row.className = 'set-row';
+
+        const name = document.createElement('span');
+        name.className = 'set-label';
+        name.textContent = f.label;
+        row.appendChild(name);
+
+        const input = document.createElement('input');
+        if (f.type === 'bool') {
+          input.type = 'checkbox';
+          input.className = 'set-check';
+        } else {
+          input.type = f.type === 'number' ? 'number' : 'text';
+          input.className = 'set-input';
+          input.autocomplete = 'off';
+          input.spellcheck = false;
+          if (f.value) input.value = f.value;
+        }
+        inputs[f.key] = input;
+        row.appendChild(input);
+
+        if (f.hint) {
+          const hint = document.createElement('small');
+          hint.className = 'set-hint';
+          hint.textContent = f.hint;
+          row.appendChild(hint);
+        }
+
+        host.appendChild(row);
+      });
+    });
+
+    // ROS master 默认就是「感知主机的 11311」。改了感知主机却忘了改这里，
+    // 表现是点云连不上一台已经不存在的 master。跟着改，并且是看得见地改 ——
+    // 悄悄改和不改一样糟。
+    inputs.perception_ip.addEventListener('change', () => {
+      if (!state.current) return;
+      const old = 'http://' + state.current.perception_ip + ':11311';
+      if (inputs.ros_master.value.trim() !== old) return;
+      const next = 'http://' + inputs.perception_ip.value.trim() + ':11311';
+      inputs.ros_master.value = next;
+      inputs.ros_master.classList.add('set-auto');
+      setNote('ROS master 已跟着感知主机改成 ' + next + '，不对的话直接改它。');
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // 读写表单
+  // -------------------------------------------------------------------------
+
+  function rememberPtz(s) {
+    const v = (s && s.ptz_vis_rtsp) ? String(s.ptz_vis_rtsp).trim() : DEFAULT_PTZ_VIS;
+    try { window.localStorage.setItem('x30.ptz_vis.rtsp', v || DEFAULT_PTZ_VIS); }
+    catch (e) { /* 记不住就下次再写 */ }
+    if (window.X30DogCam && window.X30DogCam.setPtzUrl) {
+      window.X30DogCam.setPtzUrl(v || DEFAULT_PTZ_VIS);
+    }
+  }
+
+  function fillForm(s) {
+    if (!s) return;
+    Object.keys(inputs).forEach((key) => {
+      const input = inputs[key];
+      if (!input) return;
+      if (input.type === 'checkbox') {
+        input.checked = !!s[key];
+      } else {
+        const v = s[key];
+        if (v === undefined || v === null || v === '') {
+          input.value = (key === 'ptz_vis_rtsp') ? DEFAULT_PTZ_VIS : '';
+        } else {
+          input.value = String(v);
+        }
+      }
+      input.classList.remove('set-auto');
+    });
+    updateCloudRows();
+  }
+
+  // 只收改动过的字段。整份回传的话，将来网关多出一个本面板不认识的参数时，
+  // 会被这边的旧值覆盖掉。
+  function changedFields() {
+    const out = {};
+    if (!state.current) return out;
+    Object.keys(inputs).forEach((key) => {
+      const input = inputs[key];
+      if (input.type === 'checkbox') {
+        if (input.checked !== !!state.current[key]) out[key] = input.checked;
+        return;
+      }
+      const raw = input.value.trim();
+      if (input.type === 'number') {
+        const n = Number(raw);
+        if (raw !== '' && !isNaN(n) && n !== state.current[key]) out[key] = n;
+      } else if (raw !== (state.current[key] || '')) {
+        out[key] = raw;
+      }
+    });
+    return out;
+  }
+
+  // 点云关着的时候那几项没有意义，灰掉但不隐藏 —— 隐藏会让人以为不能配。
+  function updateCloudRows() {
+    if (!inputs.cloud_enabled) return;
+    const on = inputs.cloud_enabled.checked;
+    ['ros_master', 'ros_host', 'cloud_topic', 'cloud_hz', 'cloud_points']
+      .forEach((key) => {
+        const input = inputs[key];
+        if (!input) return;
+        input.disabled = !on;
+        if (input.parentNode) input.parentNode.classList.toggle('set-off', !on);
+      });
+  }
+
+  // -------------------------------------------------------------------------
+  // 交互
+  // -------------------------------------------------------------------------
+
+  function setNote(text, kind) {
+    noteEl.textContent = text || '';
+    noteEl.className = 'set-note' + (kind ? ' ' + kind : '');
+    noteEl.classList.toggle('hidden', !text);
+  }
+
+  function setLocked(locked) {
+    root.classList.toggle('set-locked', locked);
+    $('set-unlock-box').classList.toggle('hidden', !locked);
+    $('set-form').classList.toggle('hidden', locked);
+    $('set-save').classList.toggle('hidden', locked);
+  }
+
+  function fillAppGateway() {
+    if (!isAppNative()) return;
+    const box = $('set-app-box');
+    if (!box) return;
+    box.classList.remove('hidden');
+    $('set-app-host').value = window.X30Native.getGatewayHost() || '';
+    $('set-app-port').value = String(window.X30Native.getGatewayPort() || 8080);
+    // 2.4G 的相机地址存在网页这侧（localStorage），原生只管播它给的那个串。
+    if ($('set-app-dogcam') && window.X30DogCam) {
+      $('set-app-dogcam').value = window.X30DogCam.url();
+    }
+    // 画面慢的时候，先在这里看本机缓冲了多少：接近 0 说明慢在上游，
+    // 不必再去调客户端。
+    if ($('set-app-dogcam-stat') && window.X30DogCam) {
+      $('set-app-dogcam-stat').textContent = window.X30DogCam.status() || '—';
+    }
+    if ($('set-app-radio-stat')) {
+      $('set-app-radio-stat').textContent = radioTelemLine();
+    }
+    if ($('set-app-nets')) {
+      let nets = '—';
+      try { nets = window.X30Native.meshDiag() || '—'; } catch (e) { nets = '—'; }
+      $('set-app-nets').textContent = '本机网卡 ' + nets;
+    }
+  }
+
+  // 2.4G 下狗的姿态取自它单播回来的遥测（0x1009）。狗只发给 network.toml 里
+  // 登记过的地址，没登记就一条都收不到，界面只能按「我点过什么」猜 —— 表现就是
+  // 切档后姿态对不上。所以这里要说清楚两件事：本机 2.4G 地址是多少（登记时照着填）、
+  // 现在到底收没收到。
+  function radioTelemLine() {
+    let st = null;
+    try {
+      st = JSON.parse(window.X30Native.radioStatus() || '{}');
+    } catch (e) {
+      st = null;
+    }
+    if (!st) return '—';
+    const ip = st.local || '未取到';
+    const port = 43897;
+    if (typeof st.basic === 'number' && st.basic >= 0) {
+      return '姿态遥测正常（本机 ' + ip + ':' + port + '）。';
+    }
+    return '收不到姿态遥测：狗的 network.toml 里要登记 ' + ip + ':' + port +
+           '。没登记也能操控，只是切档后姿态显示按本机记录来，可能与实际不符。';
+  }
+
+  function persistAppLocal(reloadIfAddrChanged) {
+    if (!isAppNative()) return true;
+    const hostEl = $('set-app-host');
+    const portEl = $('set-app-port');
+    if (!hostEl || !portEl) return true;
+    const host = hostEl.value.trim();
+    const port = Number(portEl.value.trim());
+    const cam = $('set-app-dogcam') ? $('set-app-dogcam').value.trim() : '';
+    if (cam && cam.indexOf('rtsp://') !== 0) {
+      setNote('机身相机地址要以 rtsp:// 开头。', 'bad');
+      return false;
+    }
+    if (window.X30DogCam) {
+      window.X30DogCam.setUrl(cam);
+      if (window.X30DogCam.onRadioPath) window.X30DogCam.onRadioPath();
+    }
+    if (!host) {
+      if (reloadIfAddrChanged) setNote('请填服务 IP。', 'bad');
+      return !reloadIfAddrChanged;
+    }
+    if (!port || port < 1 || port > 65535) {
+      if (reloadIfAddrChanged) setNote('服务端口不合法。', 'bad');
+      return !reloadIfAddrChanged;
+    }
+    try {
+      if ('saveGatewayPrefs' in window.X30Native) {
+        window.X30Native.saveGatewayPrefs(host, port);
+      }
+    } catch (e) { /* */ }
+    const curH = String(window.X30Native.getGatewayHost() || '');
+    const curP = Number(window.X30Native.getGatewayPort() || 0);
+    if (reloadIfAddrChanged && (host !== curH || port !== curP)) {
+      setNote('正在按新地址重新连接…');
+      window.X30Native.setGateway(host, port);
+      return true;
+    }
+    return true;
+  }
+
+  function saveAppGateway() {
+    persistAppLocal(true);
+  }
+
+  function resetSaveBtn() {
+    const btn = $('set-save');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '保存并重启网关';
+    }
+  }
+
+  function open() {
+    state.open = true;
+    root.classList.remove('hidden');
+    fillAppGateway();
+    // 语音开关是本机偏好，面板每次打开都要问一遍引擎起来没有（原生 TTS 初始化
+    // 要一秒左右，开机就点开的话结论会变）。
+    if (window.X30Voice) window.X30Voice.onSettingsOpen();
+    // 网关没开在线改配置时，这个面板里仍有本机能改的东西。以前这里直接 return，
+    // 表现是点了标题什么都不发生 —— 「点了没反应」是最难查的一类。
+    if (!state.available && !isAppNative()) {
+      setLocked(true);
+      $('set-unlock-box').classList.add('hidden');
+      setNote('本机未启用在线改配置（网关需要以 --config 启动），只能改上面这些。',
+              'warn');
+      return;
+    }
+    if (state.current) {
+      setLocked(false);
+    } else {
+      setLocked(true);
+      const saved = readSavedToken();
+      if (saved) {
+        $('set-token').value = saved;
+        unlock();
+      }
+    }
+  }
+
+  function close() {
+    persistAppLocal(false);
+    state.open = false;
+    state.saveArmed = false;
+    state.pendingDiff = null;
+    resetSaveBtn();
+    root.classList.add('hidden');
+    setNote('');
+  }
+
+  function readSavedToken() {
+    try { return window.localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  function saveToken(token) {
+    try {
+      if ($('set-remember').checked) {
+        window.localStorage.setItem(TOKEN_KEY, token);
+      } else {
+        window.localStorage.removeItem(TOKEN_KEY);
+      }
+    } catch (e) { /* 隐私模式下写不了，不影响本次使用 */ }
+  }
+
+  function unlock() {
+    const token = $('set-token').value.trim();
+    if (!token) {
+      setNote('请填密码。', 'bad');
+      return;
+    }
+    state.token = token;
+    // 先把表单露出来：双光 RTSP 在最上面。等网关时不再整页只剩一行「正在读取」。
+    setLocked(false);
+    if (state.current) fillForm(state.current);
+    if (!gatewayOpen()) {
+      setNote('网关还没连上。连上后会自动读配置。', 'warn');
+    } else {
+      setNote('正在读取当前配置…');
+    }
+    state.loading = true;
+    if (state.sendFn) state.sendFn({ t: 'config_get', token: token });
+    setTimeout(function () {
+      if (!state.open || !state.loading) return;
+      state.loading = false;
+      setNote('网关没有回配置。请确认已连上网关，并且网关以 --config 启动。', 'warn');
+    }, 4000);
+  }
+
+  function save() {
+    persistAppLocal(false);
+    if (!state.current) {
+      setNote('还没读到网关配置。请先输入密码 54longqr 解锁。', 'bad');
+      return;
+    }
+    const diff = changedFields();
+    if (Object.keys(diff).length === 0) {
+      state.saveArmed = false;
+      resetSaveBtn();
+      setNote('网关项没有改动。上面的本机 IP / 机身相机已记下。', 'ok');
+      return;
+    }
+
+    const portChange = Object.prototype.hasOwnProperty.call(diff, 'http_port');
+    const bindChange = Object.prototype.hasOwnProperty.call(diff, 'bind_address');
+    if (!state.saveArmed) {
+      state.saveArmed = true;
+      $('set-save').textContent = '确认保存并重启';
+      setNote(portChange || bindChange
+        ? '本机项已记下。再点「确认保存并重启」：端口或监听改了，重启后可能要用新地址。'
+        : '本机项已记下。再点「确认保存并重启」才会写入网关（会中断一两秒）。', 'warn');
+      return;
+    }
+    state.saveArmed = false;
+    resetSaveBtn();
+    $('set-save').disabled = true;
+    state.saving = true;
+    state.pendingDiff = diff;
+    state.lastSaved = diff;
+    setNote('正在保存…');
+    // 旧网关见任何控制权都拒。先让出控制权，等松开后再写，避免 100ms 后又被抢回去。
+    try {
+      if (window.app && window.app.hasControl) {
+        state.sendFn({ t: 'yield' });
+        setTimeout(flushPendingSave, 280);
+        return;
+      }
+    } catch (e) { /* */ }
+    flushPendingSave();
+  }
+
+  function flushPendingSave() {
+    const diff = state.pendingDiff;
+    if (!diff || !state.sendFn) return;
+    state.pendingDiff = null;
+    state.sendFn({ t: 'config_set', token: state.token, settings: diff });
+  }
+
+  function onControl(has) {
+    if (state.pendingDiff && !has) flushPendingSave();
+  }
+
+  function blockClaim() {
+    return !!(state.saving || state.pendingDiff);
+  }
+
+  // -------------------------------------------------------------------------
+  // 网关回执
+  // -------------------------------------------------------------------------
+
+  function onConfig(msg) {
+    state.loading = false;
+    if (!msg || !msg.settings) {
+      setLocked(false);
+      setNote('网关回了空配置。', 'bad');
+      return;
+    }
+    state.current = msg.settings;
+    saveToken(state.token);
+    try { fillForm(msg.settings); } catch (e) { /* 个别字段对不上也不把表单藏回去 */ }
+    rememberPtz(msg.settings);
+    setLocked(false);
+
+    if (state.waitingRestart) {
+      state.waitingRestart = false;
+      const lost = lostAfterSave(msg.settings);
+      if (lost) {
+        setNote('网关起来了，但这些项又变回旧值：' + lost +
+                '。板子 ExecStart 里若还有 --robot-ip / --bind，会盖过配置文件。', 'bad');
+        return;
+      }
+      setNote('网关已带着新配置起来了。', 'ok');
+      return;
+    }
+    setNote('已读到当前配置。', 'ok');
+  }
+
+  function lostAfterSave(settings) {
+    if (!state.lastSaved || !settings) return '';
+    const lost = [];
+    Object.keys(state.lastSaved).forEach((k) => {
+      if (String(settings[k]) !== String(state.lastSaved[k])) lost.push(k);
+    });
+    state.lastSaved = null;
+    return lost.join('、');
+  }
+
+  function onConfigSaved(msg) {
+    state.saving = false;
+    state.pendingDiff = null;
+    resetSaveBtn();
+    state.current = msg.settings;
+    fillForm(msg.settings);
+    rememberPtz(msg.settings);
+
+    // 端口变了的话这个页面连不回来，必须把新地址明确告诉人，
+    // 否则只会看到一个永远在「重连中」的界面。
+    const newPort = String(msg.settings.http_port);
+    const nowPort = location.port || (location.protocol === 'https:' ? '443' : '80');
+    if (newPort !== nowPort) {
+      state.waitingRestart = false;
+      setNote('已保存。服务端口改成了 ' + newPort + '，这个页面不会自己回来，' +
+              '请打开 ' + location.protocol + '//' + location.hostname + ':' +
+              newPort + '/', 'warn');
+      return;
+    }
+
+    if (msg.auto_restart) {
+      state.waitingRestart = true;
+      setNote('已保存，网关正在重启，等它回来…');
+    } else {
+      setNote('已保存。本机不由 systemd 托管，请手动重启：' +
+              'systemctl restart x30-gateway', 'warn');
+    }
+  }
+
+  // 配置相关的报错要显示在面板里。丢给顶部横幅的话，人正盯着表单，
+  // 四秒后横幅消失，只留下一个「点了保存好像没反应」。
+  function onError(msg) {
+    const mine = msg.code === 'bad_admin_token' || msg.code === 'no_admin_token' ||
+                 msg.code === 'bad_config' || msg.code === 'busy_control' ||
+                 msg.code === 'config_write_failed' || msg.code === 'no_config';
+    if (!mine || !state.open) return false;
+
+    state.saving = false;
+    state.loading = false;
+    state.saveArmed = false;
+    state.pendingDiff = null;
+    resetSaveBtn();
+    setNote(msg.msg, 'bad');
+    if (msg.code === 'bad_admin_token' || msg.code === 'no_admin_token') {
+      state.current = null;
+      setLocked(true);
+    }
+    return true;
+  }
+
+  // 断线时把「已解锁」的状态留着（令牌还在内存里），但要让人知道现在没连上。
+  function onLink(online) {
+    if (online || !state.open) return;
+    if (state.waitingRestart) {
+      setNote('网关正在重启，等它回来…');
+    } else if (state.saving) {
+      setNote('连接断了，这次保存不确定有没有成功，重连后请核对一遍。', 'warn');
+      state.saving = false;
+      state.pendingDiff = null;
+      resetSaveBtn();
+    }
+  }
+
+  // 重连上来后主动再取一次，确认新配置真的生效了 —— 只是「存下来了」
+  // 和「跑起来了」是两件事。
+  function onHello(msg) {
+    state.available = !!msg.config;
+    if (!state.available) {
+      if (state.open) {
+        setLocked(false);
+        setNote('网关未启用在线改配置（需要以 --config 启动）。', 'warn');
+      }
+      return;
+    }
+    // 面板可能是在网关连上之前打开的，那会儿解锁框被藏了起来（没什么可解锁的）。
+    // 现在网关说它能改配置了，得把门重新露出来，不然要关掉再打开一次才见得到。
+    if (state.open && !state.current) setLocked(true);
+    if (state.open && state.token) {
+      state.sendFn({ t: 'config_get', token: state.token });
+    }
+  }
+
+  function initSettings(send) {
+    state.sendFn = send;
+    root = $('settings');
+    noteEl = $('set-note');
+    if (!root) return;
+
+    buildForm($('set-form'));
+    fillAppGateway();
+    if ($('set-app-save')) {
+      $('set-app-save').addEventListener('click', saveAppGateway);
+    }
+
+    // 面板里那节本机设置（语音）任何时候都在，所以标题一直是可点的样子 ——
+    // 以前只有网关支持在线改配置时才加下划线，而现在点了总有东西可看。
+    $('btn-settings').classList.add('can-config');
+    $('btn-settings').title = '打开设置';
+    $('btn-settings').addEventListener('click', open);
+    $('set-close').addEventListener('click', close);
+    $('set-unlock').addEventListener('click', unlock);
+    $('set-save').addEventListener('click', save);
+    inputs.cloud_enabled.addEventListener('change', updateCloudRows);
+
+    $('set-token').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') unlock();
+    });
+
+    // 点遮罩关闭，但不要在点面板内部时也关掉。
+    root.addEventListener('click', (e) => {
+      if (e.target === root) close();
+    });
+  }
+
+  window.X30Settings = {
+    initSettings, onConfig, onConfigSaved, onError, onHello, onLink,
+    onControl, blockClaim,
+  };
+})();

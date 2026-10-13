@@ -1,0 +1,5 @@
+An area of the map is $area_m2 m2 in size and $shape. It contains these objects: $objects.
+$image_hint
+Choose the room type from this list: $room_types.
+
+Return JSON: {"room_type": "<one item of the list>", "confidence": <0.0 to 1.0>, "reason": "<at most 12 words>"}

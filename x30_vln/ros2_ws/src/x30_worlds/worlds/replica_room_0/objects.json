@@ -1,0 +1,2562 @@
+[
+ {
+  "label": "cabinet",
+  "label_id": 20,
+  "instance": "cabinet_01",
+  "pose": {
+   "x": -0.582,
+   "y": 1.109,
+   "z": -0.034,
+   "yaw": 0.0
+  },
+  "size": [
+   0.551,
+   2.01,
+   0.689
+  ],
+  "bbox": [
+   -0.857,
+   0.104,
+   -0.034,
+   -0.306,
+   2.114,
+   0.655
+  ],
+  "size_local": [
+   0.551,
+   2.01,
+   0.689
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "cabinet",
+  "source_id": 2,
+  "region": null,
+  "source": "replica",
+  "id": 0
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_01",
+  "pose": {
+   "x": -0.596,
+   "y": 0.73,
+   "z": 0.671,
+   "yaw": 0.0
+  },
+  "size": [
+   0.184,
+   0.254,
+   0.058
+  ],
+  "bbox": [
+   -0.689,
+   0.603,
+   0.671,
+   -0.504,
+   0.857,
+   0.729
+  ],
+  "size_local": [
+   0.184,
+   0.254,
+   0.058
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 3,
+  "region": null,
+  "source": "replica",
+  "id": 1
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_02",
+  "pose": {
+   "x": -0.586,
+   "y": 0.739,
+   "z": 0.706,
+   "yaw": 0.0
+  },
+  "size": [
+   0.184,
+   0.248,
+   0.046
+  ],
+  "bbox": [
+   -0.678,
+   0.615,
+   0.706,
+   -0.493,
+   0.863,
+   0.751
+  ],
+  "size_local": [
+   0.184,
+   0.248,
+   0.046
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 4,
+  "region": null,
+  "source": "replica",
+  "id": 2
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_01",
+  "pose": {
+   "x": 4.694,
+   "y": 2.506,
+   "z": 0.49,
+   "yaw": 0.0
+  },
+  "size": [
+   0.442,
+   0.526,
+   0.385
+  ],
+  "bbox": [
+   4.473,
+   2.243,
+   0.49,
+   4.915,
+   2.769,
+   0.875
+  ],
+  "size_local": [
+   0.442,
+   0.526,
+   0.385
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 5,
+  "region": null,
+  "source": "replica",
+  "id": 3
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_01",
+  "pose": {
+   "x": 3.364,
+   "y": -0.584,
+   "z": -0.024,
+   "yaw": 0.0
+  },
+  "size": [
+   2.585,
+   0.828,
+   1.401
+  ],
+  "bbox": [
+   2.071,
+   -0.998,
+   -0.024,
+   4.657,
+   -0.17,
+   1.377
+  ],
+  "size_local": [
+   2.585,
+   0.828,
+   1.401
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 6,
+  "region": null,
+  "source": "replica",
+  "id": 4
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_01",
+  "pose": {
+   "x": 2.238,
+   "y": -0.69,
+   "z": -0.014,
+   "yaw": 0.0
+  },
+  "size": [
+   0.518,
+   0.489,
+   0.686
+  ],
+  "bbox": [
+   1.979,
+   -0.935,
+   -0.014,
+   2.497,
+   -0.445,
+   0.672
+  ],
+  "size_local": [
+   0.518,
+   0.489,
+   0.686
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 7,
+  "region": null,
+  "source": "replica",
+  "id": 5
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_02",
+  "pose": {
+   "x": 4.544,
+   "y": -0.421,
+   "z": 0.484,
+   "yaw": 0.0
+  },
+  "size": [
+   0.543,
+   0.412,
+   0.424
+  ],
+  "bbox": [
+   4.273,
+   -0.627,
+   0.484,
+   4.816,
+   -0.216,
+   0.908
+  ],
+  "size_local": [
+   0.543,
+   0.412,
+   0.424
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 8,
+  "region": null,
+  "source": "replica",
+  "id": 6
+ },
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_01",
+  "pose": {
+   "x": 3.688,
+   "y": -0.54,
+   "z": -0.018,
+   "yaw": 0.0
+  },
+  "size": [
+   2.35,
+   1.19,
+   0.914
+  ],
+  "bbox": [
+   2.513,
+   -1.135,
+   -0.018,
+   4.862,
+   0.055,
+   0.895
+  ],
+  "size_local": [
+   2.35,
+   1.19,
+   0.914
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "sofa",
+  "source_id": 9,
+  "region": null,
+  "source": "replica",
+  "id": 7
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_02",
+  "pose": {
+   "x": 5.216,
+   "y": 2.476,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.437,
+   0.526,
+   0.62
+  ],
+  "bbox": [
+   4.997,
+   2.213,
+   0.001,
+   5.434,
+   2.739,
+   0.622
+  ],
+  "size_local": [
+   0.437,
+   0.526,
+   0.62
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 10,
+  "region": null,
+  "source": "replica",
+  "id": 8
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_03",
+  "pose": {
+   "x": 3.706,
+   "y": 1.027,
+   "z": 0.007,
+   "yaw": 0.0
+  },
+  "size": [
+   1.435,
+   0.826,
+   0.476
+  ],
+  "bbox": [
+   2.989,
+   0.614,
+   0.007,
+   4.424,
+   1.44,
+   0.482
+  ],
+  "size_local": [
+   1.435,
+   0.826,
+   0.476
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 11,
+  "region": null,
+  "source": "replica",
+  "id": 9
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_03",
+  "pose": {
+   "x": 3.524,
+   "y": 1.024,
+   "z": 0.466,
+   "yaw": 0.0
+  },
+  "size": [
+   0.344,
+   0.32,
+   0.035
+  ],
+  "bbox": [
+   3.352,
+   0.864,
+   0.466,
+   3.696,
+   1.184,
+   0.501
+  ],
+  "size_local": [
+   0.344,
+   0.32,
+   0.035
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 12,
+  "region": null,
+  "source": "replica",
+  "id": 10
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_03",
+  "pose": {
+   "x": 4.403,
+   "y": 2.546,
+   "z": 0.51,
+   "yaw": 0.0
+  },
+  "size": [
+   0.435,
+   0.34,
+   0.393
+  ],
+  "bbox": [
+   4.186,
+   2.376,
+   0.51,
+   4.621,
+   2.716,
+   0.903
+  ],
+  "size_local": [
+   0.435,
+   0.34,
+   0.393
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 13,
+  "region": null,
+  "source": "replica",
+  "id": 11
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_01",
+  "pose": {
+   "x": 6.854,
+   "y": -0.431,
+   "z": 0.931,
+   "yaw": 0.0
+  },
+  "size": [
+   0.033,
+   1.439,
+   1.745
+  ],
+  "bbox": [
+   6.838,
+   -1.151,
+   0.931,
+   6.871,
+   0.288,
+   2.675
+  ],
+  "size_local": [
+   0.033,
+   1.439,
+   1.745
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 15,
+  "region": null,
+  "source": "replica",
+  "id": 12
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_01",
+  "pose": {
+   "x": 6.84,
+   "y": -0.409,
+   "z": 0.89,
+   "yaw": 0.0
+  },
+  "size": [
+   0.062,
+   1.494,
+   1.839
+  ],
+  "bbox": [
+   6.808,
+   -1.156,
+   0.89,
+   6.871,
+   0.338,
+   2.729
+  ],
+  "size_local": [
+   0.062,
+   1.494,
+   1.839
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 17,
+  "region": null,
+  "source": "replica",
+  "id": 13
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_04",
+  "pose": {
+   "x": 3.142,
+   "y": -0.392,
+   "z": 0.504,
+   "yaw": 0.0
+  },
+  "size": [
+   0.469,
+   0.343,
+   0.367
+  ],
+  "bbox": [
+   2.907,
+   -0.564,
+   0.504,
+   3.377,
+   -0.221,
+   0.871
+  ],
+  "size_local": [
+   0.469,
+   0.343,
+   0.367
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 18,
+  "region": null,
+  "source": "replica",
+  "id": 14
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_02",
+  "pose": {
+   "x": 6.855,
+   "y": 1.093,
+   "z": 0.934,
+   "yaw": 0.0
+  },
+  "size": [
+   0.025,
+   1.486,
+   1.741
+  ],
+  "bbox": [
+   6.843,
+   0.35,
+   0.934,
+   6.868,
+   1.835,
+   2.675
+  ],
+  "size_local": [
+   0.025,
+   1.486,
+   1.741
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 19,
+  "region": null,
+  "source": "replica",
+  "id": 15
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_03",
+  "pose": {
+   "x": 6.858,
+   "y": 2.227,
+   "z": 0.945,
+   "yaw": 0.0
+  },
+  "size": [
+   0.051,
+   0.699,
+   1.734
+  ],
+  "bbox": [
+   6.833,
+   1.878,
+   0.945,
+   6.884,
+   2.577,
+   2.68
+  ],
+  "size_local": [
+   0.051,
+   0.699,
+   1.734
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 21,
+  "region": null,
+  "source": "replica",
+  "id": 16
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_04",
+  "pose": {
+   "x": 4.71,
+   "y": 3.449,
+   "z": 0.932,
+   "yaw": 0.0
+  },
+  "size": [
+   1.479,
+   0.025,
+   1.745
+  ],
+  "bbox": [
+   3.97,
+   3.437,
+   0.932,
+   5.449,
+   3.462,
+   2.677
+  ],
+  "size_local": [
+   1.479,
+   0.025,
+   1.745
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 22,
+  "region": null,
+  "source": "replica",
+  "id": 17
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_02",
+  "pose": {
+   "x": 6.851,
+   "y": 1.092,
+   "z": 0.896,
+   "yaw": 0.0
+  },
+  "size": [
+   0.031,
+   1.548,
+   1.835
+  ],
+  "bbox": [
+   6.835,
+   0.318,
+   0.896,
+   6.866,
+   1.867,
+   2.731
+  ],
+  "size_local": [
+   0.031,
+   1.548,
+   1.835
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 26,
+  "region": null,
+  "source": "replica",
+  "id": 18
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_04",
+  "pose": {
+   "x": 2.233,
+   "y": -0.437,
+   "z": -0.011,
+   "yaw": 0.0
+  },
+  "size": [
+   0.442,
+   0.586,
+   0.602
+  ],
+  "bbox": [
+   2.012,
+   -0.73,
+   -0.011,
+   2.454,
+   -0.144,
+   0.592
+  ],
+  "size_local": [
+   0.442,
+   0.586,
+   0.602
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 27,
+  "region": null,
+  "source": "replica",
+  "id": 19
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_03",
+  "pose": {
+   "x": 4.716,
+   "y": 3.446,
+   "z": 0.893,
+   "yaw": 0.0
+  },
+  "size": [
+   1.54,
+   0.025,
+   1.851
+  ],
+  "bbox": [
+   3.946,
+   3.434,
+   0.893,
+   5.486,
+   3.459,
+   2.744
+  ],
+  "size_local": [
+   1.54,
+   0.025,
+   1.851
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 28,
+  "region": null,
+  "source": "replica",
+  "id": 20
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_04",
+  "pose": {
+   "x": 3.188,
+   "y": 3.452,
+   "z": 0.888,
+   "yaw": 0.0
+  },
+  "size": [
+   1.529,
+   0.039,
+   1.844
+  ],
+  "bbox": [
+   2.424,
+   3.433,
+   0.888,
+   3.952,
+   3.472,
+   2.732
+  ],
+  "size_local": [
+   1.529,
+   0.039,
+   1.844
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 29,
+  "region": null,
+  "source": "replica",
+  "id": 21
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_05",
+  "pose": {
+   "x": 1.671,
+   "y": 3.468,
+   "z": 0.929,
+   "yaw": 0.0
+  },
+  "size": [
+   1.47,
+   0.027,
+   1.728
+  ],
+  "bbox": [
+   0.936,
+   3.455,
+   0.929,
+   2.406,
+   3.482,
+   2.656
+  ],
+  "size_local": [
+   1.47,
+   0.027,
+   1.728
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 30,
+  "region": null,
+  "source": "replica",
+  "id": 22
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_05",
+  "pose": {
+   "x": 2.889,
+   "y": 2.456,
+   "z": 0.496,
+   "yaw": 0.0
+  },
+  "size": [
+   0.414,
+   0.557,
+   0.354
+  ],
+  "bbox": [
+   2.682,
+   2.178,
+   0.496,
+   3.096,
+   2.735,
+   0.85
+  ],
+  "size_local": [
+   0.414,
+   0.557,
+   0.354
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 32,
+  "region": null,
+  "source": "replica",
+  "id": 23
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_06",
+  "pose": {
+   "x": 5.875,
+   "y": 3.438,
+   "z": 0.937,
+   "yaw": 0.0
+  },
+  "size": [
+   0.699,
+   0.036,
+   1.743
+  ],
+  "bbox": [
+   5.525,
+   3.42,
+   0.937,
+   6.225,
+   3.456,
+   2.68
+  ],
+  "size_local": [
+   0.699,
+   0.036,
+   1.743
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 34,
+  "region": null,
+  "source": "replica",
+  "id": 24
+ },
+ {
+  "label": "plant",
+  "label_id": 33,
+  "instance": "plant_01",
+  "pose": {
+   "x": 3.855,
+   "y": 1.038,
+   "z": 0.554,
+   "yaw": 0.0
+  },
+  "size": [
+   0.356,
+   0.314,
+   0.607
+  ],
+  "bbox": [
+   3.677,
+   0.881,
+   0.554,
+   4.033,
+   1.194,
+   1.161
+  ],
+  "size_local": [
+   0.356,
+   0.314,
+   0.607
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "indoor-plant",
+  "source_id": 35,
+  "region": null,
+  "source": "replica",
+  "id": 25
+ },
+ {
+  "label": "door",
+  "label_id": 3,
+  "instance": "door_01",
+  "pose": {
+   "x": -0.207,
+   "y": -1.089,
+   "z": -0.018,
+   "yaw": 0.0
+  },
+  "size": [
+   1.062,
+   0.047,
+   2.196
+  ],
+  "bbox": [
+   -0.738,
+   -1.112,
+   -0.018,
+   0.324,
+   -1.065,
+   2.178
+  ],
+  "size_local": [
+   1.062,
+   0.047,
+   2.196
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "door",
+  "source_id": 36,
+  "region": null,
+  "source": "replica",
+  "id": 26
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_05",
+  "pose": {
+   "x": 6.859,
+   "y": 2.239,
+   "z": 0.895,
+   "yaw": 0.0
+  },
+  "size": [
+   0.053,
+   0.778,
+   1.84
+  ],
+  "bbox": [
+   6.833,
+   1.85,
+   0.895,
+   6.885,
+   2.628,
+   2.735
+  ],
+  "size_local": [
+   0.053,
+   0.778,
+   1.84
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 38,
+  "region": null,
+  "source": "replica",
+  "id": 27
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_01",
+  "pose": {
+   "x": 1.818,
+   "y": 1.529,
+   "z": 0.001,
+   "yaw": 0.0
+  },
+  "size": [
+   0.654,
+   0.657,
+   0.471
+  ],
+  "bbox": [
+   1.491,
+   1.201,
+   0.001,
+   2.145,
+   1.858,
+   0.471
+  ],
+  "size_local": [
+   0.654,
+   0.657,
+   0.471
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "stool",
+  "source_id": 39,
+  "region": null,
+  "source": "replica",
+  "id": 28
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_02",
+  "pose": {
+   "x": 0.395,
+   "y": 0.87,
+   "z": 2.695,
+   "yaw": 0.0
+  },
+  "size": [
+   0.614,
+   1.181,
+   0.027
+  ],
+  "bbox": [
+   0.088,
+   0.28,
+   2.695,
+   0.702,
+   1.461,
+   2.722
+  ],
+  "size_local": [
+   0.614,
+   1.181,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 40,
+  "region": null,
+  "source": "replica",
+  "id": 29
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_02",
+  "pose": {
+   "x": 1.774,
+   "y": 0.651,
+   "z": -0.016,
+   "yaw": 0.0
+  },
+  "size": [
+   0.651,
+   0.659,
+   0.476
+  ],
+  "bbox": [
+   1.448,
+   0.322,
+   -0.016,
+   2.099,
+   0.981,
+   0.461
+  ],
+  "size_local": [
+   0.651,
+   0.659,
+   0.476
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "stool",
+  "source_id": 41,
+  "region": null,
+  "source": "replica",
+  "id": 30
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_06",
+  "pose": {
+   "x": 0.526,
+   "y": 3.478,
+   "z": 0.877,
+   "yaw": 0.0
+  },
+  "size": [
+   0.789,
+   0.035,
+   1.841
+  ],
+  "bbox": [
+   0.132,
+   3.46,
+   0.877,
+   0.92,
+   3.495,
+   2.718
+  ],
+  "size_local": [
+   0.789,
+   0.035,
+   1.841
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 42,
+  "region": null,
+  "source": "replica",
+  "id": 31
+ },
+ {
+  "label": "pan",
+  "label_id": 78,
+  "instance": "pan_01",
+  "pose": {
+   "x": 3.499,
+   "y": 1.072,
+   "z": 0.511,
+   "yaw": 0.0
+  },
+  "size": [
+   0.189,
+   0.195,
+   0.243
+  ],
+  "bbox": [
+   3.405,
+   0.974,
+   0.511,
+   3.594,
+   1.169,
+   0.754
+  ],
+  "size_local": [
+   0.189,
+   0.195,
+   0.243
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "pot",
+  "source_id": 43,
+  "region": null,
+  "source": "replica",
+  "id": 32
+ },
+ {
+  "label": "vase",
+  "label_id": 71,
+  "instance": "vase_01",
+  "pose": {
+   "x": -0.616,
+   "y": 1.818,
+   "z": 0.649,
+   "yaw": 0.0
+  },
+  "size": [
+   0.267,
+   0.255,
+   0.512
+  ],
+  "bbox": [
+   -0.75,
+   1.691,
+   0.649,
+   -0.482,
+   1.946,
+   1.16
+  ],
+  "size_local": [
+   0.267,
+   0.255,
+   0.512
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "vase",
+  "source_id": 45,
+  "region": null,
+  "source": "replica",
+  "id": 33
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_01",
+  "pose": {
+   "x": -0.755,
+   "y": 3.262,
+   "z": -0.01,
+   "yaw": 0.0
+  },
+  "size": [
+   0.18,
+   0.128,
+   2.731
+  ],
+  "bbox": [
+   -0.845,
+   3.198,
+   -0.01,
+   -0.665,
+   3.326,
+   2.721
+  ],
+  "size_local": [
+   0.18,
+   0.128,
+   2.731
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "pillar",
+  "source_id": 46,
+  "region": null,
+  "source": "replica",
+  "id": 34
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_03",
+  "pose": {
+   "x": 2.218,
+   "y": 2.087,
+   "z": 2.71,
+   "yaw": 0.0
+  },
+  "size": [
+   0.593,
+   1.178,
+   0.025
+  ],
+  "bbox": [
+   1.922,
+   1.499,
+   2.71,
+   2.515,
+   2.676,
+   2.735
+  ],
+  "size_local": [
+   0.593,
+   1.178,
+   0.025
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 49,
+  "region": null,
+  "source": "replica",
+  "id": 35
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_07",
+  "pose": {
+   "x": 0.522,
+   "y": 3.489,
+   "z": 0.914,
+   "yaw": 0.0
+  },
+  "size": [
+   0.71,
+   0.047,
+   1.746
+  ],
+  "bbox": [
+   0.167,
+   3.465,
+   0.914,
+   0.877,
+   3.512,
+   2.66
+  ],
+  "size_local": [
+   0.71,
+   0.047,
+   1.746
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 50,
+  "region": null,
+  "source": "replica",
+  "id": 36
+ },
+ {
+  "label": "curtain",
+  "label_id": 58,
+  "instance": "curtain_08",
+  "pose": {
+   "x": 3.194,
+   "y": 3.452,
+   "z": 0.939,
+   "yaw": 0.0
+  },
+  "size": [
+   1.464,
+   0.039,
+   1.719
+  ],
+  "bbox": [
+   2.462,
+   3.433,
+   0.939,
+   3.926,
+   3.472,
+   2.657
+  ],
+  "size_local": [
+   1.464,
+   0.039,
+   1.719
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blinds",
+  "source_id": 58,
+  "region": null,
+  "source": "replica",
+  "id": 37
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_04",
+  "pose": {
+   "x": 3.527,
+   "y": 1.027,
+   "z": 0.486,
+   "yaw": 0.0
+  },
+  "size": [
+   0.305,
+   0.296,
+   0.035
+  ],
+  "bbox": [
+   3.375,
+   0.878,
+   0.486,
+   3.68,
+   1.175,
+   0.52
+  ],
+  "size_local": [
+   0.305,
+   0.296,
+   0.035
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 59,
+  "region": null,
+  "source": "replica",
+  "id": 38
+ },
+ {
+  "label": "rug",
+  "label_id": 48,
+  "instance": "rug_01",
+  "pose": {
+   "x": 3.712,
+   "y": 0.981,
+   "z": -0.02,
+   "yaw": 0.0
+  },
+  "size": [
+   4.139,
+   2.932,
+   0.057
+  ],
+  "bbox": [
+   1.642,
+   -0.486,
+   -0.02,
+   5.782,
+   2.447,
+   0.037
+  ],
+  "size_local": [
+   4.139,
+   2.932,
+   0.057
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "rug",
+  "source_id": 60,
+  "region": null,
+  "source": "replica",
+  "id": 39
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_07",
+  "pose": {
+   "x": 0.562,
+   "y": -1.136,
+   "z": 0.107,
+   "yaw": 0.0
+  },
+  "size": [
+   0.513,
+   0.1,
+   2.081
+  ],
+  "bbox": [
+   0.306,
+   -1.186,
+   0.107,
+   0.819,
+   -1.086,
+   2.188
+  ],
+  "size_local": [
+   0.513,
+   0.1,
+   2.081
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 61,
+  "region": null,
+  "source": "replica",
+  "id": 40
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_08",
+  "pose": {
+   "x": 1.664,
+   "y": 3.461,
+   "z": 0.879,
+   "yaw": 0.0
+  },
+  "size": [
+   1.534,
+   0.041,
+   1.849
+  ],
+  "bbox": [
+   0.897,
+   3.441,
+   0.879,
+   2.43,
+   3.482,
+   2.728
+  ],
+  "size_local": [
+   1.534,
+   0.041,
+   1.849
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 62,
+  "region": null,
+  "source": "replica",
+  "id": 41
+ },
+ {
+  "label": "picture",
+  "label_id": 53,
+  "instance": "picture_01",
+  "pose": {
+   "x": 3.67,
+   "y": -1.105,
+   "z": 0.925,
+   "yaw": 0.0
+  },
+  "size": [
+   1.861,
+   0.057,
+   1.281
+  ],
+  "bbox": [
+   2.739,
+   -1.134,
+   0.925,
+   4.6,
+   -1.077,
+   2.207
+  ],
+  "size_local": [
+   1.861,
+   0.057,
+   1.281
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "picture",
+  "source_id": 63,
+  "region": null,
+  "source": "replica",
+  "id": 42
+ },
+ {
+  "label": "plate",
+  "label_id": 69,
+  "instance": "plate_01",
+  "pose": {
+   "x": -0.573,
+   "y": 1.457,
+   "z": 0.644,
+   "yaw": 0.0
+  },
+  "size": [
+   0.246,
+   0.423,
+   0.031
+  ],
+  "bbox": [
+   -0.696,
+   1.246,
+   0.644,
+   -0.45,
+   1.669,
+   0.675
+  ],
+  "size_local": [
+   0.246,
+   0.423,
+   0.031
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "plate",
+  "source_id": 65,
+  "region": null,
+  "source": "replica",
+  "id": 43
+ },
+ {
+  "label": "plate",
+  "label_id": 69,
+  "instance": "plate_02",
+  "pose": {
+   "x": 3.689,
+   "y": 1.021,
+   "z": 0.168,
+   "yaw": 0.0
+  },
+  "size": [
+   0.447,
+   0.358,
+   0.044
+  ],
+  "bbox": [
+   3.465,
+   0.842,
+   0.168,
+   3.912,
+   1.2,
+   0.212
+  ],
+  "size_local": [
+   0.447,
+   0.358,
+   0.044
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "plate",
+  "source_id": 66,
+  "region": null,
+  "source": "replica",
+  "id": 44
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_06",
+  "pose": {
+   "x": 5.838,
+   "y": 0.466,
+   "z": 0.489,
+   "yaw": 0.0
+  },
+  "size": [
+   0.212,
+   0.474,
+   0.269
+  ],
+  "bbox": [
+   5.732,
+   0.229,
+   0.489,
+   5.944,
+   0.703,
+   0.758
+  ],
+  "size_local": [
+   0.212,
+   0.474,
+   0.269
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 69,
+  "region": null,
+  "source": "replica",
+  "id": 45
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_07",
+  "pose": {
+   "x": 4.169,
+   "y": -0.413,
+   "z": 0.499,
+   "yaw": 0.0
+  },
+  "size": [
+   0.49,
+   0.42,
+   0.365
+  ],
+  "bbox": [
+   3.924,
+   -0.623,
+   0.499,
+   4.415,
+   -0.203,
+   0.864
+  ],
+  "size_local": [
+   0.49,
+   0.42,
+   0.365
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 70,
+  "region": null,
+  "source": "replica",
+  "id": 46
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_08",
+  "pose": {
+   "x": 2.821,
+   "y": -0.366,
+   "z": 0.48,
+   "yaw": 0.0
+  },
+  "size": [
+   0.471,
+   0.46,
+   0.378
+  ],
+  "bbox": [
+   2.585,
+   -0.596,
+   0.48,
+   3.056,
+   -0.136,
+   0.858
+  ],
+  "size_local": [
+   0.471,
+   0.46,
+   0.378
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 71,
+  "region": null,
+  "source": "replica",
+  "id": 47
+ },
+ {
+  "label": "cushion",
+  "label_id": 65,
+  "instance": "cushion_09",
+  "pose": {
+   "x": 5.858,
+   "y": 1.471,
+   "z": 0.489,
+   "yaw": 0.0
+  },
+  "size": [
+   0.187,
+   0.463,
+   0.257
+  ],
+  "bbox": [
+   5.765,
+   1.24,
+   0.489,
+   5.951,
+   1.702,
+   0.746
+  ],
+  "size_local": [
+   0.187,
+   0.463,
+   0.257
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "cushion",
+  "source_id": 72,
+  "region": null,
+  "source": "replica",
+  "id": 48
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_03",
+  "pose": {
+   "x": 5.703,
+   "y": 1.495,
+   "z": 0.007,
+   "yaw": 0.0
+  },
+  "size": [
+   0.879,
+   0.822,
+   1.092
+  ],
+  "bbox": [
+   5.263,
+   1.084,
+   0.007,
+   6.142,
+   1.906,
+   1.099
+  ],
+  "size_local": [
+   0.879,
+   0.822,
+   1.092
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "chair",
+  "source_id": 73,
+  "region": null,
+  "source": "replica",
+  "id": 49
+ },
+ {
+  "label": "chair",
+  "label_id": 10,
+  "instance": "chair_04",
+  "pose": {
+   "x": 5.7,
+   "y": 0.509,
+   "z": 0.004,
+   "yaw": 0.0
+  },
+  "size": [
+   0.879,
+   0.831,
+   1.085
+  ],
+  "bbox": [
+   5.26,
+   0.093,
+   0.004,
+   6.14,
+   0.924,
+   1.089
+  ],
+  "size_local": [
+   0.879,
+   0.831,
+   1.085
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "chair",
+  "source_id": 74,
+  "region": null,
+  "source": "replica",
+  "id": 50
+ },
+ {
+  "label": "basket",
+  "label_id": 66,
+  "instance": "basket_01",
+  "pose": {
+   "x": 2.363,
+   "y": 2.719,
+   "z": -0.0,
+   "yaw": 0.0
+  },
+  "size": [
+   0.419,
+   0.421,
+   0.345
+  ],
+  "bbox": [
+   2.154,
+   2.509,
+   -0.0,
+   2.572,
+   2.929,
+   0.345
+  ],
+  "size_local": [
+   0.419,
+   0.421,
+   0.345
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "basket",
+  "source_id": 75,
+  "region": null,
+  "source": "replica",
+  "id": 51
+ },
+ {
+  "label": "sofa",
+  "label_id": 13,
+  "instance": "sofa_02",
+  "pose": {
+   "x": 3.744,
+   "y": 2.644,
+   "z": -0.02,
+   "yaw": 0.0
+  },
+  "size": [
+   2.346,
+   1.076,
+   0.924
+  ],
+  "bbox": [
+   2.57,
+   2.106,
+   -0.02,
+   4.917,
+   3.182,
+   0.904
+  ],
+  "size_local": [
+   2.346,
+   1.076,
+   0.924
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "sofa",
+  "source_id": 77,
+  "region": null,
+  "source": "replica",
+  "id": 52
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_04",
+  "pose": {
+   "x": 5.89,
+   "y": 2.064,
+   "z": 2.733,
+   "yaw": 0.0
+  },
+  "size": [
+   0.603,
+   1.21,
+   0.027
+  ],
+  "bbox": [
+   5.588,
+   1.459,
+   2.733,
+   6.191,
+   2.668,
+   2.76
+  ],
+  "size_local": [
+   0.603,
+   1.21,
+   0.027
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 78,
+  "region": null,
+  "source": "replica",
+  "id": 53
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_02",
+  "pose": {
+   "x": -0.581,
+   "y": 0.515,
+   "z": 0.642,
+   "yaw": 0.0
+  },
+  "size": [
+   0.193,
+   0.186,
+   0.275
+  ],
+  "bbox": [
+   -0.678,
+   0.423,
+   0.642,
+   -0.485,
+   0.608,
+   0.917
+  ],
+  "size_local": [
+   0.193,
+   0.186,
+   0.275
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "candle",
+  "source_id": 79,
+  "region": null,
+  "source": "replica",
+  "id": 54
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_05",
+  "pose": {
+   "x": 4.049,
+   "y": 0.847,
+   "z": 2.713,
+   "yaw": 0.0
+  },
+  "size": [
+   0.615,
+   1.2,
+   0.024
+  ],
+  "bbox": [
+   3.742,
+   0.248,
+   2.713,
+   4.357,
+   1.447,
+   2.737
+  ],
+  "size_local": [
+   0.615,
+   1.2,
+   0.024
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 83,
+  "region": null,
+  "source": "replica",
+  "id": 55
+ },
+ {
+  "label": "other",
+  "label_id": 99,
+  "instance": "other_03",
+  "pose": {
+   "x": 6.61,
+   "y": 3.176,
+   "z": 0.018,
+   "yaw": 0.0
+  },
+  "size": [
+   0.224,
+   0.232,
+   2.736
+  ],
+  "bbox": [
+   6.498,
+   3.06,
+   0.018,
+   6.722,
+   3.292,
+   2.753
+  ],
+  "size_local": [
+   0.224,
+   0.232,
+   2.736
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "pillar",
+  "source_id": 84,
+  "region": null,
+  "source": "replica",
+  "id": 56
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_05",
+  "pose": {
+   "x": -0.611,
+   "y": 0.725,
+   "z": 0.641,
+   "yaw": 0.0
+  },
+  "size": [
+   0.195,
+   0.27,
+   0.066
+  ],
+  "bbox": [
+   -0.708,
+   0.59,
+   0.641,
+   -0.513,
+   0.86,
+   0.707
+  ],
+  "size_local": [
+   0.195,
+   0.27,
+   0.066
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 85,
+  "region": null,
+  "source": "replica",
+  "id": 57
+ },
+ {
+  "label": "blanket",
+  "label_id": 87,
+  "instance": "blanket_01",
+  "pose": {
+   "x": 2.86,
+   "y": 2.448,
+   "z": -0.009,
+   "yaw": 0.0
+  },
+  "size": [
+   0.758,
+   0.815,
+   0.71
+  ],
+  "bbox": [
+   2.481,
+   2.04,
+   -0.009,
+   3.239,
+   2.855,
+   0.701
+  ],
+  "size_local": [
+   0.758,
+   0.815,
+   0.71
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "blanket",
+  "source_id": 86,
+  "region": null,
+  "source": "replica",
+  "id": 58
+ },
+ {
+  "label": "lamp",
+  "label_id": 34,
+  "instance": "lamp_06",
+  "pose": {
+   "x": 5.214,
+   "y": 2.775,
+   "z": 0.67,
+   "yaw": 0.0
+  },
+  "size": [
+   0.421,
+   0.434,
+   0.732
+  ],
+  "bbox": [
+   5.004,
+   2.558,
+   0.67,
+   5.425,
+   2.993,
+   1.403
+  ],
+  "size_local": [
+   0.421,
+   0.434,
+   0.732
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "lamp",
+  "source_id": 87,
+  "region": null,
+  "source": "replica",
+  "id": 59
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_06",
+  "pose": {
+   "x": 5.275,
+   "y": 2.629,
+   "z": 0.674,
+   "yaw": 0.0
+  },
+  "size": [
+   0.289,
+   0.264,
+   0.037
+  ],
+  "bbox": [
+   5.13,
+   2.496,
+   0.674,
+   5.419,
+   2.761,
+   0.711
+  ],
+  "size_local": [
+   0.289,
+   0.264,
+   0.037
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 90,
+  "region": null,
+  "source": "replica",
+  "id": 60
+ },
+ {
+  "label": "window",
+  "label_id": 4,
+  "instance": "window_09",
+  "pose": {
+   "x": 5.865,
+   "y": 3.44,
+   "z": 0.895,
+   "yaw": 0.0
+  },
+  "size": [
+   0.781,
+   0.03,
+   1.851
+  ],
+  "bbox": [
+   5.475,
+   3.425,
+   0.895,
+   6.255,
+   3.455,
+   2.745
+  ],
+  "size_local": [
+   0.781,
+   0.03,
+   1.851
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "window",
+  "source_id": 91,
+  "region": null,
+  "source": "replica",
+  "id": 61
+ },
+ {
+  "label": "book",
+  "label_id": 49,
+  "instance": "book_07",
+  "pose": {
+   "x": 5.185,
+   "y": 2.345,
+   "z": 0.602,
+   "yaw": 0.0
+  },
+  "size": [
+   0.28,
+   0.264,
+   0.046
+  ],
+  "bbox": [
+   5.045,
+   2.213,
+   0.602,
+   5.325,
+   2.478,
+   0.648
+  ],
+  "size_local": [
+   0.28,
+   0.264,
+   0.046
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": false,
+  "category_raw": "book",
+  "source_id": 92,
+  "region": null,
+  "source": "replica",
+  "id": 62
+ },
+ {
+  "label": "table",
+  "label_id": 11,
+  "instance": "table_05",
+  "pose": {
+   "x": 5.216,
+   "y": 2.734,
+   "z": 0.002,
+   "yaw": 0.0
+  },
+  "size": [
+   0.503,
+   0.495,
+   0.688
+  ],
+  "bbox": [
+   4.964,
+   2.487,
+   0.002,
+   5.467,
+   2.982,
+   0.689
+  ],
+  "size_local": [
+   0.503,
+   0.495,
+   0.688
+  ],
+  "room": "",
+  "color": "",
+  "temperature_c": null,
+  "attributes": [],
+  "parent": null,
+  "blocks_robot": true,
+  "category_raw": "table",
+  "source_id": 93,
+  "region": null,
+  "source": "replica",
+  "id": 63
+ }
+]

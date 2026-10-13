@@ -1,0 +1,66 @@
+{
+ "sdf": "worlds/replica_room_0/world.sdf",
+ "spawn": {
+  "x": 0.65,
+  "y": 2.29,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -1.88,
+  -2.19,
+  7.89,
+  4.51
+ ],
+ "objects_file": "worlds/replica_room_0/objects.json",
+ "map_file": "worlds/replica_room_0/map.yaml",
+ "robot_radius_m": 0.25,
+ "license": "Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education use only; see datasets/external/replica_src/LICENSE",
+ "source": "facebookresearch/Replica-Dataset room_0",
+ "source_dataset": "replica",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   1.489681
+  ]
+ },
+ "stats": {
+  "source_file": "room_0",
+  "up_axis": "z",
+  "scale": 1.0,
+  "floor_z_source": -1.49,
+  "extent_m": [
+   7.76,
+   4.7,
+   2.81
+  ],
+  "triangles": 1907294,
+  "triangles_visual": 249490,
+  "triangles_ceiling": 53906,
+  "collision_boxes": 293,
+  "collision_pitch_m": 0.1,
+  "navigable_area_m2": 8.3,
+  "objects": 64,
+  "visual_mesh_mb": 29.0
+ },
+ "source_scene_id": "room_0"
+}

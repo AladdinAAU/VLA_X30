@@ -1,0 +1,10 @@
+string name
+string args_json
+float32 timeout_s
+---
+bool success
+string message               # short, human readable; fed back to the reasoner
+string data_json
+---
+string status
+float32 progress             # 0..1 if known

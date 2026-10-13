@@ -1,0 +1,47 @@
+{
+ "sdf": "worlds/aws_small_house/world.sdf",
+ "spawn": {
+  "x": -9.32,
+  "y": 5.48,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -11.5,
+  -7.7,
+  11.5,
+  7.7
+ ],
+ "objects_file": "worlds/aws_small_house/objects.json",
+ "map_file": "worlds/aws_small_house/map.yaml",
+ "license": "MIT-0 (AWS RoboMaker world and models)",
+ "source": "https://github.com/aws-robotics/aws-robomaker-small-house-world branch ros1, file worlds/small_house.world",
+ "source_dataset": "aws-robomaker",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "includes": 87,
+  "objects": 46,
+  "navigable_area_m2": 122.7,
+  "objects_by_label": {
+   "air_conditioner": 2,
+   "ball": 2,
+   "bed": 1,
+   "cabinet": 1,
+   "chair": 8,
+   "coffee_table": 1,
+   "door": 5,
+   "kitchen_counter": 2,
+   "monitor": 1,
+   "nightstand": 2,
+   "refrigerator": 1,
+   "rug": 2,
+   "sofa": 1,
+   "table": 3,
+   "trash_can": 2,
+   "tv": 3,
+   "window": 9
+  },
+  "skipped_non_include_models": [],
+  "models_copied": 63
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "sdf": "worlds/replica_office_0/world.sdf",
+ "spawn": {
+  "x": 0.22,
+  "y": -1.83,
+  "z": 0.0,
+  "yaw": 0.0
+ },
+ "bounds": [
+  -3.01,
+  -4.15,
+  3.39,
+  2.86
+ ],
+ "objects_file": "worlds/replica_office_0/objects.json",
+ "map_file": "worlds/replica_office_0/map.yaml",
+ "robot_radius_m": 0.25,
+ "license": "Replica Dataset Research Terms (Facebook Technologies): non-commercial research/education use only; see datasets/external/replica_src/LICENSE",
+ "source": "facebookresearch/Replica-Dataset office_0",
+ "source_dataset": "replica",
+ "rtf_note": "not measured yet",
+ "scene_transform": {
+  "R": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "t": [
+   0.0,
+   0.0,
+   1.128264
+  ]
+ },
+ "stats": {
+  "source_file": "office_0",
+  "up_axis": "z",
+  "scale": 1.0,
+  "floor_z_source": -1.128,
+  "extent_m": [
+   4.4,
+   5.01,
+   2.99
+  ],
+  "triangles": 1177518,
+  "triangles_visual": 249670,
+  "triangles_ceiling": 46484,
+  "collision_boxes": 340,
+  "collision_pitch_m": 0.1,
+  "navigable_area_m2": 3.4,
+  "objects": 28,
+  "visual_mesh_mb": 29.0
+ },
+ "source_scene_id": "office_0"
+}

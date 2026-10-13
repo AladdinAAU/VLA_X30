@@ -1,0 +1,41 @@
+services:
+  ros1_bridge:
+    image: ros:foxy-ros1-bridge
+    network_mode: host
+    ipc: host
+    environment:
+      - ROS_MASTER_URI=http://192.168.1.106:11311
+      - ROS_IP=192.168.1.131
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./bridge/topics.yaml:/topics.yaml:ro
+    restart: on-failure
+    extra_hosts:
+      - "ysc-perception:192.168.1.106"  
+    command:
+      - bash
+      - -c
+      - |
+        set -e
+        source /opt/ros/noetic/setup.bash
+        rosparam load /topics.yaml
+        source /opt/ros/foxy/setup.bash
+        exec ros2 run ros1_bridge parameter_bridge
+
+  humble_dev:
+    build:
+      context: ../..
+      dockerfile: ./Docker/Main/Dockerfile
+    container_name: X30_Main
+    network_mode: host
+    ipc: host
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ../../ros2_ws
+        target: /root/ros2_ws
+    environment:
+      - ROS_DOMAIN_ID=0
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1

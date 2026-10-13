@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<script>
+(function () {
+  var href = String(location.href || '');
+  var q = String(location.search || '');
+  if (q.indexOf('shell=app') !== -1 ||
+      location.protocol === 'file:' ||
+      href.indexOf('android_asset') !== -1) {
+    document.documentElement.classList.add('shell-app');
+  }
+})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>X30 遥控台</title>
+<style>.hidden{display:none!important}</style>
+<link rel="stylesheet" href="style.css?v=20260924c">
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand-wrap">
+    <button type="button" class="brand" id="btn-settings" data-say="设置">X30 遥控台</button>
+  </div>
+
+  <div class="chips">
+    <span class="chip" id="chip-link"><i class="dot"></i><span id="link-text">连接中</span></span>
+    <span class="chip" id="chip-state">—</span>
+    <span class="chip hidden" id="chip-stick" title="当前作业模式：侦检或水炮">侦检</span>
+    <span class="chip" id="chip-batt">—</span>
+  </div>
+
+  <div class="bar-right">
+    <span id="cannon-psi" class="cannon-psi hidden" aria-live="polite">当前水压：—  MPa</span>
+    <button type="button" class="btn btn-ghost" id="btn-learn" data-say="">学习</button>
+    <div class="bar-mode" id="bar-mode">
+      <button type="button" class="btn btn-ghost" id="btn-mode">模式</button>
+      <div id="hud-mode-pop" class="bar-pop hidden">
+        <button type="button" class="btn" data-work="inspect">侦检模式</button>
+        <button type="button" class="btn" data-work="cannon">水炮模式</button>
+      </div>
+    </div>
+    <!-- 仅安卓壳显示：顶栏切背景。网页直接打开时由 CSS 藏掉。 -->
+    <div class="bar-view" id="bar-view">
+      <button type="button" class="btn btn-ghost" id="btn-view">主图</button>
+      <div id="hud-view-pop" class="bar-pop hidden">
+        <button type="button" class="btn" data-view-pick="dog_cam">狗身视频</button>
+        <button type="button" class="btn" data-view-pick="ptz_vis">双光视频</button>
+        <button type="button" class="btn" data-view-pick="cloud">狗身点云</button>
+      </div>
+    </div>
+    <button class="btn btn-ghost" id="btn-control">控制权</button>
+    <!-- 这颗和右下角的 2×2 一样，按钮上写的是**当前**状态，照字念正好和这一下
+         要做的事相反。所以不按字念（data-say=""），由处理函数念切完的结果。 -->
+    <button type="button" class="btn btn-ghost" id="btn-radio" data-say="" title="切换 2.4G 与 MESH">MESH</button>
+    <button class="btn btn-estop" id="btn-estop">急停</button>
+  </div>
+</header>
+
+<!-- 网关设置。改完要重启网关，所以既要密码，也要求当前没人持有控制权。 -->
+<div id="settings" class="set-mask hidden">
+  <div class="set-panel">
+    <div class="set-head">
+      <span>网关设置</span>
+      <button class="btn sm btn-ghost" id="set-close">关闭</button>
+    </div>
+
+    <!-- 版本戳。装包时最容易漏拷 assets/web，页面是旧的却看不出来，
+         所以留一处能查。放这里而不是顶栏：顶栏是遥控时要盯的地方。 -->
+    <p class="set-sect-note" id="set-app-ver">—</p>
+
+    <div id="set-app-box" class="set-form hidden">
+      <div class="set-sect">本机连接网关</div>
+      <p class="set-sect-note">MESH 路径：遥控器 192.168.10.100 → 狗端 MESH → 交换机 → 板子 eth1 <b>192.168.10.120:8080</b>。板上日志：<code>journalctl -u x30-gateway -f</code></p>
+      <p class="set-sect-note" id="set-app-nets">—</p>
+      <label class="set-row">
+        <span class="set-label">服务 IP</span>
+        <input class="set-input" id="set-app-host" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="set-row">
+        <span class="set-label">服务端口</span>
+        <input class="set-input" id="set-app-port" type="number" autocomplete="off">
+      </label>
+      <div class="set-sect">2.4G 机身相机</div>
+      <p class="set-sect-note">2.4G 直连下面这个地址。MESH 下改拉网关转推 dog_cam_main，不用改这里。</p>
+      <label class="set-row">
+        <span class="set-label">RTSP 地址</span>
+        <input class="set-input" id="set-app-dogcam" autocomplete="off" spellcheck="false">
+      </label>
+      <p class="set-sect-note" id="set-app-dogcam-stat">—</p>
+      <!-- 姿态遥测是狗**单播**回来的，只发给它 network.toml 里登记过的地址。
+           没登记就一条都收不到，界面只能按「我点过什么」猜姿态。这一行把本机
+           2.4G 地址和收没收到都说清楚，要登记时照着填。 -->
+      <p class="set-sect-note" id="set-app-radio-stat">—</p>
+      <button type="button" class="btn sm" id="set-app-save">保存并重新连接</button>
+    </div>
+
+    <!-- 语音是本机偏好，与网关配置无关，所以放在解锁之外：网页和 App 都改得了，
+         网关没开在线改配置时也够得着（见 settings.js 的 open）。 -->
+    <div id="set-voice-box" class="set-form">
+      <div class="set-sect">按键语音</div>
+      <label class="gp-check">
+        <input type="checkbox" id="set-voice">
+        <span>按键语音播报：念出这一下做成了什么</span>
+      </label>
+      <p class="set-sect-note" id="set-voice-hint">—</p>
+    </div>
+
+    <div id="set-unlock-box" class="set-unlock">
+      <p>改这些参数会让网关重启，遥控中断一两秒。输入密码后解锁。</p>
+      <label class="set-row">
+        <span class="set-label">密码</span>
+        <input class="set-input" type="password" id="set-token" autocomplete="off">
+      </label>
+      <label class="gp-check">
+        <input type="checkbox" id="set-remember">
+        <span>在本机记住密码（公用平板上别勾）</span>
+      </label>
+      <button class="btn" id="set-unlock">解锁</button>
+    </div>
+
+    <div id="set-form" class="set-form hidden"></div>
+
+    <div id="set-note" class="set-note hidden"></div>
+
+    <div class="set-foot">
+      <button class="btn hidden" id="set-save">保存并重启网关</button>
+    </div>
+  </div>
+</div>
+
+<!-- 默认按趴下画：网页只藏步态菜单。虚拟摇杆由「摇杆」按钮开关。 -->
+<main class="stage-wrap dog-prone" id="stage-wrap">
+  <div id="banner" class="banner hidden"></div>
+
+  <div id="rc-learn" class="rc-learn hidden is-inspect" aria-hidden="true">
+    <div class="rc-learn-head">
+      <span>按键学习</span>
+      <button type="button" class="btn sm btn-ghost" id="btn-learn-close">关闭</button>
+    </div>
+    <div class="rc-learn-map">
+      <article class="rc-learn-card" data-key="sw1">
+        <img class="rc-learn-ico" src="icons/rc-sw.png" alt="拨动开关">
+        <div class="rc-learn-txt">
+          <b>SW1 左拨动开关</b>
+          <p>选择主图内容（狗身视频 / 双光 / 点云）</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="lstick">
+        <img class="rc-learn-ico" src="icons/rc-stick.png" alt="大摇杆">
+        <div class="rc-learn-txt">
+          <b>左大摇杆</b>
+          <p>控制狗前进后退、左右平移</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="laux">
+        <img class="rc-learn-ico" src="icons/rc-hat.png" alt="小摇杆">
+        <div class="rc-learn-txt">
+          <b>左小摇杆</b>
+          <p class="for-inspect">侦检：主图双光时控球机水平和俯仰；主图点云时移动显示中心；主图狗身视频时不控球</p>
+          <p class="for-cannon">水炮：控制水炮水平和俯仰</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="l1">
+        <img class="rc-learn-ico" src="icons/rc-l1.png" alt="L1">
+        <div class="rc-learn-txt">
+          <b>L1</b>
+          <p>力控 / 起步 / 停步</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="l2">
+        <img class="rc-learn-ico" src="icons/rc-l2.png" alt="L2">
+        <div class="rc-learn-txt">
+          <b>L2</b>
+          <p>起立 / 趴下 / 卸力</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="sw2">
+        <img class="rc-learn-ico" src="icons/rc-sw.png" alt="拨动开关">
+        <div class="rc-learn-txt">
+          <b>SW2 右拨动开关</b>
+          <p>指标 / 开关 / 气体显示</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="rstick">
+        <img class="rc-learn-ico" src="icons/rc-stick.png" alt="大摇杆">
+        <div class="rc-learn-txt">
+          <b>右大摇杆</b>
+          <p>控制狗转向和俯仰</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="raux">
+        <img class="rc-learn-ico" src="icons/rc-hat.png" alt="小摇杆">
+        <div class="rc-learn-txt">
+          <b>右小摇杆</b>
+          <p class="for-inspect">侦检：主图双光时左右切画中画、上下变焦；主图点云时上下缩放；主图狗身视频时不控球</p>
+          <p class="for-cannon">水炮：拨住选雾状或柱状（花型，不是出水）</p>
+        </div>
+      </article>
+      <article class="rc-learn-card for-cannon" data-key="home">
+        <img class="rc-learn-ico" src="icons/rc-home.png" alt="HOME">
+        <div class="rc-learn-txt">
+          <b>HOME</b>
+          <p>水炮：按住发射（开阀出水），松开停射</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="lknob">
+        <img class="rc-learn-ico" src="icons/rc-knob.png" alt="左旋">
+        <div class="rc-learn-txt">
+          <b>左旋</b>
+          <p class="for-inspect">侦检：对讲开关，中间行程调对讲音量</p>
+        </div>
+      </article>
+      <article class="rc-learn-card" data-key="rknob">
+        <img class="rc-learn-ico" src="icons/rc-knob.png" alt="右旋">
+        <div class="rc-learn-txt">
+          <b>右旋</b>
+          <p class="for-inspect">侦检：听球开关，中间行程调听球音量</p>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div id="stage" class="stage layout-1x1">
+    <div id="pane-video" class="pane is-main" data-view="dog_cam">
+      <video id="media-video" class="media-video" autoplay playsinline muted></video>
+      <div class="placeholder media-idle" id="media-idle">
+        <div class="ph-icon">▣</div>
+        <p>机身相机</p>
+        <small>等待拉流…</small>
+      </div>
+      <div class="pane-label">机身相机</div>
+      <div class="pane-actions">
+        <button type="button" class="btn sm" data-capture="shot">截图</button>
+        <button type="button" class="btn sm btn-rec" data-capture="rec">录屏</button>
+      </div>
+      <span class="pip-hint">点击放大</span>
+    </div>
+
+    <div id="pane-ptz-vis" class="pane" data-view="ptz_vis">
+      <video id="media-video-ptz-vis" class="media-video" autoplay playsinline muted></video>
+      <div class="placeholder media-idle" id="media-idle-ptz-vis">
+        <div class="ph-icon">▣</div>
+        <p>双光视频</p>
+        <small>未接通时会停在这里</small>
+      </div>
+      <div class="pane-label">双光视频</div>
+      <button type="button" class="btn sm ptz-pip-btn" id="btn-ptz-pip">画中画 · 热像主图</button>
+      <div class="pane-actions">
+        <button type="button" class="btn sm" data-capture="shot">截图</button>
+        <button type="button" class="btn sm btn-rec" data-capture="rec">录屏</button>
+      </div>
+      <span class="pip-hint">点击放大</span>
+    </div>
+
+    <div id="pane-ptz-ir" class="pane" data-view="ptz_ir">
+      <video id="media-video-ptz-ir" class="media-video" autoplay playsinline muted></video>
+      <div class="placeholder media-idle" id="media-idle-ptz-ir">
+        <div class="ph-icon">▣</div>
+        <p>布控球 热成像</p>
+        <small>未接通时会停在这里</small>
+      </div>
+      <div class="pane-label">布控球 热成像</div>
+      <div class="pane-actions">
+        <button type="button" class="btn sm" data-capture="shot">截图</button>
+        <button type="button" class="btn sm btn-rec" data-capture="rec">录屏</button>
+      </div>
+      <span class="pip-hint">点击放大</span>
+    </div>
+
+    <div id="pane-cloud" class="pane" data-view="cloud">
+      <div class="cloud-wrap">
+        <canvas id="cloud-canvas" class="cloud-canvas"></canvas>
+        <div id="uwb-marks" class="uwb-marks"></div>
+        <div id="uwb-hud" class="uwb-hud hidden"></div>
+        <div class="placeholder cloud-idle" id="cloud-idle">
+          <div class="ph-icon">⁘</div>
+          <p>点云未订阅</p>
+          <small>点云经 MESH/WiFi 连网关再从感知主机拉，不走 2.4G。进入本画面后自动订阅。</small>
+        </div>
+      </div>
+      <div class="pane-label">
+        激光点云
+        <span class="tag" id="cloud-tag">未订阅</span>
+      </div>
+      <div class="pane-actions">
+        <button type="button" class="btn sm" data-capture="shot">截图</button>
+        <button type="button" class="btn sm btn-rec" data-capture="rec">录屏</button>
+      </div>
+      <button type="button" class="btn sm hud-cloud-settings" id="btn-cloud-settings">点云设置</button>
+      <div class="cloud-ctl pane-cloud-ctl hidden" id="cloud-ctl">
+        <div class="cloud-seg" id="cloud-mode">
+          <button type="button" class="btn sm active" data-cloud-mode="live">实时</button>
+          <button type="button" class="btn sm" data-cloud-mode="persist">持久地图</button>
+        </div>
+        <button type="button" class="btn sm active" id="btn-cloud-vis" title="隐藏点云，轨迹继续留着">点云显控</button>
+        <button type="button" class="btn sm active" id="btn-trail" title="用红色画出狗走过的路">轨迹</button>
+        <div class="cloud-slice-row">
+          <label class="cloud-check">
+            <input type="checkbox" id="cloud-slice">
+            <span>楼层切割</span>
+          </label>
+          <label class="cloud-num" title="一层楼的实际层高，切割时按这个间隔识别楼层">
+            <span>高度</span>
+            <input id="cloud-slice-z" type="number" inputmode="decimal" value="3.0" step="0.1" min="1" max="8">
+            <span>m</span>
+          </label>
+          <label class="cloud-num" title="从地面往上留多少米。天花板以上的点丢掉。楼层切割开不开都生效。">
+            <span>层高显示</span>
+            <input id="cloud-slice-h" type="number" inputmode="decimal" value="2.0" step="0.1" min="0.2" max="8">
+            <span>m</span>
+          </label>
+          <button type="button" class="btn sm" id="btn-floor" title="在识别出的楼层之间切换，最后一档显示全部">楼层</button>
+        </div>
+        <button type="button" class="btn sm" id="btn-cloud-clear" title="清掉已画的点云和轨迹，单兵不受影响">清除</button>
+        <span class="hint" id="cloud-note">拖动旋转</span>
+      </div>
+      <span class="pip-hint">点击放大</span>
+    </div>
+  </div>
+
+  <div class="hud-layout-bar">
+    <button type="button" class="btn sm hud-swap" id="btn-swap" data-say="" title="在一主三小和四宫格之间切换">2×2</button>
+    <button type="button" class="btn sm" id="btn-media">画面</button>
+  </div>
+  <div id="hud-layout" class="hud-layout hidden">
+    <span class="tag" id="media-budget">—</span>
+    <span class="hint" id="codec-note">正在探测解码能力…</span>
+    <div id="media-list" class="media-list hud-media-list"></div>
+  </div>
+
+  <!-- 指标、开关、气体默认藏。网页靠按钮，App 靠 SW2。 -->
+  <div class="hud-info" id="hud-info">
+    <section id="telemetry" class="panel telemetry hidden">
+      <div class="panel-head"><span>指标</span><span class="tag" id="tag-holder">观察者</span></div>
+    <div class="grid">
+      <div class="cell"><label>机体速度 X</label><b id="t-vx">0.00</b><em>m/s</em></div>
+      <div class="cell"><label>机体速度 Y</label><b id="t-vy">0.00</b><em>m/s</em></div>
+      <div class="cell"><label>转向角速度</label><b id="t-wz">0.00</b><em>rad/s</em></div>
+      <div class="cell"><label>里程计 X</label><b id="t-ox">0.00</b><em>m</em></div>
+      <div class="cell"><label>里程计 Y</label><b id="t-oy">0.00</b><em>m</em></div>
+      <div class="cell"><label>航向</label><b id="t-yaw">0.0</b><em>°</em></div>
+      <div class="cell"><label>横滚 / 俯仰</label><b id="t-rp">0.0 / 0.0</b><em>°</em></div>
+      <div class="cell"><label>电池</label><b id="t-batt">—</b><em>%</em></div>
+      <div class="cell"><label>CPU 温度</label><b id="t-cpu">—</b><em>℃</em></div>
+      <div class="cell"><label>电机最高温</label><b id="t-motor">—</b><em>℃</em></div>
+      <div class="cell"><label>本次里程</label><b id="t-mile">—</b><em>m</em></div>
+      <div class="cell"><label>速度上限</label><b id="t-limit">—</b><em>m/s</em></div>
+    </div>
+    <div class="errors" id="t-errors"></div>
+    </section>
+    <section id="gas-panel" class="panel gas-panel hidden">
+      <div class="panel-head"><span>气体</span><span class="tag" id="gas-tag">未接入</span></div>
+      <div class="grid" id="gas-grid">
+        <div class="cell" data-gas="o2"><div class="g-head"><label>氧气 O₂</label><span class="g-loc"></span></div><div class="g-read"><b id="g-o2">—</b><em>%VOL</em></div></div>
+        <div class="cell" data-gas="ch4"><div class="g-head"><label>甲烷 CH₄</label><span class="g-loc"></span></div><div class="g-read"><b id="g-ch4">—</b><em>%LEL</em></div></div>
+        <div class="cell" data-gas="co"><div class="g-head"><label>一氧化碳 CO</label><span class="g-loc"></span></div><div class="g-read"><b id="g-co">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="h2s"><div class="g-head"><label>硫化氢 H₂S</label><span class="g-loc"></span></div><div class="g-read"><b id="g-h2s">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="lel"><div class="g-head"><label>可燃气 LEL</label><span class="g-loc"></span></div><div class="g-read"><b id="g-lel">—</b><em>%LEL</em></div></div>
+        <div class="cell" data-gas="nh3"><div class="g-head"><label>氨气 NH₃</label><span class="g-loc"></span></div><div class="g-read"><b id="g-nh3">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="no2"><div class="g-head"><label>二氧化氮 NO₂</label><span class="g-loc"></span></div><div class="g-read"><b id="g-no2">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="so2"><div class="g-head"><label>二氧化硫 SO₂</label><span class="g-loc"></span></div><div class="g-read"><b id="g-so2">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="h2"><div class="g-head"><label>氢气 H₂</label><span class="g-loc"></span></div><div class="g-read"><b id="g-h2">—</b><em>ppm</em></div></div>
+        <div class="cell" data-gas="voc"><div class="g-head"><label>VOC</label><span class="g-loc"></span></div><div class="g-read"><b id="g-voc">—</b><em>ppm</em></div></div>
+      </div>
+    </section>
+    <section id="switch-panel" class="panel switch-panel hidden">
+      <div class="panel-head"><span>开关</span><span class="tag" id="switch-tag">载荷</span></div>
+      <div class="sw-grid" id="switch-grid">
+        <button type="button" class="sw-card" data-sw="light">
+          <span class="sw-ico sw-ico-light"></span>
+          <span class="sw-name">条纹灯</span>
+          <span class="sw-state" id="sw-light">未知</span>
+        </button>
+        <button type="button" class="sw-card" data-sw="pump">
+          <span class="sw-ico sw-ico-pump"></span>
+          <span class="sw-name">气泵</span>
+          <span class="sw-state" id="sw-pump">未知</span>
+        </button>
+        <button type="button" class="sw-card" data-sw="uwb">
+          <span class="sw-ico sw-ico-uwb"></span>
+          <span class="sw-name">UWB</span>
+          <span class="sw-state" id="sw-uwb">未知</span>
+        </button>
+        <button type="button" class="sw-card" data-sw="fan">
+          <span class="sw-ico sw-ico-fan"></span>
+          <span class="sw-name">风扇</span>
+          <span class="sw-state" id="sw-fan">未知</span>
+        </button>
+        <button type="button" class="sw-card" data-sw="camera">
+          <span class="sw-ico sw-ico-cam"></span>
+          <span class="sw-name">摄像头</span>
+          <span class="sw-state" id="sw-camera">未知</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <button type="button" class="btn sm hud-sticks-btn" id="btn-sticks">摇杆</button>
+  <div id="gp-panel" class="panel hud-gp hidden">
+    <div class="gp-bar">
+      <div class="gp-line">
+        <span>物理手柄</span>
+        <span class="tag" id="gp-status">未连接</span>
+      </div>
+      <div class="gp-note" id="gp-note">插上手柄后拨动摇杆即可识别。</div>
+      <label class="gp-check">
+        <input type="checkbox" id="gp-deadman">
+        <span>死人开关：按住指定键才能推动，松手立即停</span>
+      </label>
+      <div class="row">
+        <a class="btn sm" href="gamepad.html" target="_blank" rel="noopener">诊断 / 映射</a>
+        <button class="btn sm" id="gp-paste">粘贴映射</button>
+        <button class="btn sm" id="gp-clear">清除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud-stand">
+    <!-- 与 L1 同一颗循环键：力控 → 起步 → 停步。L2 / 起立键管起立/趴下/卸力。 -->
+    <div class="hud-walk">
+      <button type="button" class="btn sm" id="btn-walk" data-cmd="walk_cycle">力控</button>
+    </div>
+    <button type="button" class="btn sm hud-fire hidden" id="btn-cannon-fire" data-say="" aria-pressed="false">发射</button>
+    <button type="button" class="btn hud-stand-btn" data-cmd="stand" id="btn-stand">起立</button>
+  </div>
+
+  <!-- 底栏只放三个档位：力控/起步在左下角与 L1 共用一颗循环键。 -->
+  <div id="hud-standing" class="hud-menus">
+    <div class="acc">
+      <!-- 收起来是「菜单名 | 当前选的那一档 ›」。菜单名要留着：只显示「常规」的话，
+           不点开认不出这颗管什么。还不知道选的是哪一档时就只有菜单名和箭头。 -->
+      <button type="button" class="btn acc-btn" data-acc="gait" aria-label="步态">
+        <span class="acc-name">步态</span>
+        <span class="acc-cur" id="acc-val-gait"></span>
+        <span class="acc-arrow" aria-hidden="true">›</span>
+      </button>
+      <div class="acc-pop hidden" id="acc-gait">
+        <div class="row wrap" id="gait-row">
+          <button type="button" class="btn sm" data-gait="walk">常规</button>
+          <button type="button" class="btn sm" data-gait="slope">爬坡</button>
+          <button type="button" class="btn sm" data-gait="offroad">越野</button>
+          <button type="button" class="btn sm" data-gait="lwalk">低姿</button>
+          <button type="button" class="btn sm" data-gait="mountain">山地</button>
+          <button type="button" class="btn sm" data-gait="silent">静音</button>
+          <button type="button" class="btn sm" data-gait="stair" data-short="楼梯">楼梯</button>
+          <button type="button" class="btn sm" data-gait="stairmulti" data-short="多帧">楼梯(多帧)</button>
+          <button type="button" class="btn sm" data-gait="stair45" data-short="45°" data-say="45度楼梯">45°楼梯</button>
+          <button type="button" class="btn sm" data-gait="lstair" data-short="L梯" data-say="L楼梯">L楼梯</button>
+        </div>
+      </div>
+    </div>
+    <div class="acc">
+      <button type="button" class="btn acc-btn" data-acc="stair" aria-label="踏面">
+        <span class="acc-name">踏面</span>
+        <span class="acc-cur" id="acc-val-stair"></span>
+        <span class="acc-arrow" aria-hidden="true">›</span>
+      </button>
+      <div class="acc-pop hidden" id="acc-stair">
+        <div class="acc-label">
+          <span>踏面材质</span>
+          <span class="hint" id="stair-hint">切楼梯步态时生效，需地形图</span>
+        </div>
+        <select id="stair-style" class="sel hidden" aria-hidden="true">
+          <option value="solid" selected>实心（常见混凝土楼梯）</option>
+          <option value="grating">格栅</option>
+          <option value="noriser">无踢面</option>
+        </select>
+        <div class="row wrap">
+          <button type="button" class="btn sm active" data-stair="solid">实心</button>
+          <button type="button" class="btn sm" data-stair="grating">格栅</button>
+          <button type="button" class="btn sm" data-stair="noriser">无踢面</button>
+        </div>
+      </div>
+    </div>
+    <div class="acc">
+      <button type="button" class="btn acc-btn" data-acc="height" aria-label="身高">
+        <span class="acc-name">身高</span>
+        <span class="acc-cur" id="acc-val-height"></span>
+        <span class="acc-arrow" aria-hidden="true">›</span>
+      </button>
+      <div class="acc-pop hidden" id="acc-height">
+        <div class="row wrap">
+          <button type="button" class="btn sm" data-height="normal">正常</button>
+          <button type="button" class="btn sm" data-height="crawl">匍匐</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud-sticks hidden" id="hud-sticks">
+    <div class="stick-wrap stick-wrap-left">
+      <div class="stick" id="stick-left"><div class="knob"></div><span class="stick-hint">前后 / 平移</span></div>
+    </div>
+    <div class="stick-wrap stick-wrap-right">
+      <div class="stick" id="stick-right"><div class="knob"></div><span class="stick-hint">转向</span></div>
+    </div>
+  </div>
+</main>
+
+<!-- voice.js 要排在最前：后面几个模块都会调它念结果。 -->
+<script src="voice.js?v=20260922e"></script>
+<script src="media.js?v=20260922b"></script>
+<script src="capture.js?v=20260826y"></script>
+<script src="cloud.js?v=20260921b"></script>
+<script src="gamepad.js?v=20260923k"></script>
+<script src="settings.js?v=20260921aj"></script>
+<script src="dogcam24.js?v=20260922a"></script>
+<script src="ptzball.js?v=20260922c"></script>
+<script src="app.js?v=20260923m"></script>
+</body>
+</html>

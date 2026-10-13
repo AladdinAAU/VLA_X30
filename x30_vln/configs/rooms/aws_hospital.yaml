@@ -1,0 +1,11 @@
+# Ground-truth rooms of aws_hospital (world frame, axis-aligned rectangles x0 y0 x1 y1), read off the 2D map (docs/figures/rooms/aws_hospital_rooms.png).
+# Each enclosure of the central column is split in two by a wall at x ~ -0.05; the top enclosure is one room. Drafted by hand: verify against the picture.
+world: aws_hospital
+rooms:
+  - {name: "Room A", rect: [-3.6, 2.2, 3.4, 9.3], gt_note: "top enclosure (nurse-station-like: chairs, desk, person)"}
+  - {name: "Room B", rect: [-3.6, -6.5, -0.1, 0.0], gt_note: "west half, 2nd enclosure (chairs, table)"}
+  - {name: "Room C", rect: [0.0, -6.5, 3.4, 0.0], gt_note: "east half, 2nd enclosure (chairs, table)"}
+  - {name: "Room D", rect: [-3.6, -13.7, -0.1, -6.7], gt_note: "west half, 3rd enclosure (toilet, kitchen counter)"}
+  - {name: "Room E", rect: [0.0, -13.7, 3.4, -6.7], gt_note: "east half, 3rd enclosure (toilet, kitchen counter)"}
+  - {name: "Room F", rect: [-3.6, -22.9, -0.1, -15.8], gt_note: "west half, bottom enclosure (bed, bathtub, carts)"}
+  - {name: "Room G", rect: [0.0, -22.9, 3.4, -15.8], gt_note: "east half, bottom enclosure (carts, shelf)"}

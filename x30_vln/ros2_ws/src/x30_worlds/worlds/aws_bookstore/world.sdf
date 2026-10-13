@@ -1,0 +1,806 @@
+<?xml version="1.0" ?>
+<!-- Converted from aws-robomaker-bookstore-world (bookstore.world), MIT-0, by x30_datasets.adapters.aws -->
+<sdf version="1.9">
+  <world name="aws_bookstore">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+    <atmosphere type="adiabatic"><temperature>293.15</temperature><pressure>101325</pressure></atmosphere>
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.55 0.65 0.8 1</background>
+      <shadows>false</shadows>
+      <grid>false</grid>
+    </scene>
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.55 0.55 0.55 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>-0.3 0.2 -0.9</direction>
+    </light>
+    <model name="ground_plane">
+      <static>true</static>
+      <pose>-0.05 0.05 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><plane><normal>0 0 1</normal><size>19.5 18.5</size></plane></geometry>
+          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface></collision>
+        <visual name="visual"><geometry><plane><normal>0 0 1</normal><size>19.5 18.5</size></plane></geometry>
+          <material><ambient>0.28 0.28 0.3 1</ambient><diffuse>0.28 0.28 0.3 1</diffuse></material></visual>
+      </link>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>2</label></plugin>
+    </model>
+    <include>
+      <name>air_conditioner_01</name>
+      <uri>model://aws_robomaker_retail_AirConditionerC_01</uri>
+      <pose>7.4582 1.4225 3.2909 0 0 -1.5642</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>62</label></plugin>
+    </include>
+    <include>
+      <name>bicycle_01</name>
+      <uri>model://aws_robomaker_retail_Bicycle_01</uri>
+      <pose>5.6812 -2.2425 0.9312 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>57</label></plugin>
+    </include>
+    <include>
+      <name>BookE_01_001</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>5.4765 -1.9325 0.9489 0 0 -2.5435</pose>
+    </include>
+    <include>
+      <name>BookE_01_002</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-5.414 3.3307 0.934 0 0 -1.5411</pose>
+    </include>
+    <include>
+      <name>BookE_01_003</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>5.5526 -1.2142 0.9489 0 0 -2.6543</pose>
+    </include>
+    <include>
+      <name>BookE_01_004</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>5.6772 -4.6492 0.9464 0.0001 0 -2.3558</pose>
+    </include>
+    <include>
+      <name>BookE_01_005</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>5.5381 -1.6103 0.9489 0 0 -2.5269</pose>
+    </include>
+    <include>
+      <name>BookE_01_006</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-1.8894 3.3464 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_007</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.1237 3.3464 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_008</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-5.3151 1.772 0.9552 3.1412 -0.0723 -2.5269</pose>
+    </include>
+    <include>
+      <name>BookE_01_009</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>1.1702 1.1963 343582.7187 0.0022 -0.0011 -0.6233</pose>
+    </include>
+    <include>
+      <name>BookE_01_010</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-5.5034 1.0121 0.9415 0 0 -1.5684</pose>
+    </include>
+    <include>
+      <name>BookE_01_011</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>5.7492 -2.492 0.9489 0 0 2.2234</pose>
+    </include>
+    <include>
+      <name>BookE_01_012</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-5.3336 0.1862 0.9493 0 -0.0045 -2.7985</pose>
+    </include>
+    <include>
+      <name>BookE_01_013</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-5.4039 2.6509 0.9311 0.0212 0 -2.3558</pose>
+    </include>
+    <include>
+      <name>BookE_01_014</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-1.8894 2.9937 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_015</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.1237 2.9937 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_016</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.3574 2.9937 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_017</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-1.8894 3.1729 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_018</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.1237 3.1729 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_019</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.3574 3.1729 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookE_01_020</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -3.5308 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_021</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -3.7605 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_022</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -3.9805 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_023</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -4.2219 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_024</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -4.4619 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_025</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -4.7019 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_026</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -4.9419 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_027</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -5.2219 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_028</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -3.2919 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_029</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-0.6943 -3.0219 1.0538 0 0 -1.5734</pose>
+    </include>
+    <include>
+      <name>BookE_01_030</name>
+      <uri>model://aws_robomaker_retail_BookE_01</uri>
+      <pose>-2.3574 3.3464 1.0549 0 0 1.5682</pose>
+    </include>
+    <include>
+      <name>BookF_01_001</name>
+      <uri>model://aws_robomaker_retail_BookF_01</uri>
+      <pose>2.9318 -1.3033 0.77 0.0034 0 0.0031</pose>
+    </include>
+    <include>
+      <name>BookD_01_001</name>
+      <uri>model://aws_robomaker_retail_BookD_01</uri>
+      <pose>5.72 -5.3659 0.0222 0.0035 0 0.0007</pose>
+    </include>
+    <include>
+      <name>BookF_01_002</name>
+      <uri>model://aws_robomaker_retail_BookF_01</uri>
+      <pose>2.903 -4.7607 0.7583 0.0034 0 -0.0022</pose>
+    </include>
+    <include>
+      <name>BookD_01_002</name>
+      <uri>model://aws_robomaker_retail_BookD_01</uri>
+      <pose>-4.5096 -1.3125 0.8045 0 0 0</pose>
+    </include>
+    <include>
+      <name>BookF_01_003</name>
+      <uri>model://aws_robomaker_retail_BookF_01</uri>
+      <pose>-4.6049 -4.7721 0.8045 0 0 0</pose>
+    </include>
+    <include>
+      <name>BookD_01_003</name>
+      <uri>model://aws_robomaker_retail_BookD_01</uri>
+      <pose>-6.2356 -3.7852 1.0382 0 0 1.5804</pose>
+    </include>
+    <include>
+      <name>BookF_01_004</name>
+      <uri>model://aws_robomaker_retail_BookF_01</uri>
+      <pose>1.2616 0.8565 1.0382 0 0 1.5804</pose>
+    </include>
+    <include>
+      <name>BookD_01_004</name>
+      <uri>model://aws_robomaker_retail_BookD_01</uri>
+      <pose>2.3586 0.8549 1.0382 0 0 0.0017</pose>
+    </include>
+    <include>
+      <name>BookF_01_005</name>
+      <uri>model://aws_robomaker_retail_BookF_01</uri>
+      <pose>3.4306 0.8565 1.0382 0 0 1.5804</pose>
+    </include>
+    <include>
+      <name>bookshelf_01</name>
+      <uri>model://aws_robomaker_retail_BookshelfA_01</uri>
+      <pose>1.4052 -1.4497 0.0376 0.0035 0 0.0007</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_02</name>
+      <uri>model://aws_robomaker_retail_BookshelfA_01</uri>
+      <pose>1.4052 -4.7616 0.0034 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_03</name>
+      <uri>model://aws_robomaker_retail_BookshelfA_01</uri>
+      <pose>-2.5545 -1.4875 0.0063 0.0013 -0.002 0.0318</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_04</name>
+      <uri>model://aws_robomaker_retail_BookshelfA_01</uri>
+      <pose>-2.6086 -4.7616 0.0034 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_05</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>-6.1897 -6.7856 -0.0089 0.0035 0.0001 -0.0321</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_06</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>-2.2094 -6.9715 0.0171 -0.0001 -0.0003 0.0004</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_07</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>0.5222 -6.9715 0.0179 -0.0033 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_08</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>3.2934 -6.9637 0.0174 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_09</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>6.0804 -6.9877 0.0174 0.0002 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_10</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>7.4783 -5.2983 0.0174 -0.002 -0.0002 1.5541</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_11</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>7.4783 -2.5107 0.0174 0 0 1.5621</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_12</name>
+      <uri>model://aws_robomaker_retail_BookshelfB_01</uri>
+      <pose>7.4783 0.4025 0.0172 0 -0.0002 1.5708</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_13</name>
+      <uri>model://aws_robomaker_retail_BookshelfC_01</uri>
+      <pose>2.9111 -1.3102 0.0085 0.0035 0 0.0006</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_14</name>
+      <uri>model://aws_robomaker_retail_BookshelfC_01</uri>
+      <pose>2.9154 -4.7617 -0.0035 0.0035 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_15</name>
+      <uri>model://aws_robomaker_retail_BookshelfC_01</uri>
+      <pose>-4.5171 -1.3102 0.0459 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>bookshelf_16</name>
+      <uri>model://aws_robomaker_retail_BookshelfC_01</uri>
+      <pose>-4.6144 -4.7616 0.0459 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>18</label></plugin>
+    </include>
+    <include>
+      <name>chair_01</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>6.644 -0.2105 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_02</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>6.644 -1.622 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_03</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>6.644 -3.2466 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_04</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>6.644 -4.6816 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_05</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>4.6533 -0.2105 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_06</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>4.6533 -1.622 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_07</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>4.6533 -3.2466 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_08</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>4.6533 -4.6816 0.0221 0 0.0062 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_09</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-4.6029 5.0219 0.0303 -0.0011 -0.0019 0.0014</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_10</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-6.1097 5.0262 0.0273 -0.0014 -0.0024 0.0002</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_11</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-4.6162 3.2768 0.0321 -0.0011 -0.0019 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_12</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-6.0908 3.2934 0.0292 -0.0011 -0.0019 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_13</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-4.5896 1.8158 0.0325 0.0014 -0.0019 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_14</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-6.1301 1.7986 0.0294 0.0014 -0.0019 0.0001</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_15</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-4.6075 0.2036 0.0302 0.0014 -0.0019 0.0002</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>chair_16</name>
+      <uri>model://aws_robomaker_retail_ChairB_01</uri>
+      <pose>-6.1215 0.195 0.0273 0.0014 -0.0019 0.0033</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>10</label></plugin>
+    </include>
+    <include>
+      <name>ColumnB_01_002</name>
+      <uri>model://aws_robomaker_retail_ColumnB_01</uri>
+      <pose>-4.0762 -6.8607 0.0175 0.0019 -0.0006 -0.0038</pose>
+    </include>
+    <include>
+      <name>monitor_01</name>
+      <uri>model://aws_robomaker_retail_Computer_01</uri>
+      <pose>0.2847 4.9513 1.0852 -0.004 -0.0001 -0.0107</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>SecurityCamera_01_001</name>
+      <uri>model://aws_robomaker_retail_SecurityCamera_01</uri>
+      <pose>-1.3088 2.9737 1.0378 -0.004 -0.0001 -0.0107</pose>
+    </include>
+    <include>
+      <name>SecurityCamera_01_002</name>
+      <uri>model://aws_robomaker_retail_SecurityCamera_01</uri>
+      <pose>-3.9045 3.5905 1.0378 0 0 3.0509</pose>
+    </include>
+    <include>
+      <name>desk_01</name>
+      <uri>model://aws_robomaker_retail_InfoDesk_01</uri>
+      <pose>1.0107 5.0326 0.0116 -0.0067 0.0051 -0.0251</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>table_01</name>
+      <uri>model://aws_robomaker_retail_DeskB_01</uri>
+      <pose>5.6229 -2.4754 -0.1813 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>11</label></plugin>
+    </include>
+    <include>
+      <name>table_02</name>
+      <uri>model://aws_robomaker_retail_DeskB_01</uri>
+      <pose>-5.4007 2.5805 -0.1813 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>11</label></plugin>
+    </include>
+    <include>
+      <name>desk_02</name>
+      <uri>model://aws_robomaker_retail_DeskA_01</uri>
+      <pose>-2.3407 3.2001 0.0149 0.0001 0 0.0004</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>desk_03</name>
+      <uri>model://aws_robomaker_retail_DeskA_01</uri>
+      <pose>-2.3699 0.8361 0.0088 -0.0008 -0.0019 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>desk_04</name>
+      <uri>model://aws_robomaker_retail_DeskA_01</uri>
+      <pose>-6.2547 -3.9792 -0.0046 0.0019 0.0014 -1.5696</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>desk_05</name>
+      <uri>model://aws_robomaker_retail_DeskA_01</uri>
+      <pose>-0.7017 -4.0493 0.0149 0 0 -1.5661</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>desk_06</name>
+      <uri>model://aws_robomaker_retail_DeskA_01</uri>
+      <pose>2.2982 0.8618 0.0149 0 0.0035 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>12</label></plugin>
+    </include>
+    <include>
+      <name>door_01</name>
+      <uri>model://aws_robomaker_retail_DoorB_01</uri>
+      <pose>-2.4925 7.2194 -0.0352 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>3</label></plugin>
+    </include>
+    <include>
+      <name>RetailShopFloor_01_001</name>
+      <uri>model://aws_robomaker_retail_RetailShopFloor_01</uri>
+      <pose>-0.0027 0 -0.2766 0 0 0</pose>
+    </include>
+    <include>
+      <name>monitor_02</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.8877 -2.5263 1.1811 0.5343 -0.0073 -3.125</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_03</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.4909 -2.5263 1.1811 0.5343 -0.0073 -3.125</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_04</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.5985 -5.5707 1.1847 0.5509 -0.0073 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_05</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-1.0366 -5.5707 1.1847 0.5509 -0.0073 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_06</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.3786 -4.955 1.1847 0.5184 0.0233 1.5645</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_07</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.3786 -4.2272 1.1847 0.5184 0.0233 1.5645</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_08</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-0.3786 -3.2805 1.1847 0.5184 0.0233 1.5645</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_09</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-1.0039 -4.9648 1.1847 0.5125 -0.0584 -1.6041</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_10</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-1.0039 -4.224 1.1847 0.5125 -0.0584 -1.6041</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_11</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-1.0039 -3.2755 1.1847 0.5125 -0.0584 -1.6041</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_12</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-5.915 -3.0317 1.1847 0.5184 0.0233 1.5645</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_13</name>
+      <uri>model://aws_robomaker_retail_TabletB_01</uri>
+      <pose>-5.915 -4.6124 1.1847 0.5184 0.0233 1.5645</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_14</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-1.8461 0.4891 1.1806 0.5793 0.0415 -0.0079</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_15</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-2.6502 0.4891 1.1806 0.5793 0.0415 -0.0079</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_16</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-1.0693 0.4891 1.1806 0.5793 0.0415 -0.0079</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_17</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-3.6393 0.4891 1.1806 0.5793 0.0415 -0.0079</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_18</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-1.0727 1.1638 1.1779 0.5133 0 3.1101</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_19</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-1.8767 1.1638 1.1779 0.5133 0 3.1101</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_20</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-2.6497 1.1638 1.1779 0.5133 0 3.1101</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>monitor_21</name>
+      <uri>model://aws_robomaker_retail_Tablet_01</uri>
+      <pose>-3.6366 1.1638 1.1779 0.5133 0 3.1101</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>22</label></plugin><plugin filename="gz-sim-thermal-system" name="gz::sim::systems::Thermal"><temperature>306.15</temperature></plugin>
+    </include>
+    <include>
+      <name>Holder_01_001</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.5992 -5.5712 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_002</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.4916 -2.5287 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_003</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0358 -5.5712 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_004</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.8862 -2.5297 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_005</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.8466 0.4956 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_006</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-2.6478 0.4956 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_007</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0724 0.4956 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_008</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-3.6396 0.4956 1.0378 0 0 0</pose>
+    </include>
+    <include>
+      <name>Holder_01_009</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0729 1.1608 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_010</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.8749 1.1608 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_011</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-2.6592 1.1608 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_012</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-3.6313 1.1608 1.0378 0 0 -3.1301</pose>
+    </include>
+    <include>
+      <name>Holder_01_013</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.3725 -4.9604 1.0378 0 0 1.55</pose>
+    </include>
+    <include>
+      <name>Holder_01_014</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.3725 -4.2268 1.0378 0 0 1.55</pose>
+    </include>
+    <include>
+      <name>Holder_01_015</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-0.3725 -3.2863 1.0378 0 0 1.55</pose>
+    </include>
+    <include>
+      <name>Holder_01_016</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0017 -4.9615 1.0378 0 0 -1.5886</pose>
+    </include>
+    <include>
+      <name>Holder_01_017</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0017 -4.2261 1.0378 0 0 -1.5886</pose>
+    </include>
+    <include>
+      <name>Holder_01_018</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-1.0017 -3.2691 1.0378 0 0 -1.5886</pose>
+    </include>
+    <include>
+      <name>Holder_01_019</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-5.9291 -3.0328 1.0378 0 0 1.55</pose>
+    </include>
+    <include>
+      <name>Holder_01_020</name>
+      <uri>model://aws_robomaker_retail_Holder_01</uri>
+      <pose>-5.9291 -4.6036 1.0378 0 0 1.55</pose>
+    </include>
+    <include>
+      <name>Horologe_01_001</name>
+      <uri>model://aws_robomaker_retail_Horologe_01</uri>
+      <pose>2.4051 3.0257 2.5252 0 0 -1.5656</pose>
+    </include>
+    <include>
+      <name>RetailShopWall_01_001</name>
+      <uri>model://aws_robomaker_retail_RetailShopWall_01</uri>
+      <pose>0 0 -0.2813 0 0 0</pose>
+    </include>
+    <include>
+      <name>LightA_01_001</name>
+      <uri>model://aws_robomaker_retail_LightA_01</uri>
+      <pose>2.7744 -3.6282 3.1503 0 0 0</pose>
+    </include>
+    <include>
+      <name>LightA_01_002</name>
+      <uri>model://aws_robomaker_retail_LightA_01</uri>
+      <pose>5.384 -5.3837 3.1503 0 0 0</pose>
+    </include>
+    <include>
+      <name>LightA_01_003</name>
+      <uri>model://aws_robomaker_retail_LightA_01</uri>
+      <pose>5.384 0.0419 3.1503 0 0 0</pose>
+    </include>
+    <include>
+      <name>LightA_01_004</name>
+      <uri>model://aws_robomaker_retail_LightA_01</uri>
+      <pose>-3.2107 -5.3837 3.1503 0 0 0</pose>
+    </include>
+    <include>
+      <name>LightA_01_005</name>
+      <uri>model://aws_robomaker_retail_LightA_01</uri>
+      <pose>-3.271 2.6859 3.1503 0 0 0</pose>
+    </include>
+    <include>
+      <name>medical_device_01</name>
+      <uri>model://aws_robomaker_retail_MagicCube_01</uri>
+      <pose>5.6676 -5.1749 0.9686 1.5599 0 -1.5554</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>61</label></plugin>
+    </include>
+    <include>
+      <name>medical_device_02</name>
+      <uri>model://aws_robomaker_retail_MagicCube_01</uri>
+      <pose>-5.3837 5.1775 0.9686 1.5641 0 -1.5554</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>61</label></plugin>
+    </include>
+    <include>
+      <name>medical_device_03</name>
+      <uri>model://aws_robomaker_retail_MagicCube_01</uri>
+      <pose>-3.1465 2.9285 1.0357 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>61</label></plugin>
+    </include>
+    <include>
+      <name>Spotlight_01_001</name>
+      <uri>model://aws_robomaker_retail_Spotlight_01</uri>
+      <pose>1.4932 4.6924 3.3027 0 0 0</pose>
+    </include>
+    <include>
+      <name>window_01</name>
+      <uri>model://aws_robomaker_retail_ShopWindow_01</uri>
+      <pose>-7.7382 0.016 -0.1801 0 0 0</pose>
+      <plugin filename="gz-sim-label-system" name="gz::sim::systems::Label"><label>4</label></plugin>
+    </include>
+  </world>
+</sdf>

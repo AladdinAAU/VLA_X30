@@ -1,0 +1,12 @@
+# Mode goal_pose: Nav2 NavigateToPose through the skill goto_pose. Read by mode_manager per task (sim: / real: override the top level).
+odom_source: lidar          # informational for x30_bringup: gt | leg | lidar | fused (INTERFACES section 3)
+timeout_s: 300.0
+no_progress_window_s: 40.0
+progress_min_distance_m: 0.15
+safety_abort_s: 45.0
+teleop_cancels_task: true
+tolerance_m: 0.5
+real:
+  timeout_s: 420.0
+  no_progress_window_s: 60.0
+  tolerance_m: 0.6

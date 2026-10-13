@@ -1,0 +1,11 @@
+{
+  "world": "aws_hospital",
+  "_comment": "Crowd test 1: five people with five different outfits. The target (navy nurse) walks the east corridor; a red nurse walks toward it in the corridor, a green nurse crosses the hall in front of the robot at the start, a visitor in a dark top walks slowly ahead of the target and is overtaken, a woman in maroon walks toward it later.",
+  "people": [
+    {"name": "target",        "model": "person_07", "path": "crowd1/target.json", "target": true, "outfit": "navy scrubs"},
+    {"name": "crowd_red",     "uri": "file:///x30/configs/follow/models/ScrubsRed", "path": "crowd1/red.json", "outfit": "red scrubs"},
+    {"name": "crowd_green",   "uri": "file:///x30/configs/follow/models/ScrubsGreen", "path": "crowd1/green.json", "outfit": "green scrubs"},
+    {"name": "crowd_male",    "uri": "file:///x30/datasets/external/fuel/models/MaleVisitorOnPhone", "path": "crowd1/male.json", "outfit": "dark top, grey trousers"},
+    {"name": "crowd_female",  "uri": "file:///x30/datasets/external/fuel/models/FemaleVisitor", "path": "crowd1/female.json", "outfit": "maroon dress", "delay_s": 30.0}
+  ]
+}

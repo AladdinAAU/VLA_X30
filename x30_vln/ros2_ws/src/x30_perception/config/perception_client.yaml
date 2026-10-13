@@ -1,0 +1,60 @@
+# ROS parameters of the perception_client node. Domain configuration (vocabulary, thresholds, thermal rules) is in
+# configs/perception.yaml (parameter config_file). Every value below is the node default, listed for tuning.
+perception_client:
+  ros__parameters:
+    # topics (INTERFACES.md section 2)
+    rgb_topic: /camera/color/image_raw
+    camera_info_topic: /camera/color/camera_info
+    lidar_topic: /lidar_points
+    thermal_image_topic: /thermal/image_raw          # optional hardware: the node works without any /thermal/* topic
+    thermal_temperature_topic: /thermal/temperature
+    thermal_info_topic: /thermal/camera_info
+    depth_topic: /camera/depth/image_raw             # only read when depth_source: sim_depth
+    # server and rate
+    server_url: ''                                   # '' -> env PERCEPTION_URL -> configs/perception.yaml server.url
+    server_timeout_s: 5.0
+    rate_hz: 2.5                                     # frames sent to the server per second; extra frames are dropped
+    max_image_age_s: 1.0
+    imgsz: 640
+    send_max_side: 960
+    # 3D source: lidar (default, the robot has no depth camera) | sim_depth (simulator ground truth, ablations) | none
+    depth_source: lidar
+    # frames
+    map_frame: map
+    fallback_frame: odom                             # used (and named in the output frame_id) when map is not available
+    accum_frame: odom                                # smooth frame in which scans are accumulated
+    tf_timeout_s: 0.1
+    # lidar accumulation and motion compensation
+    num_scans: 3                                     # 3 scans = 0.3 s
+    time_bins: 3                                     # pose lookups per scan (deskew with per-point timestamps)
+    scan_duration_s: 0.1
+    scan_stamp_at: start                             # Livox driver stamps the start of the scan (checked on the recorded bag)
+    scan_time_field: timestamp                       # per-point time field, float64 in milliseconds on the X30
+    scan_time_unit_s: 0.001
+    scan_wait_s: 0.15
+    max_scan_age_s: 2.0
+    # extrinsics fallbacks, used only when TF has no camera <- lidar transform
+    calibration_file: ''                             # ROS camera_calibration YAML (+ optional lidar_to_camera_xyzrpy)
+    extrinsics_override: false
+    lidar_to_camera_xyzrpy: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]   # camera optical frame expressed in lidar_link (m, rad)
+    # projector
+    min_range_m: 0.6                                 # own-body returns: 57 % of the recorded cloud lies within 0.5 m
+    max_range_m: 30.0
+    occlusion_window_px: 5                           # at 640 px width, scaled with the working resolution
+    occlusion_abs_tol_m: 0.10
+    occlusion_rel_tol: 0.04
+    mask_erode_px: 2
+    min_points: 5                                    # fewer lidar points in the mask -> bearing_only
+    depth_gap_abs_m: 0.25
+    depth_gap_rel: 0.04
+    cluster_keep_frac: 0.4
+    euclid_eps_m: 0.30
+    euclid_eps_rel: 0.03
+    # thermal
+    thermal_default_depth_m: 3.0                     # assumed object distance for bearing-only detections
+    thermal_max_dt_s: 0.5
+    # outputs
+    publish_crops: true
+    crop_max_side: 256
+    crop_min_score: 0.3
+    debug_image_always: false                        # publish /perception/detections_image only when somebody subscribes

@@ -1,0 +1,8 @@
+# agent progress notes
+
+- M1 (done): x30_common (VLMClient sync/async, retry/cancel/usage, JSON repair, tool-schema coercion, image encoding, models.yaml loader with env overrides, fake OpenAI server). 59 pytest pass. configs/models.yaml written.
+- M2 (done): x30_agent core: policy files (configs/agent/object_nav*.{yaml,md}), skills->tools, reasoner loop (hints, repetition refusal, finish guard, rejected memory, token budget, traces), fake 2D world, 21 pytest pass. First live run against Qwen3-VL (x30-vlm, ctx 16384): 3/3 fake-world episodes ok; found verify(object_id) without question -> harness now fills question from the task.
+- M3 (in progress): follower core written (core/follower.py, primitives.py, velocity_follow.yaml + prompts); next: baselines, ROS nodes, tests for follower, live measurements, reports.
+- M3 (done): follower, baselines (ScriptedSearch, DeadReckon), mocks, 35+ pytest pass. Found+fixed a real bug: unquoted `yes:`/`no:` hint keys loaded as YAML booleans (verify hints were silently missing); regression test added. Noisy-mock 20-episode run: 18/20 (fake world).
+- M4 (next): ROS nodes (reasoner_agent, instruction_follower), Docker integration with fake skill server, live measurements, README + docs/reports/agent.md.
+- M4 (done 2026-10-10): ROS nodes verified in x30-framework (19/19 checks fake stack, chain via real mode_manager/skill_server), live measurements (latency, format errors, 72-state decisions, 20+20 fake-world episodes), eval-contract fixes (trace_dir, seed, give-up != finished, LLM error prefix), follower auto-advance of metric subgoals, README + docs/reports/agent.md + figures. Step 3 (real sim episode) not done: navigation.md missing.

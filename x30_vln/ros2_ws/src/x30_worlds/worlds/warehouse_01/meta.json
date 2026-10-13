@@ -1,0 +1,50 @@
+{
+ "sdf": "worlds/warehouse_01/world.sdf",
+ "spawn": {
+  "x": 13.72,
+  "y": 2.0,
+  "z": 0.0,
+  "yaw": 1.571
+ },
+ "bounds": [
+  -1.5,
+  -1.5,
+  29.5,
+  21.5
+ ],
+ "objects_file": "worlds/warehouse_01/objects.json",
+ "rooms_file": "worlds/warehouse_01/rooms.json",
+ "map_file": "worlds/warehouse_01/map.yaml",
+ "license": "generated in this repository from SDF primitives (no third-party assets); CC0-1.0",
+ "source": "x30_datasets.procgen preset 'warehouse_01' seed 99",
+ "source_dataset": "procedural",
+ "rtf_note": "not measured yet",
+ "stats": {
+  "kind": "warehouse",
+  "rooms": 1,
+  "objects": 75,
+  "reachable_area_m2": 444.1,
+  "models": 77,
+  "objects_by_label": {
+   "barrel": 5,
+   "bookshelf": 1,
+   "box": 8,
+   "cart": 2,
+   "chair": 2,
+   "desk": 2,
+   "door": 3,
+   "filing_cabinet": 1,
+   "fire_extinguisher": 2,
+   "monitor": 2,
+   "pallet": 5,
+   "person": 2,
+   "plant": 1,
+   "shelf": 35,
+   "trash_can": 2,
+   "whiteboard": 1,
+   "window": 1
+  },
+  "robot_radius_m": 0.35,
+  "min_door_width_m": 1.1
+ }
+}
