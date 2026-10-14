@@ -5,14 +5,24 @@
 #                  that /ros_entrypoint.sh also sources would shadow Noetic's python modules (rosgraph_msgs) and break them
 #   anything else is executed as given (bash, ros2 ...)
 # Env: ROS_MASTER_URI (required for "bridge"), ROS_IP or ROS_HOSTNAME (address the ROS 1 side advertises; must be reachable
-# from the master/robot), BRIDGE_TOPICS (yaml), BRIDGE_MASTER_TIMEOUT (s, default 120).
+# from the master/robot), BRIDGE_TOPICS (yaml), BRIDGE_MASTER_TIMEOUT (s, default 120), BRIDGE_NODE_NAME (optional ROS 1 name).
 set -e
 if [ "${1:-bridge}" = "ros1" ]; then
     shift
     unset PYTHONPATH CMAKE_PREFIX_PATH AMENT_PREFIX_PATH COLCON_PREFIX_PATH LD_LIBRARY_PATH ROS_DISTRO
     . /opt/ros/noetic/setup.bash
+    if [ -f /opt/livox/ros1/setup.bash ]; then . /opt/livox/ros1/setup.bash; fi
     exec "$@"
 fi
+
+# Noetic's overlay resets PATH; restore Foxy before loading the ROS 2 overlays.
+if [ -f /opt/livox/ros1/setup.bash ]; then
+    . /opt/livox/ros1/setup.bash
+    . /opt/ros/foxy/setup.bash
+fi
+for setup in /opt/livox/ros2/local_setup.bash /opt/livox/bridge/local_setup.bash; do
+    if [ -f "$setup" ]; then . "$setup"; fi
+done
 if [ "${1:-bridge}" != "bridge" ]; then exec "$@"; fi
 
 : "${ROS_MASTER_URI:?ROS_MASTER_URI must be set, e.g. http://192.168.1.106:11311}"
@@ -45,4 +55,8 @@ echo "[bridge] topic list: $TOPICS"; grep -E '^\s+topic:' "$TOPICS" | sed 's/^/[
 ( unset PYTHONPATH CMAKE_PREFIX_PATH AMENT_PREFIX_PATH COLCON_PREFIX_PATH LD_LIBRARY_PATH ROS_DISTRO
   . /opt/ros/noetic/setup.bash
   rosparam load "$TOPICS" )
-exec ros2 run ros1_bridge parameter_bridge
+REMAP=()
+if [ -n "${BRIDGE_NODE_NAME:-}" ]; then
+    REMAP+=("__name:=${BRIDGE_NODE_NAME}")
+fi
+exec ros2 run ros1_bridge parameter_bridge "${REMAP[@]}"

@@ -1,0 +1,44 @@
+# Live robot cloud + robot TF. Merge after compose.yml and compose.real.yml.
+# Start only ros1_bridge, framework, tools; docs/LIVOX_LIVE.md has the commands.
+name: x30-livox
+
+services:
+  ros1_bridge:
+    image: x30-livox-bridge:latest
+    build:
+      context: images
+      dockerfile: livox_bridge/bridge.Dockerfile
+      args:
+        BUILD_JOBS: ${LIVOX_BUILD_JOBS:-2}
+    container_name: x30-livox-bridge
+    # Robot publishers advertise this hostname, as in the ROB7 bridge compose.
+    extra_hosts:
+      - "ysc-perception:${LIVOX_ROS_HOST_IP:-192.168.1.106}"
+    # Use the current entrypoint without rebuilding the image.
+    entrypoint: ["/ros_entrypoint.sh", "bash", "/opt/x30/bridge-entrypoint.sh"]
+    volumes:
+      - ./images/ros1_bridge/bridge-entrypoint.sh:/opt/x30/bridge-entrypoint.sh:ro
+    environment:
+      ROS_DOMAIN_ID: ${LIVOX_ROS_DOMAIN_ID:-30}
+      CYCLONEDDS_URI: file:///etc/x30/cyclonedds-local.xml
+      BRIDGE_MODE: parameter
+      BRIDGE_NODE_NAME: x30_livox_bridge
+      BRIDGE_TOPICS: /x30/configs/ros1_bridge_topics_livox.yaml
+  framework:
+    image: x30-livox-framework:latest
+    build:
+      context: images
+      dockerfile: livox_bridge/humble.Dockerfile
+      args:
+        BUILD_JOBS: ${LIVOX_BUILD_JOBS:-2}
+    container_name: x30-livox-framework
+    environment:
+      ROS_DOMAIN_ID: ${LIVOX_ROS_DOMAIN_ID:-30}
+      CYCLONEDDS_URI: file:///etc/x30/cyclonedds-local.xml
+  tools:
+    image: x30-livox-framework:latest
+    container_name: x30-livox-tools
+    command: ["ros2", "launch", "foxglove_bridge", "foxglove_bridge_launch.xml", "port:=${LIVOX_FOXGLOVE_PORT:-8766}", "address:=127.0.0.1", "send_buffer_limit:=100000000"]
+    environment:
+      ROS_DOMAIN_ID: ${LIVOX_ROS_DOMAIN_ID:-30}
+      CYCLONEDDS_URI: file:///etc/x30/cyclonedds-local.xml

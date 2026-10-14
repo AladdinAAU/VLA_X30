@@ -79,6 +79,10 @@ mount `./dds:/etc/x30:ro`, and install `ros-<distro>-rmw-cyclonedds-cpp` in its 
 
 ## 4. Real robot networking (ROS 1 master on the robot)
 
+For live `/lidar_points` with the robot's `/tf` and `/tf_static`, see [LIVOX_LIVE.md](LIVOX_LIVE.md).
+It uses the ROB7 bridge architecture with a dedicated Compose overlay and ROS 2 consumer domain;
+the robot supplies the transforms for viewing and recording.
+
 ROS 1 is a callback protocol: after contacting the master, the master and each publisher open new TCP connections back to the address
 a node advertises (`ROS_IP`) on random ports. Docker Desktop's NAT hides the container behind the VM, so the robot cannot call back: topics
 are listed but no data flows. (This is why the bag test runs on `x30_net` with a Noetic container instead of the robot.)

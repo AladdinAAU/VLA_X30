@@ -1,0 +1,53 @@
+# Live Livox viewing/recording with the ROB7 parameter_bridge architecture.
+# Used by docker/compose.livox.yml; see docs/LIVOX_LIVE.md.
+# These topics are BIDIRECTIONAL: run consumers only in this ROS 2 domain.
+# The robot owns TF. Do not run local TF broadcasters, navigation, or replay here.
+topics:
+  - topic: /livox/lidar
+    type: livox_ros_driver2/msg/CustomMsg
+    queue_size: 5
+    qos:
+      history: keep_last
+      depth: 5
+      reliability: reliable
+      durability: volatile
+  - topic: /imu/data
+    type: sensor_msgs/msg/Imu
+    queue_size: 200
+  - topic: /livox/imu_192_168_2_202
+    type: sensor_msgs/msg/Imu
+    queue_size: 200
+  - topic: /livox/imu_192_168_2_203
+    type: sensor_msgs/msg/Imu
+    queue_size: 200
+  - topic: /livox/imu_192_168_2_204
+    type: sensor_msgs/msg/Imu
+    queue_size: 200
+  - topic: /livox/imu_192_168_2_205
+    type: sensor_msgs/msg/Imu
+    queue_size: 200
+  - topic: /lidar_points
+    type: sensor_msgs/msg/PointCloud2
+    queue_size: 5
+    qos:
+      history: keep_last
+      depth: 5
+      reliability: reliable
+      durability: volatile
+  - topic: /tf
+    type: tf2_msgs/msg/TFMessage
+    queue_size: 100
+    qos:
+      history: keep_last
+      depth: 100
+      reliability: reliable
+      durability: volatile
+  - topic: /tf_static
+    type: tf2_msgs/msg/TFMessage
+    queue_size: 100
+    qos:
+      history: keep_all
+      reliability: reliable
+      durability: transient_local
+services_1_to_2: []
+services_2_to_1: []

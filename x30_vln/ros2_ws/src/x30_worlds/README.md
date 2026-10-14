@@ -13,6 +13,8 @@ hooks/                     adds share/x30_worlds/models to GZ_SIM_RESOURCE_PATH
 ```
 
 Install: `colcon build --packages-select x30_worlds` copies everything above (the real-scan models are about 30-60 MB each).
+The `models/` assets are excluded from Git and may be absent in a fresh checkout. The package still builds without them;
+procedural worlds such as `lab_01` use built-in shapes, while imported worlds need their generated/downloaded models before running.
 For development the simulator container can symlink `share/x30_worlds/{worlds,models}` to the source tree instead (done in the `x30-sim`
 container for the checks in `docs/reports/worlds.md`).
 

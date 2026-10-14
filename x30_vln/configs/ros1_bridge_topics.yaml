@@ -1,5 +1,6 @@
 # ros1_bridge topic list for the REAL X30 (loaded by the x30-ros1-bridge container with `rosparam load`, then
 # `ros2 run ros1_bridge parameter_bridge`). Format as in Rob7_Gr760_P7/Docker/Main/bridge/topics.yaml.
+# For live cloud + ROBOT TF viewing/recording use ros1_bridge_topics_livox.yaml and docs/LIVOX_LIVE.md.
 #
 # WARNING: parameter_bridge topics are BIDIRECTIONAL. Anything the PC publishes on one of these names is forwarded into
 # the robot's ROS 1 graph (digest 2.3). Therefore:

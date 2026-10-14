@@ -1,0 +1,16 @@
+name: livox-learning
+
+services:
+  ros1:
+    build: .
+    image: livox-learning-ros1:local
+    container_name: livox-learning-ros1
+    init: true
+    network_mode: host
+    environment:
+      ROS_MASTER_URI: ${ROS_MASTER_URI:-http://192.168.1.106:11311}
+      ROS_IP: ${ROS_IP:?Set ROS_IP to this laptop's current address on robot Wi-Fi}
+    extra_hosts:
+      - "ysc-perception:${ROBOT_IP:-192.168.1.106}"
+    volumes:
+      - ./data:/data
