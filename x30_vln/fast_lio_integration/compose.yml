@@ -1,0 +1,19 @@
+# Add after docker/compose.yml, docker/compose.real.yml and docker/compose.livox.yml.
+services:
+  fast_lio:
+    build:
+      context: ../fast_lio_integration
+    image: x30-fast-lio:local
+    container_name: x30-fast-lio
+    init: true
+    network_mode: host
+    environment:
+      ROS_DOMAIN_ID: ${LIVOX_ROS_DOMAIN_ID:-30}
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      CYCLONEDDS_URI: file:///etc/x30/cyclonedds-local.xml
+      LIVOX_LIDAR_ID: ${LIVOX_LIDAR_ID:-auto}
+    volumes:
+      - ./dds:/etc/x30:ro
+      - ../fast_lio_integration/fast_lio.yaml:/etc/fast_lio.yaml:ro
+      - ../datasets/real:/bags:ro
+    command: ["bash", "-lc", "source /opt/fast_lio/install/setup.bash && exec ros2 launch fast_lio x30_mapping.launch.py use_sim_time:=${FAST_LIO_SIM_TIME:-false}"]
